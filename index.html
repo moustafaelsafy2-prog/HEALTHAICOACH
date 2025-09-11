@@ -39,13 +39,13 @@
     .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:.85rem 1rem;border-radius:.5rem;z-index:60;opacity:0;transition:.4s}
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-    /* Modals */
-    .plan-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:var(--backdrop);z-index:50}
-    .plan-modal.open{display:flex}
-    .plan-modal-content{width:min(920px,96vw);max-height:86vh;overflow:hidden;background:#fff;border-radius:1rem;box-shadow:0 20px 60px rgba(0,0,0,.25);display:flex;flex-direction:column}
-    .dark .plan-modal-content{background:#0f172a;color:#E5E7EB}
-    .plan-modal-header{display:flex;justify-content:space-between;align-items:center;padding:.85rem 1rem;border-bottom:1px solid #e5e7eb;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff}
-    .plan-modal-body{padding:1rem 1rem .5rem;overflow-y:auto}
+    /* Modals (shared) */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:var(--backdrop);z-index:50}
+    .modal.open{display:flex}
+    .modal-content{width:min(920px,96vw);max-height:86vh;overflow:hidden;background:#fff;border-radius:1rem;box-shadow:0 20px 60px rgba(0,0,0,.25);display:flex;flex-direction:column}
+    .dark .modal-content{background:#0f172a;color:#E5E7EB}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;padding:.85rem 1rem;border-bottom:1px solid #e5e7eb;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff}
+    .modal-body{padding:1rem 1rem .5rem;overflow-y:auto}
     .close-button{background:transparent;color:#fff;font-size:1.75rem;line-height:1;padding:0 .25rem}
 
     .skeleton{display:block;height:1rem;width:100%;background:linear-gradient(90deg,#eee,#f5f5f5,#eee);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:.35rem}
@@ -73,9 +73,17 @@
     .dot:nth-child(3){animation-delay:.4s}
     @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
 
+    /* Contact modal */
+    .contact-actions{display:grid;grid-template-columns:1fr;gap:.75rem;padding:1rem}
+    @media (min-width:520px){ .contact-actions{grid-template-columns:1fr 1fr} }
+    .contact-btn{display:flex;align-items:center;gap:.75rem;padding:1rem;border-radius:.8rem;font-weight:800;justify-content:center}
+    .contact-btn svg{width:22px;height:22px}
+    .contact-whatsapp{background:#25D366;color:#fff}
+    .contact-phone{background:#0ea5e9;color:#fff}
+
     .footer{text-align:center;padding:.75rem;font-size:.9rem;color:#6b7280}
 
-    /* Responsive tweaks */
+    /* Responsive tweak: hide title near avatar on xs */
     @media (max-width:420px){ .brand span{display:none} }
   </style>
 </head>
@@ -84,7 +92,7 @@
   <div class="welcome-screen" id="welcomeScreen">
     <img id="welcomeAvatar" src="https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=200&q=60" alt="Coach Avatar" class="rounded-full mb-6 shadow-xl object-cover"/>
     <h1 class="text-4xl font-bold mb-2" id="welcomeTitle">مدربك الشخصي الذكي</h1>
-    <p class="text-xl font-light text-white/90 mb-6" id="welcomeSubtitle">جاهز للتغيير؟ خطتك مصممة خصيصاً لك—تنفيذ محكم، متابعة دقيقة، ونتيجة ملموسة تستحق الاستثمار.</p>
+    <p class="text-xl font-light text-white/90 mb-6" id="welcomeSubtitle">جاهز للتغيير؟ خطتك مصممة خصيصًا لك — تنفيذ محكم، متابعة دقيقة، ونتيجة ملموسة.</p>
     <button id="startBtn" class="cta-btn">ابدأ الآن</button>
   </div>
 
@@ -117,28 +125,28 @@
 
     <div id="planButtonArea" class="px-4 py-3 hidden">
       <div class="rounded-xl bg-white shadow dark:bg-slate-800 p-3 flex items-center justify-between">
-        <div class="typewriter-text" id="prepStatus">جاهز تبدأ بخطتك معنا؟ تواصل فورًا بخطوة بسيطة</div>
+        <div class="typewriter-text" id="prepStatus">جاهز تبدأ بخطتك معنا؟ تواصل بخطوة واحدة</div>
         <button id="generatePlanBtn" class="btn btn-primary" disabled>احصل على خطتك الآن</button>
       </div>
-      <p id="planButtonNote" class="text-gray-500 text-sm mt-2">يمكنك الاستمرار في الحديث إذا كانت لديك أي استفسارات أخرى.</p>
+      <p id="planButtonNote" class="text-gray-500 text-sm mt-2">جاهز تبدأ بخطتك معنا؟ تواصل فورًا بخطوة بسيطة</p>
     </div>
 
     <div class="input-area" id="inputArea">
       <input type="text" id="userInput" placeholder="اكتب رسالتك..." dir="rtl" />
       <input type="file" id="imageInput" accept="image/*" class="hidden" />
       <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة">➕</button>
-      <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل"> ↪ </button>
+      <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل">📤</button>
     </div>
   </div>
 
-  <!-- Plan Modal -->
-  <div id="planModal" class="plan-modal" aria-modal="true" aria-hidden="true" role="dialog" aria-labelledby="planModalTitle">
-    <div class="plan-modal-content">
-      <div class="plan-modal-header">
+  <!-- Plan Modal (kept for later use) -->
+  <div id="planModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog" aria-labelledby="planModalTitle">
+    <div class="modal-content">
+      <div class="modal-header">
         <h3 id="planModalTitle" class="text-lg font-extrabold">خطتك المخصصة</h3>
         <button id="closePlanBtn" class="close-button" title="إغلاق" aria-label="إغلاق">×</button>
       </div>
-      <div id="planOutput" class="plan-modal-body">
+      <div id="planOutput" class="modal-body">
         <div class="mb-4">
           <p class="typewriter-text">جارٍ تحضير الخطة قسمًا قسمًا…</p>
           <span class="skeleton" style="height:12px;width:85%"></span>
@@ -153,7 +161,33 @@
     </div>
   </div>
 
-  <footer class="footer">© Powerd by Mustafa Elsafy مصطفى الصافي</footer>
+  <!-- Contact Modal (WhatsApp / Phone) -->
+  <div id="contactModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog" aria-labelledby="contactModalTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="contactModalTitle" class="text-lg font-extrabold">اختر طريقة التواصل</h3>
+        <button id="closeContactBtn" class="close-button" title="إغلاق" aria-label="إغلاق">×</button>
+      </div>
+      <div class="modal-body">
+        <p class="mb-3 text-sm text-gray-600 dark:text-gray-300">اختر الطريقة المناسبة للتواصل المباشر مع المدرب.</p>
+        <div class="contact-actions">
+          <a class="contact-btn contact-whatsapp" href="https://wa.me/971502061209" target="_blank" rel="noopener">
+            <!-- WhatsApp Icon -->
+            <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M19.11 17.18c-.28-.14-1.65-.81-1.9-.9-.26-.1-.44-.14-.62.14-.18.27-.71.9-.87 1.09-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.66-1.55-1.94-.16-.27-.02-.42.12-.56.12-.12.28-.3.42-.46.14-.16.18-.27.28-.46.1-.18.06-.34-.02-.48-.08-.14-.62-1.5-.84-2.06-.22-.52-.44-.45-.62-.46h-.54c-.18 0-.48.07-.74.34-.26.27-1 1-1 2.42s1.03 2.8 1.18 2.99c.14.2 2.03 3.1 4.93 4.33.69.3 1.22.48 1.64.62.69.22 1.32.19 1.82.12.56-.08 1.65-.68 1.88-1.35.24-.67.24-1.24.16-1.35-.06-.1-.24-.16-.52-.3z"/><path d="M26.9 5.1A13.9 13.9 0 0 0 16 .1C7.3.1.2 7.1.2 15.8c0 2.7.7 5.2 2 7.4L.1 31.9l8.9-2.3c2.1 1.1 4.5 1.7 7 1.7h.1c8.7 0 15.8-7 15.8-15.7 0-4.2-1.6-8.1-4.9-10.9zM16 28.7h-.1c-2.2 0-4.4-.6-6.3-1.6l-.4-.2-5.3 1.4 1.4-5.1-.2-.4c-1.2-2-1.8-4.3-1.8-6.7 0-7.1 5.8-12.8 12.9-12.8 3.4 0 6.7 1.3 9.1 3.6 2.4 2.4 3.8 5.6 3.8 9 .1 7.1-5.7 12.8-13 12.8z"/></svg>
+            <span>واتساب مباشر</span>
+          </a>
+          <a class="contact-btn contact-phone" href="tel:+971502061209">
+            <!-- Phone Icon -->
+            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.11.37 2.3.57 3.58.57a1 1 0 0 1 1 1V21a1 1 0 0 1-1 1C10.61 22 2 13.39 2 3a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.27.2 2.47.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
+            <span>اتصال هاتفي</span>
+          </a>
+        </div>
+        <p class="text-xs text-gray-500 mt-2">أو أغلق النافذة للمتابعة داخل المحادثة.</p>
+      </div>
+    </div>
+  </div>
+
+  <footer class="footer">© Powered by Mustafa Elsafy | مصطفى الصافي</footer>
 
   <script type="module">
     /* ===== Elements ===== */
@@ -180,6 +214,8 @@
     const planOutput = $('planOutput');
     const printBtn = $('printBtn');
     const expandAllBtn = $('expandAllBtn');
+    const contactModal = $('contactModal');
+    const closeContactBtn = $('closeContactBtn');
 
     let userState = { step: 0, data: {} };
     let LANG = 'ar';
@@ -189,16 +225,15 @@
     const i18n = {
       ar: {
         appName: 'مدربك الشخصي الذكي',
-        welcomeSubtitle: 'جاهز للتغيير؟ خطتك مصممة خصيصاً لك—تنفيذ محكم، متابعة دقيقة، ونتيجة ملموسة تستحق الاستثمار.',
+        welcomeSubtitle: 'جاهز للتغيير؟ خطتك مصممة خصيصًا لك — تنفيذ محكم، متابعة دقيقة، ونتيجة ملموسة.',
         startButtonText: 'ابدأ الآن',
-        userDataTitle: ' لنبني ملفك السريع',
+        userDataTitle: 'لنبني ملفك السريع',
         userDataSubtitle: 'اسمك وعُمرك ودولتك كبداية',
         namePlaceholder:'اسمك', agePlaceholder:'عمرك', countryPlaceholder:'دولتك', nextButtonText:'ابدأ المحادثة',
         inputPlaceholder:'اكتب رسالتك...', emptyFields:'أدخل الاسم والعمر والدولة للمتابعة.', imageUpload:'تم استلام الصورة — يتم التحليل الآن.',
         generationStart:'جاري تجهيز الخطة… قسمًا قسمًا.', generationDone:'الخطة جاهزة. لو محتاج تعديل، بلغني.',
-        initialPrompt:'مرحبًا {name}. سنبدء خطوة خطوة لتجميع بياناتك وبناء خطة دقيقة قابلة للتنفيذ أكتب جاهز للبدء.',
-        planButtonText:'احصل على خطتك الآن', planButtonNote:'أي استفسار؟ تواصل فورًا ونرد عليك مباشرة.',
-        planPreparingInModal:'جاري تحضير الخطة في نافذة أعلى المحادثة.',
+        initialPrompt:'مرحبًا {name}. نمشي خطوة خطوة لتجميع بياناتك وبناء خطة دقيقة قابلة للتنفيذ.',
+        planButtonText:'احصل على خطتك الآن', planButtonNote:'جاهز تبدأ بخطتك معنا؟ تواصل فورًا بخطوة بسيطة',
         typing:'… يتم الرد الآن'
       },
       en: {
@@ -207,7 +242,7 @@
         inputPlaceholder:'Type your message…', emptyFields:'Please fill name, age and country.', imageUpload:'Image received — analyzing now.',
         generationStart:'Preparing your plan… section by section.', generationDone:'Plan is ready. Tell me if you need changes.',
         initialPrompt:'Hi {name}. We’ll collect your data stepwise and build a precise, actionable plan.',
-        planButtonText:'Get your plan now', planButtonNote:'You can keep chatting if you have questions.', planPreparingInModal:'Preparing your plan in a modal above the chat.',
+        planButtonText:'Get your plan now', planButtonNote:'You can keep chatting if you have questions.',
         typing:'typing…'
       }
     };
@@ -234,14 +269,14 @@
     function removeNode(n){ if(n && n.parentNode) n.parentNode.removeChild(n) }
 
     /* ===== AI Prompts ===== */
- function buildCoachSystemPrompt(){ return `
+function buildCoachSystemPrompt(){ return `
 اكتب ردود محادثة قصيرة، دقيقة، ومحترفة.  
 لا ثناء زائد، ولا ذكر لتقنيات أو روبوتات.  
 
 الدور: خبير عالمي في التدريب والتغذية والطب البشري.  
 
 المهمة:  
-- جمع البيانات على مراحل (بحد أقصى سؤالين في كل رسالة).  
+- جمع البيانات لتصميم خطة تدريب وتغذية ومكملات غذائية بناءا علي احتياجات المستخدم إحترافية ومخصصة بنسبة 100% على مراحل (بحد أقصى سؤالين في كل رسالة).  
 - تلخيص ما جُمِع وطلب تأكيد قبل البناء.  
 
 الحالات الخاصة (أمراض/أدوية/إصابات):  
@@ -277,7 +312,7 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
 اعتمد على المحادثة التالية:
 ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
 
-    function buildImagePrompt(){ return `حلّل الصورة بسطرين إلى ثلاثة كحد أقصى: ما الذي تراه، وما يعنيه صحيًا/حركيًا إن كان مرتبطًا بالتمرين أو الطعام. كن عمليًا ومحددًا.` }
+    function buildImagePrompt(){ return `حلّل الصورة في 2-3 أسطر: ماذا ترى؟ وما دلالته الصحية/الرياضية إن وُجدت. كن محددًا وعمليًا.` }
 
     async function callAI(prompt, images){
       try{ const res = await fetch('/.netlify/functions/gemini-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt, images})}); const data = await res.json(); return data.text || '' }catch(e){ console.error(e); return '' }
@@ -285,11 +320,11 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
 
     /* ===== Health flags ===== */
     const MED_FLAGS=/(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i;
-    function analyzeUserMessage(msg){ if(MED_FLAGS.test(msg)){ displayMessage('تم تسجيل ملاحظة صحية. سنضبط التوصيات وفقًا لها. لو في تفاصيل إضافية اكتبها.', 'ai') } }
+    function analyzeUserMessage(msg){ if(MED_FLAGS.test(msg)){ displayMessage('تم رصد حالة صحية — سأضبط التوصيات بناءً عليها. لو في تفاصيل إضافية (تشخيص/جرعة) اذكرها.', 'ai') } }
 
     /* ===== Plan modal helpers ===== */
-    function openPlanModal(){ planModal.classList.add('open'); planModal.setAttribute('aria-hidden','false') }
-    function closePlanModal(){ planModal.classList.remove('open'); planModal.setAttribute('aria-hidden','true') }
+    const openModal = (el)=>{ el.classList.add('open'); el.setAttribute('aria-hidden','false') }
+    const closeModal = (el)=>{ el.classList.remove('open'); el.setAttribute('aria-hidden','true') }
     function lockInputs(state){ userInput.disabled=state; sendBtn.disabled=state; plusBtn.disabled=state; generatePlanBtn.disabled=state && !isDataComplete() }
 
     function sectionBlock(title, html=''){
@@ -308,7 +343,7 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
     async function fetchJSONPlan(){ let raw = await callAI(buildPlanJSONPrompt()); if(!raw) return null; let txt = raw.trim(); if(txt.startsWith('```')){ txt = txt.replace(/^```json/i,'').replace(/^```/i,''); if(txt.endsWith('```')) txt = txt.slice(0,-3); txt = txt.trim() } try{ return JSON.parse(txt) }catch(_){ const s=txt.indexOf('{'); const e=txt.lastIndexOf('}'); if(s>-1&&e>-1&&e>s){ try{ return JSON.parse(txt.slice(s,e+1)) }catch(__){} } } return null }
 
     async function generatePlanProgressive(){
-      openPlanModal(); planOutput.innerHTML='';
+      openModal(planModal); planOutput.innerHTML='';
       const sections=[{key:'analysis',title:'التحليل'},{key:'allowed',title:'المسموح والممنوع'},{key:'nutrition',title:'التغذية (7 أيام)'},{key:'training',title:'التدريب (7 أيام)'},{key:'supps',title:'المكملات'},{key:'safety',title:'السلامة'},{key:'closing',title:'الختام'}];
       const blocks=sections.map(s=>sectionBlock(s.title)); blocks.forEach(b=>planOutput.appendChild(b.wrapper));
 
@@ -334,8 +369,13 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
       function sendMessage(){ const message=(userInput.value||'').trim(); if(!message) return; displayMessage(message,'user'); chatHistory.push({role:'user',parts:[{text:message}]}); analyzeUserMessage(message); processAIResponse(message); userInput.value='' }
       sendBtn.addEventListener('click', sendMessage); userInput.addEventListener('keypress', e=>{ if(e.key==='Enter') sendMessage() })
 
-      generatePlanBtn.addEventListener('click', async ()=>{ displayMessage(i18n[LANG].generationStart,'ai'); const typingEl = showTyping('ai'); await generatePlanProgressive(); removeNode(typingEl); displayMessage(i18n[LANG].generationDone,'ai') })
-      closePlanBtn.addEventListener('click',()=> closePlanModal()); planModal.addEventListener('click',e=>{ if(e.target===planModal) closePlanModal() })
+      // Contact modal on main CTA
+      generatePlanBtn.addEventListener('click', ()=>{ openModal(contactModal) })
+      closeContactBtn.addEventListener('click',()=> closeModal(contactModal));
+      contactModal.addEventListener('click', e=>{ if(e.target===contactModal) closeModal(contactModal) })
+
+      // Plan modal (kept) controls
+      closePlanBtn.addEventListener('click',()=> closeModal(planModal)); planModal.addEventListener('click',e=>{ if(e.target===planModal) closeModal(planModal) })
       printBtn.addEventListener('click',()=> window.print()); expandAllBtn.addEventListener('click',()=>{ planOutput.querySelectorAll('.section-body').forEach(d=>d.style.display='block'); planOutput.querySelectorAll('.section-head span:last-child').forEach(ic=>ic.textContent='−') })
 
       const savedTheme=localStorage.getItem('theme'); if(savedTheme==='dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent='🌙' } setLang('ar')
@@ -343,6 +383,3 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
   </script>
 </body>
 </html>
-
-
-
