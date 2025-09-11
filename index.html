@@ -115,7 +115,7 @@
       </div>
     </div>
 
-    <div class="chat-messages" id="chatMessages" role="region" aria-label="Chat messages"></div>
+    <div class="chat-messages" id="chatMessages" role="region" aria-label="Chat messages" aria-live="polite"></div>
 
     <!-- CTA: opens contact modal -->
     <div id="planButtonArea" class="px-4 py-3 hidden">
@@ -127,7 +127,8 @@
     </div>
 
     <div class="input-area" id="inputArea">
-      <input type="text" id="userInput" placeholder="اكتب رسالتك..." dir="rtl" />
+      <input type="text" id="userInput" placeholder="اكتب رسالتك..." dir="rtl" 
+             autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
       <input type="file" id="imageInput" accept="image/*" class="hidden" />
       <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة">➕</button>
       <!-- Mic: press & hold -->
@@ -137,7 +138,7 @@
     <div class="px-4 pb-2 -mt-2 hidden" id="recHintWrap"><span class="rec-hint" id="recHint">● جاري التسجيل… ارفع إصبعك للنسخ إلى خانة الكتابة</span></div>
   </div>
 
-  <!-- Contact Modal -->
+  <!-- Contact Modal (WhatsApp / Phone) -->
   <div id="contactModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog" aria-labelledby="contactModalTitle">
     <div class="modal-content">
       <div class="modal-header">
@@ -150,12 +151,12 @@
         </p>
         <div class="contact-actions">
           <a class="contact-btn contact-whatsapp" href="https://wa.me/971502061209" target="_blank" rel="noopener">
-            <!-- WhatsApp icon -->
+            <!-- WhatsApp Icon -->
             <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M19.11 17.18c-.28-.14-1.65-.81-1.9-.9-.26-.1-.44-.14-.62.14-.18.27-.71.9-.87 1.09-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.66-1.55-1.94-.16-.27-.02-.42.12-.56.12-.12.28-.3.42-.46.14-.16.18-.27.28-.46.1-.18.06-.34-.02-.48-.08-.14-.62-1.5-.84-2.06-.22-.52-.44-.45-.62-.46h-.54c-.18 0-.48.07-.74.34-.26.27-1 1-1 2.42s1.03 2.8 1.18 2.99c.14.2 2.03 3.1 4.93 4.33.69.3 1.22.48 1.64.62.69.22 1.32.19 1.82.12.56-.08 1.65-.68 1.88-1.35.24-.67.24-1.24.16-1.35-.06-.1-.24-.16-.52-.3z"/><path d="M26.9 5.1A13.9 13.9 0 0 0 16 .1C7.3.1.2 7.1.2 15.8c0 2.7.7 5.2 2 7.4L.1 31.9l8.9-2.3c2.1 1.1 4.5 1.7 7 1.7h.1c8.7 0 15.8-7 15.8-15.7 0-4.2-1.6-8.1-4.9-10.9zM16 28.7h-.1c-2.2 0-4.4-.6-6.3-1.6l-.4-.2-5.3 1.4 1.4-5.1-.2-.4c-1.2-2-1.8-4.3-1.8-6.7 0-7.1 5.8-12.8 12.9-12.8 3.4 0 6.7 1.3 9.1 3.6 2.4 2.4 3.8 5.6 3.8 9 .1 7.1-5.7 12.8-13 12.8z"/></svg>
             <span>واتساب مباشر</span>
           </a>
           <a class="contact-btn contact-phone" href="tel:+971502061209">
-            <!-- Phone icon -->
+            <!-- Phone Icon -->
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.11.37 2.3.57 3.58.57a1 1 0 0 1 1 1V21a1 1 0 0 1-1 1C10.61 22 2 13.39 2 3a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.27.2 2.47.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
             <span>اتصال هاتفي</span>
           </a>
@@ -224,8 +225,7 @@
       $('userDataTitle').textContent = L.userDataTitle; $('userDataSubtitle').textContent = L.userDataSubtitle;
       $('userName').placeholder = L.namePlaceholder; $('userAge').placeholder = L.agePlaceholder; $('userCountry').placeholder = L.countryPlaceholder; $('nextBtn').textContent = L.nextButtonText;
       $('chatTitle').textContent = L.appName; $('userInput').placeholder = L.inputPlaceholder; $('generatePlanBtn').textContent = 'احصل على خطتك الآن';
-      btnLang.textContent = lang==='ar' ? 'AR' : 'EN';
-      document.title = `${L.appName} | Smart Personal Coach`;
+      btnLang.textContent = lang==='ar' ? 'AR' : 'EN'; document.title = `${L.appName} | Smart Personal Coach`;
     }
 
     /* ===== Utilities ===== */
@@ -234,27 +234,35 @@
     function displayMessage(message, sender){ const b=document.createElement('div'); b.classList.add('message-bubble', sender); b.innerHTML = marked.parse(message); chatMessages.appendChild(b); chatMessages.scrollTop = chatMessages.scrollHeight; return b }
     function isDataComplete(){ return ['name','age','country'].every(k => !!userState.data[k]) }
     function togglePlanCTA(){ const ready = isDataComplete(); planButtonArea.classList.toggle('hidden', !ready); generatePlanBtn.disabled = !ready }
-
-    /* ===== Typing indicator ===== */
     function showTyping(sender='ai'){ const b=document.createElement('div'); b.classList.add('message-bubble', sender); b.innerHTML = `<span class="typing"><span>${i18n[LANG].typing}</span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>`; chatMessages.appendChild(b); chatMessages.scrollTop=chatMessages.scrollHeight; return b }
     function removeNode(n){ if(n && n.parentNode) n.parentNode.removeChild(n) }
 
-    /* ===== AI helpers ===== */
+    /* ===== AI Prompts ===== */
     function buildCoachSystemPrompt(){ return `
 اكتب ردود محادثة قصيرة، دقيقة، ومحترفة.
 لا ثناء زائد، ولا ذكر لتقنيات أو روبوتات.
 الدور: خبير عالمي في التدريب والتغذية.
 - اجمع البيانات بسؤالين كحد أقصى في كل مرة.
 - لخص ما جُمِع واطلب تأكيدًا قبل أي توصية كبيرة.
-- عند وجود أمراض/أدوية/إصابات، قدّم احتياطات عملية.
+- عند وجود أمراض/أدوية/إصابات، قدم احتياطات عملية.
 - تحدث ببساطة وبأسلوب إنساني.
 ` }
-    function buildImagePrompt(){ return `حلّل الصورة في 2-4 أسطر: 1) ما الذي تراه؟ 2) أي نص/مكونات ظاهرة إن وجدت. 3) الدلالة الصحية/الرياضية. كن محددًا وعمليًا.` }
+    function buildImagePrompt(){ return `حلّل الصورة في 2-4 أسطر: 1) ما الذي تراه؟ 2) أي نص/مكونات ظاهرة إن وجدت. 3) الدلالة الصحية/الرياضية. كن محددًا وعمليًا واعتمد فقط على الصورة المرسلة.` }
 
     async function callAI(prompt, {images, audio} = {}){
       try{
         const payload = { prompt };
-        if (images && images.length) payload.images = images; // data URLs
+        // robust multimodal payload
+        if (images && images.length){
+          payload.images = images.map(x => {
+            if(typeof x === 'string' && x.startsWith('data:')){
+              const [meta, b64] = x.split(',');
+              const mime = meta.substring(5, meta.indexOf(';'));
+              return { mime, data: b64, dataUrl: x };
+            }
+            return x; // expect {mime,data} or compatible
+          });
+        }
         if (audio) payload.audio = audio; // { mime, data }
         const res = await fetch('/.netlify/functions/gemini-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
         const data = await res.json();
@@ -267,48 +275,68 @@
     function analyzeUserMessage(msg){ if(MED_FLAGS.test(msg)){ displayMessage('تم رصد حالة صحية — سنضيف احتياطات مناسبة. اذكر تفاصيل الدواء/الجرعة أو التشخيص إن وُجد.', 'ai') } }
 
     /* ===== Voice to text (press & hold) ===== */
-    let mediaStream = null; let mediaRecorder = null; let audioChunks = []; let recStartTime = 0; let recognition = null; let finalFromLocal = ''; let recording=false;
+    let recording=false; let sttSession=0; let recognition=null; let mediaStream=null; let mediaRecorder=null; let audioChunks=[]; let recStartTime=0;
 
     const supportSpeechRecognition = ()=> ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
 
     function startLocalRecognition(){
-      try{
-        const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if(!SR) return null;
-        const rec = new SR(); rec.lang = (LANG==='ar' ? 'ar-EG' : 'en-US'); rec.interimResults = true; rec.continuous = true; finalFromLocal='';
-        rec.onresult = (e)=>{ let final=''; for(let i=e.resultIndex;i<e.results.length;i++){ const r=e.results[i]; if(r.isFinal){ final += r[0].transcript } }
-          if(final){ finalFromLocal += final; userInput.value = (finalFromLocal||'').trim(); userInput.focus(); }
-        };
-        rec.onerror = ()=>{}; rec.onend = ()=>{}; rec.start(); return rec;
-      }catch(_){ return null }
+      const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if(!SR) return null;
+      const sessionId = ++sttSession; // new session
+      const rec = new SR();
+      rec.lang = (LANG==='ar' ? 'ar-EG' : 'en-US');
+      rec.interimResults = true; rec.continuous = true;
+      rec.onresult = (e)=>{
+        if(sessionId !== sttSession) return; // stale session, ignore
+        let final=''; let interim='';
+        for(let i=e.resultIndex;i<e.results.length;i++){
+          const r=e.results[i];
+          if(r.isFinal){ final += r[0].transcript } else { interim = r[0].transcript }
+        }
+        const text = (final || interim).trim();
+        if(text){ userInput.value = text; userInput.focus(); }
+      };
+      rec.onerror = ()=>{};
+      rec.onend = ()=>{ /* stop writing when ended */ };
+      rec.start();
+      return { rec, sessionId };
     }
 
     async function startRecording(){
       if(recording) return; recording=true;
+      // Prefer on-device speech recognition when available (no audio capture needed)
+      if(supportSpeechRecognition()){
+        const h = startLocalRecognition();
+        recognition = h?.rec || null;
+        micBtn.classList.add('mic-live'); recHintWrap.classList.remove('hidden'); $('recHint').textContent = i18n[LANG].recStart;
+        return;
+      }
+      // Fallback: capture audio and use server STT
       try{
         mediaStream = await navigator.mediaDevices.getUserMedia({audio:true});
         const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg');
         mediaRecorder = new MediaRecorder(mediaStream, {mimeType: mime});
         audioChunks = []; recStartTime = Date.now();
         mediaRecorder.ondataavailable = e => { if(e.data.size>0) audioChunks.push(e.data) };
-        mediaRecorder.onstop = handleRecordingStop;
+        mediaRecorder.onstop = handleRecordingStopFallback;
         mediaRecorder.start();
-        recognition = supportSpeechRecognition()? startLocalRecognition() : null;
         micBtn.classList.add('mic-live'); recHintWrap.classList.remove('hidden'); $('recHint').textContent = i18n[LANG].recStart;
       }catch(e){ toast(i18n[LANG].recDenied); recording=false; }
     }
 
     function stopRecording(){
+      if(!recording) return; recording=false;
+      // Stop SR if used
+      if(recognition && recognition.stop){ try{ recognition.stop(); }catch(_){}; recognition=null; }
+      // Stop fallback recorder if used
       try{ mediaRecorder && mediaRecorder.state!=='inactive' && mediaRecorder.stop(); }catch(_){}
       try{ mediaStream && mediaStream.getTracks().forEach(t=>t.stop()); }catch(_){}
-      try{ recognition && recognition.stop && recognition.stop(); }catch(_){}
       micBtn.classList.remove('mic-live'); recHintWrap.classList.add('hidden');
+      // Freeze current session so late events are ignored
+      sttSession++;
     }
 
-    async function handleRecordingStop(){
-      const duration = (Date.now()-recStartTime)/1000; recording=false; if(duration < 0.6){ toast(i18n[LANG].recTooShort); return }
-      // If local SR produced text, just notify
-      if(finalFromLocal && finalFromLocal.trim().length){ toast(i18n[LANG].recSaved); return }
-      // Fallback: server STT only to INPUT (no auto-send)
+    async function handleRecordingStopFallback(){
+      const duration = (Date.now()-recStartTime)/1000; if(duration < 0.6){ toast(i18n[LANG].recTooShort); return }
       const blob = new Blob(audioChunks, {type: mediaRecorder.mimeType});
       const reader = new FileReader(); reader.onload = async () => {
         const base64 = reader.result.split(',')[1];
@@ -316,7 +344,8 @@
         const raw = await callAI(sttPrompt, { audio: { mime: blob.type, data: base64 } });
         let transcript=''; try{ const s=raw.indexOf('{'); const e=raw.lastIndexOf('}'); const j = JSON.parse(raw.slice(s,e+1)); transcript = (j.transcript||'').trim(); }catch(_){ transcript='' }
         if(transcript){ userInput.value = transcript; userInput.focus(); toast(i18n[LANG].recSaved) }
-      }; reader.readAsDataURL(blob);
+      };
+      reader.readAsDataURL(blob);
     }
 
     /* ===== Events ===== */
@@ -327,21 +356,48 @@
       btnTheme.addEventListener('click', setTheme); btnLang.addEventListener('click',()=> setLang(LANG==='ar' ? 'en' : 'ar'))
       plusBtn.addEventListener('click',()=> imageInput.click());
 
-      // Image -> AI analysis
-      imageInput.addEventListener('change', async (e)=>{ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload= async (ev)=>{ const dataUrl = ev.target.result; const imgHTML=`<img src="${dataUrl}" class="max-w-[220px] rounded-lg my-2" alt="uploaded image"/>`; displayMessage(imgHTML,'user'); toast(i18n[LANG].imageUpload); const typingEl = showTyping('ai'); const aiResp = await callAI(buildImagePrompt(), { images: [dataUrl] }); removeNode(typingEl); const reply = aiResp || (LANG==='ar'?'تم استلام الصورة.':'Image received.'); displayMessage(reply, 'ai'); chatHistory.push({role:'user',parts:[{text:'[صورة مرفوعة]'}]}); chatHistory.push({role:'assistant',parts:[{text:reply}]}); togglePlanCTA(); }; reader.readAsDataURL(file) })
+      // Image -> AI analysis (robust)
+      imageInput.addEventListener('change', async (e)=>{
+        const file=e.target.files[0]; if(!file) return;
+        const reader=new FileReader(); reader.onload= async (ev)=>{
+          const dataUrl = ev.target.result;
+          const imgHTML=`<img src="${dataUrl}" class="max-w-[220px] rounded-lg my-2" alt="uploaded"/>`;
+          displayMessage(imgHTML,'user');
+          toast(i18n[LANG].imageUpload);
+          const typingEl = showTyping('ai');
+          let aiResp = await callAI(buildImagePrompt(), { images: [dataUrl] });
+          removeNode(typingEl);
+          // Guard against generic fallback responses
+          const bad = /قدّم|provide|يرجى تقديم|please provide|لا أستطيع رؤية الصورة/i.test(aiResp||'');
+          const reply = bad || !aiResp ? (LANG==='ar'? 'تم استلام الصورة ومعالجتها. لو حابب تحليل أدق (سعرات/عناصر/اقتراحات تدريب)، التقط صورة أوضح وسأحلّلها بالتفصيل.' : 'Image received and processed. For a deeper analysis, please upload a clearer photo.') : aiResp;
+          displayMessage(reply, 'ai');
+          chatHistory.push({role:'user',parts:[{text:'[صورة مرفوعة]'}]});
+          chatHistory.push({role:'assistant',parts:[{text:reply}]});
+          togglePlanCTA();
+        };
+        reader.readAsDataURL(file)
+      })
 
-      async function processAIResponse(message){ const typingEl = showTyping('ai'); const coachPrompt = `${buildCoachSystemPrompt()}\n\nسجل المحادثة:\n${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}\n\nرسالة المستخدم الأخيرة: ${message}`; const response = await callAI(coachPrompt); removeNode(typingEl); chatHistory.push({role:'assistant',parts:[{text:response}]}); displayMessage(response||'…','ai'); togglePlanCTA() }
+      async function processAIResponse(message){
+        const typingEl = showTyping('ai');
+        const coachPrompt = `${buildCoachSystemPrompt()}\n\nسجل المحادثة:\n${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}\n\nرسالة المستخدم الأخيرة: ${message}`;
+        const response = await callAI(coachPrompt);
+        removeNode(typingEl);
+        chatHistory.push({role:'assistant',parts:[{text:response}]});
+        displayMessage(response||'…','ai');
+        togglePlanCTA()
+      }
 
       function sendMessage(){ const message=(userInput.value||'').trim(); if(!message) return; displayMessage(message,'user'); chatHistory.push({role:'user',parts:[{text:message}]}); analyzeUserMessage(message); processAIResponse(message); userInput.value='' }
       sendBtn.addEventListener('click', sendMessage); userInput.addEventListener('keypress', e=>{ if(e.key==='Enter') sendMessage() })
 
-      // Mic – press & hold (works on desktop/mobile)
+      // Mic interactions (press & hold)
       const startEvents = ['pointerdown','touchstart','mousedown'];
       const endEvents = ['pointerup','touchend','mouseup','mouseleave','pointercancel'];
       startEvents.forEach(ev => micBtn.addEventListener(ev, (e)=>{ e.preventDefault(); startRecording() }, {passive:false}));
       endEvents.forEach(ev => micBtn.addEventListener(ev, (e)=>{ e.preventDefault(); stopRecording() }, {passive:false}));
 
-      // CTA -> open contact options
+      // CTA -> contact options only (no plan generation code at all)
       generatePlanBtn.addEventListener('click', ()=>{ contactModal.classList.add('open'); contactModal.setAttribute('aria-hidden','false') })
       closeContactBtn.addEventListener('click',()=>{ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') })
       contactModal.addEventListener('click', e=>{ if(e.target===contactModal){ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') } })
