@@ -1,6 +1,0 @@
-[build]
-command = "echo 'Netlify build successful'"
-publish = "."
-
-[functions]
-directory = "netlify/functions"
