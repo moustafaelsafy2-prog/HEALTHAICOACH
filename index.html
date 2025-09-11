@@ -27,34 +27,12 @@
       --backdrop: rgba(0,0,0,0.7);
     }
     * { box-sizing: border-box; }
-    body {
-      font-family: 'Tajawal', sans-serif;
-      background-color: var(--chat-bg);
-      color: #333;
-      transition: background-color 0.3s, color 0.3s;
-    }
+    body { font-family: 'Tajawal', sans-serif; background-color: var(--chat-bg); color: #333; transition: background-color 0.3s, color 0.3s; }
     .dark body { color: #E5E7EB; }
 
     /* Chat shell */
-    .chat-container {
-      max-width: 720px;
-      margin: 0 auto;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background-color: var(--chat-bg);
-      box-shadow: 0 0 25px rgba(0,0,0,0.08);
-      border-radius: 1rem;
-      overflow: hidden;
-      position: relative;
-    }
-    .chat-header {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      padding: 0.875rem 1rem;
-      position: sticky; top: 0; z-index: 10;
-      display: flex; justify-content: space-between; align-items: center;
-    }
+    .chat-container { max-width: 720px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; background-color: var(--chat-bg); box-shadow: 0 0 25px rgba(0,0,0,0.08); border-radius: 1rem; overflow: hidden; position: relative; }
+    .chat-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 0.875rem 1rem; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; }
     .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6rem; }
     .message-bubble { padding: 0.85rem 1.15rem; border-radius: 1.25rem; max-width: 82%; margin-bottom: 0.75rem; position: relative; animation: fadeIn 0.25s ease-in-out; }
     .message-bubble.user { background-color: var(--bubble-user); margin-left: auto; border-bottom-right-radius: 0.25rem; }
@@ -223,10 +201,10 @@
         chatTitle: 'Coach AI',
         inputPlaceholder: 'اكتب رسالتك...',
         emptyFields: 'الرجاء إدخال اسمك وعمرك ودولتك للبدء.',
-        imageUpload: 'تم إرسال الصورة. يتم تحليلها الآن...',
+        imageUpload: 'تم إرسال الصورة. جاري المعالجة…',
         generationStart: 'جاري تجهيز الخطة… قسمًا قسمًا.',
         generationDone: 'الخطة جاهزة. لو محتاج تعديل، قول لي.',
-        initialPrompt: 'أهلاً يا {name}. خلّينا نشتغل خطوة بخطوة عشان نطلع خطة دقيقة ومناسبة لك.',
+        initialPrompt: 'أهلاً يا {name}. هنمشي خطوة خطوة لغاية ما نطلع خطة دقيقة ومناسبة لك.',
         planButtonText: 'احصل على خطتك الآن',
         planButtonNote: 'تقدر تكمل الحديث لو عندك أي استفسار.',
         planPreparingInModal: 'جاري تحضير الخطة في نافذة فوق المحادثة.'
@@ -309,35 +287,34 @@
     }
 
     /* ==========================
-       AI Orchestration
+       AI Orchestration (Natural, no AI mentions)
     ===========================*/
     function buildCoachSystemPrompt(){
       return `
-اكتب ردود دردشة طبيعية ومحترفة دون مبالغة أو مديح زائد، ولا تذكر أنك نظام أو ذكاء اصطناعي أو روبوت. لا تستخدم عبارات مثل: أنا ذكاء اصطناعي/بطريقة بشرية.
-
+اكتب ردود دردشة طبيعية ومحترفة، بلا مبالغة أو مديح زائد، ولا تذكر أنك نظام أو ذكاء اصطناعي أو روبوت.
 الدور: مدرب صحي وأخصائي تغذية وطبيب.
-الهدف: جمع البيانات تدريجيًا بتسلسل منطقي، وتقديم تعليقات مختصرة عند وجود أمراض/إصابات/أدوية، ثم تلخيص ما جُمِع وطلب تأكيد قبل بناء الخطة.
+الهدف: جمع البيانات تدريجيًا وطلب التأكيد قبل بناء الخطة.
 
-المعطيات التي نحتاجها (اجمعها على مراحل وبسؤالين كحد أقصى في كل رسالة):
+اجمع هذه البيانات على مراحل وبحد أقصى سؤالين كل مرة:
 - الهدف الأساسي (خسارة دهون/بناء عضل/صحة عامة/قوة).
 - العمر، الجنس، الطول، الوزن.
-- قياسات اختيارية (محيط خصر أو نسبة دهون إن وُجدت).
-- أيام التمرين بالأسبوع، مدة الحصة، المكان والمعدات.
+- قياسات اختيارية (محيط خصر/نسبة دهون).
+- أيام التمرين/المدة/المكان/المعدات.
 - التغذية: عدد الوجبات، المطبخ المفضل، وقت التحضير، الميزانية.
 - حساسيات/أطعمة ممنوعة، تحديات سابقة.
-- نمط حياة: طبيعة العمل/الخطوات/النوم/الضغط/الكافيين.
+- نمط حياة: العمل/الخطوات/النوم/الضغط/الكافيين.
 - الإصابات/الأمراض/الأدوية/المكملات.
 - مجموعات عضلية تحتاج تركيز.
 
-الأسلوب: مهني، واضح، مباشر، أسئلة قصيرة.
-عند ذكر مشكلة صحية جدية، انصح بمراجعة الطبيب دون تهويل.
-`; }
+الأسلوب: مهني، واضح، مباشر.
+عند ذكر مشكلة صحية مهمة، انصح بزيارة الطبيب دون تهويل.
+`;
+    }
 
     function buildPlanPrompt(){
       return `
-اكتب خطة مخصصة 100% بصيغة Markdown دون أي تلميح لوجود ذكاء اصطناعي. كن مهنيًا ومباشرًا.
-
-التزم بالعناوين التالية حرفيًا (H2):
+اكتب خطة مخصصة 100% بصيغة Markdown دون أي تلميح لذكاء اصطناعي.
+استخدم هذه العناوين حرفيًا (H2):
 ## التحليل
 ## المسموح والممنوع
 ## التغذية (7 أيام)
@@ -346,22 +323,23 @@
 ## السلامة
 ## الختام
 
-التفاصيل:
-- التغذية: 3 وجبات يوميًا × 7 أيام، مقادير واضحة وتوزيع سعرات تقريبي، بدائل سريعة اقتصادية عند اللزوم.
-- التدريب: وفق معطيات المستخدم (جيم/منزل)، مجموعات/تكرارات، ملاحظات أمان وتقدّم بسيط للأسبوع التالي.
-- المكملات: فقط إن لزم، الجرعات وموانع الاستخدام والتداخلات.
-- السلامة: تنبيهات حسب الأمراض/الأدوية/الإصابات.
+التفاصيل المتوقعة:
+- التغذية: 3 وجبات يوميًا × 7 أيام، مقادير واضحة وتوزيع سعرات تقريبي، بدائل اقتصادية.
+- التدريب: حسب بيانات المستخدم (منزل/جيم)، مجموعات/تكرارات، تقدم أسبوعي بسيط.
+- المكملات: فقط عند اللزوم، الجرعات وموانع الاستخدام.
+- السلامة: تنبيهات تبعًا للأمراض/الأدوية/الإصابات.
 
 المحادثة:
 ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
-`; }
+`;
+    }
 
     async function callAI(prompt){
       try{
         const res = await fetch('/.netlify/functions/gemini-proxy', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ prompt }) });
         const data = await res.json();
-        return data.text || 'تعذّر الحصول على رد.';
-      }catch(e){ console.error(e); return 'عذراً، حدث خطأ أثناء التواصل. حاول مرة أخرى.'; }
+        return data.text || '';
+      }catch(e){ console.error(e); return ''; }
     }
 
     async function processAIResponse(message){
@@ -369,13 +347,13 @@ ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
       const coachPrompt = `${buildCoachSystemPrompt()}\n\nسجل المحادثة:\n${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}\n\nرسالة المستخدم الأخيرة: ${message}`;
       const response = await callAI(coachPrompt);
       chatHistory.push({ role:'assistant', parts:[{text: response}] });
-      displayMessage(response, 'ai');
+      displayMessage(response || '…', 'ai');
       lockInputs(false);
       togglePlanCTA();
     }
 
     /* ==========================
-       Input enrichment & safety notes
+       Input enrichment & detection
     ===========================*/
     const MED_FLAGS = /(سكري|ضغط|قلب|كورونا|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|مضاد|كورتيزون|مضادات|ضغط الدم|سكر الدم)/i;
     function isPlanRequest(msg){ return /(الخطة|خطة|خطه|اعمل\s*خطة|جهز\s*الخطة|عايز\s*الخطة|generate\s*plan|my\s*plan)/i.test(msg); }
@@ -387,14 +365,12 @@ ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
     }
 
     /* ==========================
-       Modal plan generation (progressive)
+       Modal plan generation (progressive + robust parsing)
     ===========================*/
     function openPlanModal(){ planModal.classList.add('open'); planModal.setAttribute('aria-hidden','false'); }
     function closePlanModal(){ planModal.classList.remove('open'); planModal.setAttribute('aria-hidden','true'); }
 
-    function lockInputs(state){
-      userInput.disabled = state; sendBtn.disabled = state; plusBtn.disabled = state; generatePlanBtn.disabled = state && !isDataComplete();
-    }
+    function lockInputs(state){ userInput.disabled = state; sendBtn.disabled = state; plusBtn.disabled = state; generatePlanBtn.disabled = state && !isDataComplete(); }
 
     function sectionBlock(title, contentHTML = '', collapsed = false){
       const wrapper = document.createElement('section');
@@ -427,30 +403,31 @@ ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
       const blocks = sections.map(s => sectionBlock(s.title));
       blocks.forEach(b => planOutput.appendChild(b.wrapper));
 
-      // Full plan once for accuracy, then split client-side
+      // Fetch one full plan for consistency; split locally
       const full = await callAI(buildPlanPrompt());
-      if(!full || typeof full !== 'string'){ planOutput.innerHTML += '<p class="text-red-600">تعذر توليد الخطة. حاول مرة أخرى.</p>'; return; }
+      if(!full){ blocks[0].body.innerHTML = '<p class="text-red-600">تعذر توليد الخطة. حاول مرة أخرى.</p>'; return; }
 
       const md = full;
+      // Tolerant regex: optional spaces, optional parentheses, possible dash replacement
       const map = {
-        analysis: /##\s*التحليل\b([\s\S]*?)(?=##\s*(?:المسموح والممنوع)\b|$)/,
+        analysis: /##\s*التحليل\b([\s\S]*?)(?=##\s*(?:المسموح\s*و?\s*الممنوع)\b|$)/,
         allowed: /##\s*المسموح\s*و?\s*الممنوع\b([\s\S]*?)(?=##\s*(?:التغذية|التدريب|المكملات|السلامة|الختام)|$)/,
-        nutrition: /##\s*التغذية\s*(?:\(\s*7\s*أيام\s*\)|7\s*أيام)?\b([\s\S]*?)(?=##\s*(?:التدريب|المكملات|السلامة|الختام)|$)/,
-        training: /##\s*التدريب\s*(?:\(\s*7\s*أيام\s*\)|7\s*أيام)?\b([\s\S]*?)(?=##\s*(?:المكملات|السلامة|الختام)|$)/,
+        nutrition: /##\s*التغذية\s*(?:[-–]\s*)?(?:\(\s*7\s*أيام\s*\)|7\s*أيام)?\b([\s\S]*?)(?=##\s*(?:التدريب|المكملات|السلامة|الختام)|$)/,
+        training: /##\s*التدريب\s*(?:[-–]\s*)?(?:\(\s*7\s*أيام\s*\)|7\s*أيام)?\b([\s\S]*?)(?=##\s*(?:المكملات|السلامة|الختام)|$)/,
         supps: /##\s*المكملات\b([\s\S]*?)(?=##\s*(?:السلامة|الختام)|$)/,
         safety: /##\s*السلامة\b([\s\S]*?)(?=##\s*الختام|$)/,
         closing: /##\s*الختام\b([\s\S]*$)/,
       };
 
       const delay = ms => new Promise(r => setTimeout(r, ms));
-      let matchedCount = 0;
+      let matched = 0;
       for (let i=0; i<sections.length; i++){
         const k = sections[i].key; const b = blocks[i].body; const match = md.match(map[k]);
-        await delay(i===0?250:200);
-        if(match && match[1] && match[1].trim().length){ matchedCount++; b.innerHTML = marked.parse(match[1].trim()); }
+        await delay(i===0?250:180);
+        if(match && match[1] && match[1].trim()){ matched++; b.innerHTML = marked.parse(match[1].trim()); }
         else { b.innerHTML = '<p>—</p>'; }
       }
-      if(matchedCount === 0){ blocks[0].body.innerHTML = marked.parse(md); }
+      if(matched === 0){ blocks[0].body.innerHTML = marked.parse(md); }
     }
 
     /* ==========================
