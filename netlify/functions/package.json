@@ -1,21 +1,6 @@
 {
-  "name": "gemini-proxy",
+  "name": "netlify-functions",
   "version": "1.0.0",
-  "description": "A Netlify function to proxy requests to the Google Gemini API.",
   "main": "gemini-proxy.js",
-  "scripts": {
-    "start": "netlify functions:serve",
-    "deploy": "netlify deploy --prod"
-  },
-  "keywords": [
-    "netlify",
-    "serverless",
-    "gemini",
-    "api"
-  ],
-  "author": "Your Name",
-  "license": "MIT",
-  "dependencies": {
-    "@google/generative-ai": "^0.11.3"
-  }
+  "dependencies": {}
 }
