@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>مدربك الصحي الذكي | Your Smart Health Coach</title>
+  <title>مدربك الذكي | Your Smart Coach</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
@@ -37,19 +37,20 @@
     .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:.85rem 1rem;border-radius:.5rem;z-index:60;opacity:0;transition:.4s}
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-    /* Plan Modal */
-    .plan-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:var(--backdrop);z-index:50}
-    .plan-modal.open{display:flex}
-    .plan-modal-content{width:min(920px,96vw);max-height:86vh;overflow:hidden;background:#fff;border-radius:1rem;box-shadow:0 20px 60px rgba(0,0,0,.25);display:flex;flex-direction:column}
-    .dark .plan-modal-content{background:#0f172a;color:#E5E7EB}
-    .plan-modal-header{display:flex;justify-content:space-between;align-items:center;padding:.85rem 1rem;border-bottom:1px solid #e5e7eb;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff}
-    .plan-modal-body{padding:1rem 1rem .5rem;overflow-y:auto}
+    /* Modals */
+    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:var(--backdrop);z-index:50}
+    .modal.open{display:flex}
+    .modal-content{width:min(920px,96vw);max-height:86vh;overflow:hidden;background:#fff;border-radius:1rem;box-shadow:0 20px 60px rgba(0,0,0,.25);display:flex;flex-direction:column}
+    .dark .modal-content{background:#0f172a;color:#E5E7EB}
+    .modal-header{display:flex;justify-content:space-between;align-items:center;padding:.85rem 1rem;border-bottom:1px solid #e5e7eb;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff}
+    .modal-body{padding:1rem 1rem .5rem;overflow-y:auto}
+    .modal-actions{display:flex;gap:.5rem;padding:.85rem 1rem 1rem;border-top:1px solid #e5e7eb}
     .close-button{background:transparent;color:#fff;font-size:1.75rem;line-height:1;padding:0 .25rem}
+
     .skeleton{display:block;height:1rem;width:100%;background:linear-gradient(90deg,#eee,#f5f5f5,#eee);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:.35rem}
     .dark .skeleton{background:linear-gradient(90deg,#374151,#4b5563,#374151)}
     @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-    .plan-actions{display:flex;gap:.5rem;padding:.85rem 1rem 1rem;border-top:1px solid #e5e7eb}
     .btn{padding:.6rem 1rem;border-radius:.6rem;font-weight:700;cursor:pointer}
     .btn-primary{background:var(--accent);color:#fff}
     .btn-secondary{background:#6B7280;color:#fff}
@@ -57,11 +58,21 @@
     .typewriter-text{font-size:1.05rem;font-weight:600;color:var(--primary)}
     .dark .typewriter-text{color:var(--accent)}
 
-    /* Section cards */
+    /* Section cards (plan) */
     .section-card{border:1px solid #e5e7eb;border-radius:.75rem;overflow:hidden;margin-bottom:1rem}
     .section-head{display:flex;justify-content:space-between;align-items:center;background:#f9fafb;padding:.6rem .8rem;font-weight:800}
     .dark .section-head{background:#111827;color:#E5E7EB}
     .section-body{padding:.8rem}
+
+    /* Contact options */
+    .contact-grid{display:grid;grid-template-columns:1fr;gap:12px}
+    @media (min-width:520px){ .contact-grid{grid-template-columns:1fr 1fr} }
+    .contact-card{border:1px solid #e5e7eb;border-radius:.9rem;padding:1rem;display:flex;align-items:center;gap:.9rem;background:#fff;transition:.2s}
+    .dark .contact-card{background:#0b1220;border-color:#1f2a44}
+    .contact-card:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(0,0,0,.08)}
+    .icon{width:28px;height:28px;display:inline-block}
+    .wa{color:#25D366}
+    .ph{color:#0ea5e9}
 
     .footer{text-align:center;padding:.75rem;font-size:.9rem;color:#6b7280}
   </style>
@@ -70,7 +81,7 @@
   <!-- Welcome -->
   <div class="welcome-screen" id="welcomeScreen">
     <img src="https://placehold.co/150x150/ffffff/0D47A1?text=AI+Coach" alt="AI Coach Avatar" class="rounded-full mb-6 shadow-xl"/>
-    <h1 class="text-4xl font-bold mb-2" id="welcomeTitle">مدربك الصحي الشخصي</h1>
+    <h1 class="text-4xl font-bold mb-2" id="welcomeTitle">مدربك الشخصي</h1>
     <p class="text-xl font-light text-white/90 mb-8" id="welcomeSubtitle">ابدأ رحلتك نحو الأفضل الآن</p>
     <button id="startBtn" class="cta-btn">ابدأ المحادثة</button>
   </div>
@@ -102,10 +113,10 @@
 
     <div class="chat-messages" id="chatMessages" role="region" aria-label="Chat messages"></div>
 
-    <!-- Smart CTA appears when data complete -->
+    <!-- CTA becomes contact options trigger -->
     <div id="planButtonArea" class="px-4 py-3 hidden">
       <div class="rounded-xl bg-white shadow dark:bg-slate-800 p-3 flex items-center justify-between">
-        <div class="typewriter-text"><span id="prepStatus">جاهز نبني خطتك المخصصة؟</span></div>
+        <div class="typewriter-text"><span id="prepStatus">جاهز نبني خطتك؟</span></div>
         <button id="generatePlanBtn" class="btn btn-primary" disabled>احصل على خطتك الآن</button>
       </div>
       <p id="planButtonNote" class="text-gray-500 text-sm mt-2">يمكنك الاستمرار في الحديث إذا كانت لديك أي استفسارات أخرى.</p>
@@ -115,19 +126,18 @@
       <input type="text" id="userInput" placeholder="اكتب رسالتك..." dir="rtl" />
       <input type="file" id="imageInput" accept="image/*" class="hidden" />
       <button id="plusBtn" class="icon-btn" aria-label="أرسل ملف">➕</button>
-      <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل">📤</button>
+      <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل"> ↪ </button>
     </div>
   </div>
 
-  <!-- Plan Modal (overlay above chat) -->
-  <div id="planModal" class="plan-modal" aria-modal="true" aria-hidden="true" role="dialog" aria-labelledby="planModalTitle">
-    <div class="plan-modal-content">
-      <div class="plan-modal-header">
+  <!-- Plan Modal -->
+  <div id="planModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog" aria-labelledby="planModalTitle">
+    <div class="modal-content">
+      <div class="modal-header">
         <h3 id="planModalTitle" class="text-lg font-extrabold">خطتك المخصصة</h3>
         <button id="closePlanBtn" class="close-button" title="إغلاق" aria-label="إغلاق">×</button>
       </div>
-      <div id="planOutput" class="plan-modal-body">
-        <!-- Progressive placeholder -->
+      <div id="planOutput" class="modal-body">
         <div class="mb-4">
           <p class="typewriter-text">جارٍ تحضير الخطة قسمًا قسمًا…</p>
           <span class="skeleton" style="height:12px;width:85%"></span>
@@ -135,9 +145,43 @@
           <span class="skeleton mt-2" style="height:12px;width:75%"></span>
         </div>
       </div>
-      <div class="plan-actions">
+      <div class="modal-actions">
         <button id="printBtn" class="btn btn-primary">طباعة الخطة</button>
         <button id="expandAllBtn" class="btn btn-secondary">عرض كل الأقسام</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Modal (NEW) -->
+  <div id="contactModal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="contactTitle">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="contactTitle" class="text-lg font-extrabold">اختر وسيلة التواصل</h3>
+        <button id="closeContactBtn" class="close-button" title="إغلاق" aria-label="إغلاق">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="contact-grid">
+          <a class="contact-card" href="https://wa.me/971502061209" target="_blank" rel="noopener" aria-label="تواصل عبر واتساب">
+            <svg class="icon wa" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M20.52 3.48A11.77 11.77 0 0 0 12.06 0C5.47 0 .1 5.37.1 12c0 2.11.55 4.2 1.6 6.03L0 24l6.17-1.62A11.9 11.9 0 0 0 12.06 24c6.6 0 11.97-5.38 11.97-12s-5.37-12-11.97-12Zm0 0" opacity=".1"/>
+              <path d="M12.06 2.1C6.62 2.1 2.2 6.52 2.2 12c0 1.9.5 3.77 1.45 5.42l-.96 3.55 3.64-.95A9.88 9.88 0 0 0 12.06 21.9c5.44 0 9.86-4.42 9.86-9.9s-4.42-9.9-9.86-9.9Zm5.66 14.18c-.24.68-1.41 1.29-1.96 1.38-.5.08-1.15.11-1.86-.12-.43-.14-1-.32-1.7-.63-2.99-1.3-4.94-4.38-5.09-4.59-.15-.21-1.21-1.6-1.21-3.05 0-1.45.76-2.17 1.02-2.47.26-.3.57-.38.76-.38.18 0 .37 0 .54.01.17.01.4-.07.62.47.24.58.82 2 .9 2.14.07.14.12.3.02.49-.1.2-.15.32-.3.49-.15.17-.31.38-.44.51-.15.15-.3.32-.13.62.17.3.77 1.27 1.66 2.06 1.14 1.02 2.1 1.34 2.4 1.5.3.15.48.13.66-.08.18-.2.76-.89.97-1.2.21-.3.41-.25.68-.15.26.09 1.65.78 1.93.92.29.14.48.21.55.33.07.12.07.7-.17 1.38Z"/>
+            </svg>
+            <div>
+              <div class="font-extrabold">واتساب مباشر</div>
+              <div class="text-sm text-gray-500">اضغط للانتقال إلى المحادثة</div>
+            </div>
+          </a>
+          <a class="contact-card" href="tel:+971502061209" aria-label="اتصال هاتفي">
+            <svg class="icon ph" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M6.62 10.79a15.053 15.053 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.11.37 2.31.57 3.58.57.55 0 1 .45 1 1v3.5a1 1 0 0 1-1 1C10.85 21 3 13.15 3 3.99a1 1 0 0 1 1-1H7.5a1 1 0 0 1 1 1c0 1.27.2 2.47.57 3.58.1.33.03.69-.23.95l-2.22 2.27Z"/>
+            </svg>
+            <div>
+              <div class="font-extrabold">اتصال هاتفي</div>
+              <div class="text-sm text-gray-500">+971502061209</div>
+            </div>
+          </a>
+        </div>
+        <div class="mt-4 text-sm text-gray-600 dark:text-gray-400">تفضل خيار التواصل المباشر، أو <button id="continueInChatBtn" class="underline">تابع هنا داخل المحادثة</button>.</div>
       </div>
     </div>
   </div>
@@ -145,9 +189,7 @@
   <footer class="footer">© 2025 مصطفى الصافي</footer>
 
   <script type="module">
-    /* ==========================
-       Elements & State
-    ===========================*/
+    /* Elements */
     const $ = id => document.getElementById(id);
     const chatMessages = $('chatMessages');
     const userInput = $('userInput');
@@ -171,64 +213,60 @@
     const planOutput = $('planOutput');
     const printBtn = $('printBtn');
     const expandAllBtn = $('expandAllBtn');
+    const contactModal = $('contactModal');
+    const closeContactBtn = $('closeContactBtn');
+    const continueInChatBtn = $('continueInChatBtn');
 
     let userState = { step: 0, data: {} };
     let LANG = 'ar';
     let chatHistory = [];
 
-    /* ==========================
-       i18n
-    ===========================*/
+    /* i18n */
     const i18n = {
       ar: {
-        welcomeTitle: 'مدربك الصحي الشخصي',
-        welcomeSubtitle: 'ابدأ رحلتك نحو الأفضل الآن',
-        startButtonText: 'ابدأ المحادثة',
-        userDataTitle: 'لنبدأ رحلتك',
-        userDataSubtitle: 'أخبرنا عن نفسك لتبدأ',
-        namePlaceholder: 'اسمك', agePlaceholder: 'عمرك', countryPlaceholder: 'دولتك', nextButtonText: 'التالي',
-        chatTitle: 'Coach AI', inputPlaceholder: 'اكتب رسالتك...',
-        emptyFields: 'الرجاء إدخال اسمك وعمرك ودولتك للبدء.', imageUpload: 'تم استلام الصورة.',
-        generationStart: 'جاري تجهيز الخطة… قسمًا قسمًا.', generationDone: 'الخطة جاهزة. لو محتاج تعديل، بلغني.',
-        initialPrompt: 'أهلاً يا {name}. هنشتغل خطوة بخطوة لغاية ما نطلع خطة دقيقة ومناسبة لك.',
-        planButtonText: 'احصل على خطتك الآن', planButtonNote: 'تقدر تكمل الحديث لو عندك أي استفسار.',
-        planPreparingInModal: 'جاري تحضير الخطة في نافذة فوق المحادثة.'
+        welcomeTitle: 'مدربك الصحي الشخصي', welcomeSubtitle: 'ابدأ رحلتك نحو الأفضل الآن', startButtonText: 'ابدأ المحادثة',
+        userDataTitle: 'لنبدأ رحلتك', userDataSubtitle: 'أخبرنا عن نفسك لتبدأ', namePlaceholder:'اسمك', agePlaceholder:'عمرك', countryPlaceholder:'دولتك', nextButtonText:'التالي',
+        chatTitle:'Coach AI', inputPlaceholder:'اكتب رسالتك...', emptyFields:'الرجاء إدخال اسمك وعمرك ودولتك للبدء.', imageUpload:'تم استلام الصورة.',
+        generationStart:'جاري تجهيز الخطة… قسمًا قسمًا.', generationDone:'الخطة جاهزة. لو محتاج تعديل، بلغني.',
+        initialPrompt:'أهلاً يا {name}. هنتحرك بخطوات منظمة ونبني خطة دقيقة على بياناتك.',
+        planButtonText:'احصل على خطتك الآن', planButtonNote:'يمكنك الاستمرار في الحديث إذا كانت لديك أي استفسارات أخرى.',
+        planPreparingInModal:'جاري تحضير الخطة في نافذة فوق المحادثة.'
       },
       en: {
-        welcomeTitle: 'Your Personal Health Coach', welcomeSubtitle: 'Start your journey to a better you now', startButtonText: 'Start Chat',
-        userDataTitle: 'Let’s start your journey', userDataSubtitle: 'Tell us about yourself to begin', namePlaceholder: 'Your Name', agePlaceholder: 'Your Age', countryPlaceholder: 'Your Country', nextButtonText: 'Next',
-        chatTitle: 'Coach AI', inputPlaceholder: 'Type your message...', emptyFields: 'Please enter your name, age, and country to get started.', imageUpload: 'Image received.',
-        generationStart: 'Preparing your plan… section by section.', generationDone: 'Plan is ready. If you need changes, tell me.',
-        initialPrompt: 'Hi {name}. We’ll work step by step to build a precise plan that fits you.',
-        planButtonText: 'Get Your Plan Now', planButtonNote: 'You can keep chatting if you have questions.', planPreparingInModal: 'Preparing the plan in a modal above the chat.'
+        welcomeTitle:'Your Personal Health Coach', welcomeSubtitle:'Start your journey to a better you now', startButtonText:'Start Chat',
+        userDataTitle:'Let’s start your journey', userDataSubtitle:'Tell us about yourself to begin', namePlaceholder:'Your Name', agePlaceholder:'Your Age', countryPlaceholder:'Your Country', nextButtonText:'Next',
+        chatTitle:'Coach AI', inputPlaceholder:'Type your message…', emptyFields:'Please enter your name, age, and country to get started.', imageUpload:'Image received.',
+        generationStart:'Preparing your plan… section by section.', generationDone:'Plan ready. Tell me if you need changes.',
+        initialPrompt:'Hi {name}. We’ll move step by step and build a precise plan around your data.',
+        planButtonText:'Get Your Plan Now', planButtonNote:'You can keep chatting if you have questions.',
+        planPreparingInModal:'Working on your plan in a modal above the chat.'
       }
     };
     function setLang(lang){
       LANG = lang; document.documentElement.lang = lang; document.documentElement.dir = lang==='ar'?'rtl':'ltr';
       const L = i18n[LANG];
-      $('welcomeTitle').textContent = L.welcomeTitle; $('welcomeSubtitle').textContent = L.welcomeSubtitle; $('userDataTitle').textContent = L.userDataTitle; $('userDataSubtitle').textContent = L.userDataSubtitle;
-      $('userName').placeholder = L.namePlaceholder; $('userAge').placeholder = L.agePlaceholder; $('userCountry').placeholder = L.countryPlaceholder; $('nextBtn').textContent = L.nextButtonText;
-      $('chatTitle').textContent = L.chatTitle; $('userInput').placeholder = L.inputPlaceholder; $('generatePlanBtn').textContent = L.planButtonText; $('planButtonNote').textContent = L.planButtonNote;
-      btnLang.textContent = lang==='ar' ? 'AR' : 'EN';
+      $('welcomeTitle').textContent=L.welcomeTitle; $('welcomeSubtitle').textContent=L.welcomeSubtitle;
+      $('userDataTitle').textContent=L.userDataTitle; $('userDataSubtitle').textContent=L.userDataSubtitle;
+      $('userName').placeholder=L.namePlaceholder; $('userAge').placeholder=L.agePlaceholder; $('userCountry').placeholder=L.countryPlaceholder; $('nextBtn').textContent=L.nextButtonText;
+      $('chatTitle').textContent=L.chatTitle; $('userInput').placeholder=L.inputPlaceholder; $('generatePlanBtn').textContent=L.planButtonText; $('planButtonNote').textContent=L.planButtonNote;
+      btnLang.textContent = lang==='ar'?'AR':'EN';
     }
 
-    /* ==========================
-       Utilities
-    ===========================*/
-    function setTheme(){ document.documentElement.classList.toggle('dark'); btnTheme.textContent = document.documentElement.classList.contains('dark') ? '🌙' : '☀️'; localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light') }
+    /* Utilities */
+    function setTheme(){ document.documentElement.classList.toggle('dark'); btnTheme.textContent = document.documentElement.classList.contains('dark') ? '🌙' : '☀️'; localStorage.setItem('theme', document.documentElement.classList.contains('dark')?'dark':'light') }
     function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.style.opacity=1,10); setTimeout(()=>{t.style.opacity=0; setTimeout(()=>t.remove(),400)},2600) }
-    function displayMessage(message, sender){ const b=document.createElement('div'); b.classList.add('message-bubble', sender); b.innerHTML = marked.parse(message); chatMessages.appendChild(b); chatMessages.scrollTop = chatMessages.scrollHeight }
-    function isDataComplete(){ return ['name','age','country'].every(k => !!userState.data[k]) }
-    function togglePlanCTA(){ const ready = isDataComplete(); planButtonArea.classList.toggle('hidden', !ready); generatePlanBtn.disabled = !ready }
+    function displayMessage(message,sender){ const b=document.createElement('div'); b.classList.add('message-bubble',sender); b.innerHTML=marked.parse(message); chatMessages.appendChild(b); chatMessages.scrollTop=chatMessages.scrollHeight }
+    function isDataComplete(){ return ['name','age','country'].every(k=>!!userState.data[k]) }
+    function togglePlanCTA(){ const ready=isDataComplete(); planButtonArea.classList.toggle('hidden',!ready); generatePlanBtn.disabled=!ready }
 
-    /* ==========================
-       AI Prompts (Natural tone, no AI mentions)
-    ===========================*/
+    /* Professional coach prompts */
     function buildCoachSystemPrompt(){
       return `
-اكتب ردودًا طبيعية ومهنية دون مبالغة أو عبارات إنشائية، ولا تذكر أنظمة أو روبوتات.
-الدور: مدرب صحي وأخصائي تغذية وطبيب.
-المهمة: جمع البيانات تدريجيًا (حتى سؤالين في كل رسالة)، إبداء ملاحظات مختصرة عند ذكر أمراض/أدوية/إصابات، ثم تلخيص وطلب تأكيد قبل بناء الخطة.
+اكتب ردود محادثة قصيرة ومحترفة، بلا مبالغة ولا ثناء زائد. لا تذكر أنظمة أو روبوتات. الأسلوب: واضح، واثق، عملي.
+الدور: خبير عالمي في التدريب والتغذية وطبيب استشاري.
+المهمة: جمع البيانات على مراحل (بحد أقصى سؤالان كل مرة)، ثم تلخيصها وطلب تأكيد.
+عند وجود أمراض/أدوية/إصابات: قدّم احتياطات محددة وفّرق بين الحالات.
+استخدم لهجة عربية مفهومة (فصحى بسيطة مع لمسة مصرية عند اللزوم) دون تعقيد.
 `}
 
     function buildPlanJSONPrompt(){
@@ -254,123 +292,74 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}`}
 ## المكملات
 ## السلامة
 ## الختام
-
 اعتمد على المحادثة التالية:
 ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}`}
 
     async function callAI(prompt){
-      try{ const res = await fetch('/.netlify/functions/gemini-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})}); const data = await res.json(); return data.text || '' }catch(e){ console.error(e); return '' }
+      try{ const res=await fetch('/.netlify/functions/gemini-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})}); const data=await res.json(); return data.text||'' }catch(e){ console.error(e); return '' }
     }
 
-    /* ==========================
-       Message analysis & triggers
-    ===========================*/
-    const MED_FLAGS = /(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i;
-    function isPlanRequest(msg){ return /(الخطة|خطة|خطه|اعمل\s*خطة|جهز\s*الخطة|عايز\s*الخطة|generate\s*plan|my\s*plan)/i.test(msg) }
-    function analyzeUserMessage(msg){ if(MED_FLAGS.test(msg)){ displayMessage('تم تسجيل ملاحظة صحية. سنأخذها في الاعتبار ونضيف احتياطات مناسبة. لو فيه تفاصيل إضافية اكتبها.', 'ai') } }
+    /* Flags & triggers */
+    const MED_FLAGS=/(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i;
+    function analyzeUserMessage(msg){ if(MED_FLAGS.test(msg)){ displayMessage('تم تسجيل ملاحظة صحية وسيتم ضبط الخطة وفقًا لها. لو فيه تفاصيل إضافية اذكرها.', 'ai') } }
 
-    /* ==========================
-       Modal helpers
-    ===========================*/
+    /* Plan modal helpers */
     function openPlanModal(){ planModal.classList.add('open'); planModal.setAttribute('aria-hidden','false') }
     function closePlanModal(){ planModal.classList.remove('open'); planModal.setAttribute('aria-hidden','true') }
-    function lockInputs(state){ userInput.disabled = state; sendBtn.disabled = state; plusBtn.disabled = state; generatePlanBtn.disabled = state && !isDataComplete() }
+    function lockInputs(state){ userInput.disabled=state; sendBtn.disabled=state; plusBtn.disabled=state; generatePlanBtn.disabled=state && !isDataComplete() }
 
-    function sectionBlock(title, html=''){
+    function sectionBlock(title,html=''){
       const s=document.createElement('section'); s.className='section-card';
       const h=document.createElement('div'); h.className='section-head'; h.innerHTML=`<span>${title}</span><span aria-hidden="true">−</span>`;
       const b=document.createElement('div'); b.className='section-body'; b.innerHTML=html||'<span class="skeleton" style="height:12px;width:90%"></span>';
-      h.addEventListener('click',()=>{ const hidden=b.style.display==='none'; b.style.display=hidden?'block':'none'; h.lastElementChild.textContent=hidden?'−':'＋' });
+      h.addEventListener('click',()=>{ const hidden=b.style.display==='none'; b.style.display=hidden?'block':'none'; h.lastElementChild.textContent=hidden?'−':'＋' })
       s.appendChild(h); s.appendChild(b); return {wrapper:s, body:b}
     }
 
-    const toMD = v => Array.isArray(v) ? v.map(x=>`- ${x}`).join('\n') : (typeof v==='string' ? v : JSON.stringify(v,null,2));
+    const toMD=v=>Array.isArray(v)?v.map(x=>`- ${x}`).join('\n'):(typeof v==='string'?v:JSON.stringify(v,null,2));
     function buildNutritionMD(days){ if(!Array.isArray(days)) return toMD(days); return days.map((d,i)=>{ const meals=(d.meals||[]).map(m=>`- **${m.name||'وجبة'}**: ${(m.items||[]).join(', ')}${m.kcal?` — ${m.kcal} ك.س`:''}${m.protein_g?` | بروتين: ${m.protein_g}غ`:''}`).join('\n'); return `### اليوم ${d.day||i+1}\n${meals}` }).join('\n\n') }
     function buildTrainingMD(days){ if(!Array.isArray(days)) return toMD(days); return days.map((d,i)=>{ const exs=(d.session||[]).map(ex=>`- **${ex.exercise||'تمرين'}** — ${ex.sets||''}×${ex.reps||''}${ex.notes?` (${ex.notes})`:''}`).join('\n'); const meta=[]; if(d.duration_min) meta.push(`المدة: ${d.duration_min} د`); if(d.location) meta.push(`المكان: ${d.location}`); return `### اليوم ${d.day||i+1}${meta.length?` — ${meta.join(' | ')}`:''}\n${exs}` }).join('\n\n') }
     function buildSuppsMD(s){ if(Array.isArray(s)) return s.map(x=>`- **${x.name}** — ${x.dose}${x.timing?` (${x.timing})`:''}${x.notes?` — ${x.notes}`:''}`).join('\n'); return toMD(s) }
 
-    async function fetchJSONPlan(){
-      let raw = await callAI(buildPlanJSONPrompt()); if(!raw) return null; let txt = raw.trim();
-      // strip code fences if present
-      if(txt.startsWith('```')){ txt = txt.replace(/^```json/i,'').replace(/^```/i,''); if(txt.endsWith('```')) txt = txt.slice(0,-3); txt = txt.trim(); }
-      try{ return JSON.parse(txt) }catch(_){ const s=txt.indexOf('{'); const e=txt.lastIndexOf('}'); if(s>-1 && e>-1 && e>s){ try{ return JSON.parse(txt.slice(s,e+1)) }catch(__){} } }
-      return null;
-    }
+    async function fetchJSONPlan(){ let raw=await callAI(buildPlanJSONPrompt()); if(!raw) return null; let txt=raw.trim(); if(txt.startsWith('```')){ txt=txt.replace(/^```json/i,'').replace(/^```/i,''); if(txt.endsWith('```')) txt=txt.slice(0,-3); txt=txt.trim() } try{ return JSON.parse(txt) }catch(_){ const s=txt.indexOf('{'); const e=txt.lastIndexOf('}'); if(s>-1&&e>-1&&e>s){ try{ return JSON.parse(txt.slice(s,e+1)) }catch(__){} } } return null }
 
     async function generatePlanProgressive(){
       openPlanModal(); planOutput.innerHTML='';
-
-      const sections = [
-        { key:'analysis', title:'التحليل' },
-        { key:'allowed', title:'المسموح والممنوع' },
-        { key:'nutrition', title:'التغذية (7 أيام)' },
-        { key:'training', title:'التدريب (7 أيام)' },
-        { key:'supps', title:'المكملات' },
-        { key:'safety', title:'السلامة' },
-        { key:'closing', title:'الختام' }
-      ];
-      const blocks = sections.map(s=>sectionBlock(s.title)); blocks.forEach(b=>planOutput.appendChild(b.wrapper));
-      const delay = ms => new Promise(r=>setTimeout(r,ms));
-
-      // 1) Try JSON plan for reliability
-      const plan = await fetchJSONPlan();
-      if(plan){
-        const allowedMD = (()=>{ if(typeof plan.allowed==='string') return plan.allowed; if(plan.allowed&&(plan.allowed.allowed||plan.allowed.forbidden)){ const a=toMD(plan.allowed.allowed||[]); const f=toMD(plan.allowed.forbidden||[]); return `**مسموح:**\n${a}\n\n**ممنوع:**\n${f}` } return toMD(plan.allowed||'') })();
-        const mdMap = {
-          analysis: toMD(plan.analysis||''),
-          allowed: allowedMD,
-          nutrition: buildNutritionMD(plan.nutrition||[]),
-          training: buildTrainingMD(plan.training||[]),
-          supps: buildSuppsMD(plan.supplements||''),
-          safety: toMD(plan.safety||''),
-          closing: toMD(plan.closing||'')
-        };
-        for(let i=0;i<sections.length;i++){ await delay(i===0?250:180); const k=sections[i].key; const b=blocks[i].body; const content=(mdMap[k]||'').trim()||'—'; b.innerHTML = marked.parse(content) }
-        return; // done
-      }
-
-      // 2) Fallback: Markdown split with tolerant regex
-      const mdFull = await callAI(buildPlanMDPrompt());
-      if(!mdFull){ for(let i=0;i<blocks.length;i++){ blocks[i].body.innerHTML = i===0 ? '<p class="text-red-600">تعذر توليد الخطة الآن.</p>' : '<p>—</p>'; } return }
-
-      const map = {
-        analysis: /##\s*التحليل\b([\s\S]*?)(?=##\s*(?:المسموح\s*و?\s*الممنوع)|$)/,
-        allowed: /##\s*المسموح\s*و?\s*الممنوع\b([\s\S]*?)(?=##\s*(?:التغذية|التدريب|المكملات|السلامة|الختام)|$)/,
-        nutrition: /##\s*التغذية\s*(?:[-–]\s*)?(?:\(\s*7\s*أيام\s*\)|7\s*أيام)?\b([\s\S]*?)(?=##\s*(?:التدريب|المكملات|السلامة|الختام)|$)/,
-        training: /##\s*التدريب\s*(?:[-–]\s*)?(?:\(\s*7\s*أيام\s*\)|7\s*أيام)?\b([\s\S]*?)(?=##\s*(?:المكملات|السلامة|الختام)|$)/,
-        supps: /##\s*المكملات\b([\s\S]*?)(?=##\s*(?:السلامة|الختام)|$)/,
-        safety: /##\s*السلامة\b([\s\S]*?)(?=##\s*الختام|$)/,
-        closing: /##\s*الختام\b([\s\S]*$)/
-      };
-
-      let matched = 0;
-      for(let i=0;i<sections.length;i++){
-        const k = sections[i].key; const b = blocks[i].body; const m = mdFull.match(map[k]); await delay(i===0?250:180);
-        if(m && m[1] && m[1].trim()){ matched++; b.innerHTML = marked.parse(m[1].trim()) } else { b.innerHTML = '<p>—</p>' }
-      }
-      if(!matched){ blocks[0].body.innerHTML = marked.parse(mdFull) }
+      const sections=[{key:'analysis',title:'التحليل'},{key:'allowed',title:'المسموح والممنوع'},{key:'nutrition',title:'التغذية (7 أيام)'},{key:'training',title:'التدريب (7 أيام)'},{key:'supps',title:'المكملات'},{key:'safety',title:'السلامة'},{key:'closing',title:'الختام'}];
+      const blocks=sections.map(s=>sectionBlock(s.title)); blocks.forEach(b=>planOutput.appendChild(b.wrapper));
+      const plan=await fetchJSONPlan();
+      if(plan){ const allowedMD=(()=>{ if(typeof plan.allowed==='string') return plan.allowed; if(plan.allowed&&(plan.allowed.allowed||plan.allowed.forbidden)){ const a=toMD(plan.allowed.allowed||[]); const f=toMD(plan.allowed.forbidden||[]); return `**مسموح:**\n${a}\n\n**ممنوع:**\n${f}` } return toMD(plan.allowed||'') })(); const mdMap={ analysis:toMD(plan.analysis||''), allowed:allowedMD, nutrition:buildNutritionMD(plan.nutrition||[]), training:buildTrainingMD(plan.training||[]), supps:buildSuppsMD(plan.supplements||''), safety:toMD(plan.safety||''), closing:toMD(plan.closing||'') }; for(let i=0;i<sections.length;i++){ await new Promise(r=>setTimeout(r,i===0?250:180)); const k=sections[i].key; const b=blocks[i].body; const content=(mdMap[k]||'').trim()||'—'; b.innerHTML=marked.parse(content) } return }
+      const mdFull=await callAI(buildPlanMDPrompt()); if(!mdFull){ blocks[0].body.innerHTML='<p class="text-red-600">تعذر توليد الخطة الآن.</p>'; for(let i=1;i<blocks.length;i++){ blocks[i].body.innerHTML='<p>—</p>' } return }
+      const map={ analysis:/##\s*التحليل\b([\s\S]*?)(?=##\s*(?:المسموح\s*و?\s*الممنوع)|$)/, allowed:/##\s*المسموح\s*و?\s*الممنوع\b([\s\S]*?)(?=##\s*(?:التغذية|التدريب|المكملات|السلامة|الختام)|$)/, nutrition:/##\s*التغذية\s*(?:[-–]\s*)?(?:\(\s*7\s*أيام\s*\)|7\s*أيام)?\b([\s\S]*?)(?=##\s*(?:التدريب|المكملات|السلامة|الختام)|$)/, training:/##\s*التدريب\s*(?:[-–]\s*)?(?:\(\s*7\s*أيام\s*\)|7\s*أيام)?\b([\s\S]*?)(?=##\s*(?:المكملات|السلامة|الختام)|$)/, supps:/##\s*المكملات\b([\s\S]*?)(?=##\s*(?:السلامة|الختام)|$)/, safety:/##\s*السلامة\b([\s\S]*?)(?=##\s*الختام|$)/, closing:/##\s*الختام\b([\s\S]*$)/ };
+      let matched=0; for(let i=0;i<sections.length;i++){ const k=sections[i].key; const b=blocks[i].body; const m=mdFull.match(map[k]); await new Promise(r=>setTimeout(r,i===0?250:180)); if(m&&m[1]&&m[1].trim()){ matched++; b.innerHTML=marked.parse(m[1].trim()) } else { b.innerHTML='<p>—</p>' } } if(!matched){ blocks[0].body.innerHTML=marked.parse(mdFull) }
     }
 
-    /* ==========================
-       Events
-    ===========================*/
+    /* Contact modal helpers */
+    function openContactModal(){ contactModal.classList.add('open'); contactModal.setAttribute('aria-hidden','false') }
+    function closeContactModal(){ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') }
+
+    /* Events */
     document.addEventListener('DOMContentLoaded',()=>{
       startBtn.addEventListener('click',()=>{ welcomeScreen.classList.add('hidden'); userDataScreen.classList.remove('hidden'); setLang(LANG) })
-      nextBtn.addEventListener('click',()=>{ const name=(userNameInput.value||'').trim(); const age=(userAgeInput.value||'').trim(); const country=(userCountryInput.value||'').trim(); if(!name||!age||!country){ toast(i18n[LANG].emptyFields); return } userState.data = { ...userState.data, name, age, country }; userDataScreen.classList.add('hidden'); chatContainer.classList.remove('hidden'); const welcomeMsg = i18n[LANG].initialPrompt.replace('{name}',name); chatHistory.push({role:'assistant',parts:[{text:welcomeMsg}]}); displayMessage(welcomeMsg,'ai'); togglePlanCTA() })
+      nextBtn.addEventListener('click',()=>{ const name=(userNameInput.value||'').trim(); const age=(userAgeInput.value||'').trim(); const country=(userCountryInput.value||'').trim(); if(!name||!age||!country){ toast(i18n[LANG].emptyFields); return } userState.data={...userState.data,name,age,country}; userDataScreen.classList.add('hidden'); chatContainer.classList.remove('hidden'); const welcomeMsg=i18n[LANG].initialPrompt.replace('{name}',name); chatHistory.push({role:'assistant',parts:[{text:welcomeMsg}]}); displayMessage(welcomeMsg,'ai'); togglePlanCTA() })
+      btnTheme.addEventListener('click',setTheme); btnLang.addEventListener('click',()=>setLang(LANG==='ar'?'en':'ar'))
+      plusBtn.addEventListener('click',()=>imageInput.click()); imageInput.addEventListener('change',e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload=ev=>{ displayMessage(`<img src="${ev.target.result}" class="max-w-[180px] rounded-lg my-2" alt="uploaded"/>`,'user'); toast(i18n[LANG].imageUpload) }; r.readAsDataURL(f) })
 
-      btnTheme.addEventListener('click', setTheme); btnLang.addEventListener('click', ()=> setLang(LANG==='ar' ? 'en' : 'ar'))
-      plusBtn.addEventListener('click', ()=> imageInput.click()); imageInput.addEventListener('change', e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload = ev => { displayMessage(`<img src="${ev.target.result}" class="max-w-[180px] rounded-lg my-2" alt="uploaded"/>`,'user'); toast(i18n[LANG].imageUpload) }; r.readAsDataURL(f) })
+      async function processAIResponse(message){ lockInputs(true); const prompt=`${buildCoachSystemPrompt()}\n\nسجل المحادثة:\n${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}\n\nرسالة المستخدم الأخيرة: ${message}`; const response=await callAI(prompt); chatHistory.push({role:'assistant',parts:[{text:response}]}); displayMessage(response||'…','ai'); lockInputs(false); togglePlanCTA() }
+      function sendMessage(){ const message=(userInput.value||'').trim(); if(!message) return; displayMessage(message,'user'); chatHistory.push({role:'user',parts:[{text:message}]}); analyzeUserMessage(message); processAIResponse(message); userInput.value='' }
+      sendBtn.addEventListener('click',sendMessage); userInput.addEventListener('keypress',e=>{ if(e.key==='Enter') sendMessage() })
 
-      async function processAIResponse(message){ lockInputs(true); const coachPrompt = `${buildCoachSystemPrompt()}\n\nسجل المحادثة:\n${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}\n\nرسالة المستخدم الأخيرة: ${message}`; const response = await callAI(coachPrompt); chatHistory.push({role:'assistant',parts:[{text:response}]}); displayMessage(response||'…','ai'); lockInputs(false); togglePlanCTA() }
+      // NEW: CTA opens contact options instead of generating plan
+      generatePlanBtn.addEventListener('click',()=>{ openContactModal() })
+      closeContactBtn.addEventListener('click',()=>closeContactModal()); contactModal.addEventListener('click',e=>{ if(e.target===contactModal) closeContactModal() })
+      continueInChatBtn.addEventListener('click',()=>{ closeContactModal(); displayMessage('تمام. هنكمل هنا، وبنفس الوقت أي وقت تحت أمرك للتواصل المباشر.', 'ai') })
 
-      function sendMessage(){ const message=(userInput.value||'').trim(); if(!message) return; displayMessage(message,'user'); chatHistory.push({role:'user',parts:[{text:message}]}); analyzeUserMessage(message); if(isPlanRequest(message)){ displayMessage(i18n[LANG].planPreparingInModal,'ai'); generatePlanProgressive(); userInput.value=''; return } processAIResponse(message); userInput.value='' }
-      sendBtn.addEventListener('click', sendMessage); userInput.addEventListener('keypress', e=>{ if(e.key==='Enter') sendMessage() })
+      // Plan modal controls (still available via function call if needed)
+      closePlanBtn.addEventListener('click',()=>closePlanModal()); planModal.addEventListener('click',e=>{ if(e.target===planModal) closePlanModal() })
+      printBtn.addEventListener('click',()=>window.print());
+      expandAllBtn.addEventListener('click',()=>{ planOutput.querySelectorAll('.section-body').forEach(d=>d.style.display='block'); planOutput.querySelectorAll('.section-head span:last-child').forEach(ic=>ic.textContent='−') })
 
-      generatePlanBtn.addEventListener('click', async()=>{ displayMessage(i18n[LANG].generationStart,'ai'); await generatePlanProgressive(); displayMessage(i18n[LANG].generationDone,'ai') })
-      closePlanBtn.addEventListener('click', ()=> closePlanModal()); planModal.addEventListener('click', e=>{ if(e.target===planModal) closePlanModal() })
-      printBtn.addEventListener('click', ()=> window.print()); expandAllBtn.addEventListener('click', ()=>{ planOutput.querySelectorAll('.section-body').forEach(d=>d.style.display='block'); planOutput.querySelectorAll('.section-head span:last-child').forEach(ic=>ic.textContent='−') })
-
-      const savedTheme = localStorage.getItem('theme'); if(savedTheme==='dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent='🌙' } setLang('ar')
+      const savedTheme=localStorage.getItem('theme'); if(savedTheme==='dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent='🌙' } setLang('ar')
     })
   </script>
 </body>
