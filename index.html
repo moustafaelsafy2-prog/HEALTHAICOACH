@@ -50,19 +50,16 @@
     .toast{position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:.7rem 1rem;border-radius:.6rem;z-index:60;opacity:0;transition:.35s}
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
-    /* Typing */
     .typing{display:inline-flex;gap:6px;align-items:center}
     .dot{width:6px;height:6px;border-radius:999px;background:#9CA3AF;animation:blink 1.2s infinite}
     .dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
     @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
 
-    /* Voice UI */
     .mic-btn{position:relative}
     .mic-live::after{content:'';position:absolute;inset:-2px;border:2px solid #ef4444;border-radius:999px;animation:pulse 1s infinite}
     @keyframes pulse{0%{transform:scale(.95);opacity:.9}70%{transform:scale(1.05);opacity:.2}100%{transform:scale(.95);opacity:.9}}
     .rec-hint{font-size:.8rem;color:#ef4444;margin-inline-end:.35rem}
 
-    /* Contact modal */
     .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:var(--backdrop);z-index:50}
     .modal.open{display:flex}
     .modal-content{width:min(560px,96vw);max-height:86vh;overflow:hidden;background:#fff;border-radius:1rem;box-shadow:0 20px 60px rgba(0,0,0,.25);display:flex;flex-direction:column}
@@ -131,14 +128,13 @@
              autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
       <input type="file" id="imageInput" accept="image/*" class="hidden" />
       <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة">➕</button>
-      <!-- Mic: press & hold -->
       <button id="micBtn" class="icon-btn mic-btn" aria-label="تسجيل صوتي" title="اضغط مطولاً للتسجيل">🎙️</button>
       <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل">↪</button>
     </div>
     <div class="px-4 pb-2 -mt-2 hidden" id="recHintWrap"><span class="rec-hint" id="recHint">● جاري التسجيل… ارفع إصبعك للنسخ إلى خانة الكتابة</span></div>
   </div>
 
-  <!-- Contact Modal (WhatsApp / Phone) -->
+  <!-- Contact Modal -->
   <div id="contactModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog" aria-labelledby="contactModalTitle">
     <div class="modal-content">
       <div class="modal-header">
@@ -151,12 +147,10 @@
         </p>
         <div class="contact-actions">
           <a class="contact-btn contact-whatsapp" href="https://wa.me/971502061209" target="_blank" rel="noopener">
-            <!-- WhatsApp Icon -->
-            <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M19.11 17.18c-.28-.14-1.65-.81-1.9-.9-.26-.1-.44-.14-.62.14-.18.27-.71.9-.87 1.09-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.66-1.55-1.94-.16-.27-.02-.42.12-.56.12-.12.28-.3.42-.46.14-.16.18-.27.28-.46.1-.18.06-.34-.02-.48-.08-.14-.62-1.5-.84-2.06-.22-.52-.44-.45-.62-.46h-.54c-.18 0-.48.07-.74.34-.26.27-1 1-1 2.42s1.03 2.8 1.18 2.99c.14.2 2.03 3.1 4.93 4.33.69.3 1.22.48 1.64.62.69.22 1.32.19 1.82.12.56-.08 1.65-.68 1.88-1.35.24-.67.24-1.24.16-1.35-.06-.1-.24-.16-.52-.3z"/><path d="M26.9 5.1A13.9 13.9 0 0 0 16 .1C7.3.1.2 7.1.2 15.8c0 2.7.7 5.2 2 7.4L.1 31.9l8.9-2.3c2.1 1.1 4.5 1.7 7 1.7h.1c8.7 0 15.8-7 15.8-15.7 0-4.2-1.6-8.1-4.9-10.9zM16 28.7h-.1c-2.2 0-4.4-.6-6.3-1.6l-.4-.2-5.3 1.4 1.4-5.1-.2-.4c-1.2-2-1.8-4.3-1.8-6.7 0-7.1 5.8-12.8 12.9-12.8 3.4 0 6.7 1.3 9.1 3.6 2.4 2.4 3.8 5.6 3.8 9 .1 7.1-5.7 12.8-13 12.8z"/></svg>
+            <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M19.11 17.18c-.28-.14-1.65-.81-1.9-.9-.26-.1-.44-.14-.62.14-.18.27-.71.9-.87 1.09-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.66-1.55-1.94-.16-.27-.02-.42.12-.56.12-.12.28-.3.42-.46.14-.16.18-.27.28-.46.1-.18.06-.34-.02-.48-.08-.14-.62-1.5-.84-2.06-.22-.52-.44-.45-.62-.46h-.54c-.18 0-.48.07-.74.34-.26.27-1 1-1 2.42s1.03 2.8 1.18 2.99c.14.2 2.03 3.1 4.93 4.33.69.3 1.22.48 1.64.62.69.22 1.32.19 1.82.12.56-.08 1.65-.68 1.88-1.35.24-.67.24-1.24.16-1.35-.06-.1-.24-.16-.52-.3z"/><path d="M26.9 5.1A13.9 13.9 0 0 0 16 .1C7.3.1.2 7.1.2 15.8c0 2.7.7 5.2 2 7.4L.1 31.9l8.9-2.3c2.1 1.1 4.5 1.7 7 1.7h.1c8.7 0 15.8-7 15.8-15.7 0-4.2-1.6-8.1-4.9-10.9z"/></svg>
             <span>واتساب مباشر</span>
           </a>
           <a class="contact-btn contact-phone" href="tel:+971502061209">
-            <!-- Phone Icon -->
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.11.37 2.3.57 3.58.57a1 1 0 0 1 1 1V21a1 1 0 0 1-1 1C10.61 22 2 13.39 2 3a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.27.2 2.47.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
             <span>اتصال هاتفي</span>
           </a>
@@ -192,9 +186,12 @@
     const contactModal = $('contactModal');
     const closeContactBtn = $('closeContactBtn');
 
-    let userState = { step: 0, data: {} };
+    /* ===== State ===== */
+    let userState = { step: 0, data: {}, persona:'neutral' };
     let LANG = 'ar';
     let chatHistory = [];
+    const MAX_TURNS = 12;
+    const MAX_PROMPT_CHARS = 14000;
 
     /* ===== i18n ===== */
     const i18n = {
@@ -229,9 +226,22 @@
     }
 
     /* ===== Utilities ===== */
-    function setTheme(){ document.documentElement.classList.toggle('dark'); btnTheme.textContent = document.documentElement.classList.contains('dark') ? '🌙' : '☀️'; localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light') }
-    function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.style.opacity=1,10); setTimeout(()=>{t.style.opacity=0; setTimeout(()=>t.remove(),400)},2400) }
-    function displayMessage(message, sender){ const b=document.createElement('div'); b.classList.add('message-bubble', sender); b.innerHTML = marked.parse(message); chatMessages.appendChild(b); chatMessages.scrollTop = chatMessages.scrollHeight; return b }
+    function setTheme(){
+      document.documentElement.classList.toggle('dark');
+      btnTheme.textContent = document.documentElement.classList.contains('dark') ? '🌙' : '☀️';
+      localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light')
+    }
+    function toast(msg){
+      const t=document.createElement('div'); t.className='toast'; t.textContent=msg;
+      document.body.appendChild(t); setTimeout(()=>t.style.opacity=1,10);
+      setTimeout(()=>{t.style.opacity=0; setTimeout(()=>t.remove(),400)},2400)
+    }
+    function displayMessage(message, sender){
+      const b=document.createElement('div'); b.classList.add('message-bubble', sender);
+      const safe = (message && typeof message === 'string') ? message : (LANG==='ar'?'…':'…');
+      b.innerHTML = marked.parse(safe);
+      chatMessages.appendChild(b); chatMessages.scrollTop = chatMessages.scrollHeight; return b
+    }
     function isDataComplete(){ return ['name','age','country'].every(k => !!userState.data[k]) }
     function togglePlanCTA(){ const ready = isDataComplete(); planButtonArea.classList.toggle('hidden', !ready); generatePlanBtn.disabled = !ready }
     function showTyping(sender='ai'){ const b=document.createElement('div'); b.classList.add('message-bubble', sender); b.innerHTML = `<span class="typing"><span>${i18n[LANG].typing}</span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>`; chatMessages.appendChild(b); chatMessages.scrollTop=chatMessages.scrollHeight; return b }
@@ -330,10 +340,10 @@
 ` }
     function buildImagePrompt(){ return `حلّل الصورة في 2-4 أسطر: 1) ما الذي تراه؟ 2) أي نص/مكونات ظاهرة إن وجدت. 3) الدلالة الصحية/الرياضية. كن محددًا وعمليًا واعتمد فقط على الصورة المرسلة.` }
 
+    /* ===== AI Call (proxy) ===== */
     async function callAI(prompt, {images, audio} = {}){
       try{
         const payload = { prompt };
-        // robust multimodal payload
         if (images && images.length){
           payload.images = images.map(x => {
             if(typeof x === 'string' && x.startsWith('data:')){
@@ -341,13 +351,16 @@
               const mime = meta.substring(5, meta.indexOf(';'));
               return { mime, data: b64, dataUrl: x };
             }
-            return x; // expect {mime,data} or compatible
+            return x;
           });
         }
-        if (audio) payload.audio = audio; // { mime, data }
-        const res = await fetch('/.netlify/functions/gemini-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        if (audio) payload.audio = audio;
+        const res = await fetch('/.netlify/functions/gemini-proxy',{
+          method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
+        });
         const data = await res.json();
-        return data.text || ''
+        if(!res.ok) throw new Error((data && (data.details || data.error)) || 'AI error');
+        return data.text || '';
       }catch(e){ console.error(e); return '' }
     }
 
@@ -355,19 +368,43 @@
     const MED_FLAGS=/(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i;
     function analyzeUserMessage(msg){ if(MED_FLAGS.test(msg)){ displayMessage('تم رصد حالة صحية — سنضيف احتياطات مناسبة. اذكر تفاصيل الدواء/الجرعة أو التشخيص إن وُجد.', 'ai') } }
 
-    /* ===== Voice to text (press & hold) ===== */
+    /* ===== History & State helpers ===== */
+    function compactHistory(){
+      if (chatHistory.length > MAX_TURNS) chatHistory = chatHistory.slice(-MAX_TURNS);
+    }
+    function buildInternalStateSummary(){
+      const d = userState.data || {};
+      const fields = [];
+      if (d.name)    fields.push(`الاسم: ${d.name}`);
+      if (d.age)     fields.push(`العمر: ${d.age}`);
+      if (d.country) fields.push(`الدولة: ${d.country}`);
+      if (d.goal)    fields.push(`الهدف: ${d.goal}`);
+      if (d.health)  fields.push(`حالة صحية: ${d.health}`);
+      if (d.gym)     fields.push(`مكان التمرين: ${d.gym}`);
+      if (d.meals)   fields.push(`وجبات/اليوم: ${d.meals}`);
+      return fields.length ? `🗒️ ملخص الحالة: ${fields.join(' | ')}` : '';
+    }
+    function buildConversationSnippet(){
+      compactHistory();
+      const lines = chatHistory.map(m=>{
+        const role = m.role === 'assistant' ? 'المدرب' : 'المستخدم';
+        const txt  = (m.parts?.[0]?.text || '').replace(/\s+/g,' ').slice(0,1200);
+        return `${role}: ${txt}`;
+      });
+      return lines.join('\n').slice(0, MAX_PROMPT_CHARS);
+    }
+
+    /* ===== Voice to text ===== */
     let recording=false; let sttSession=0; let recognition=null; let mediaStream=null; let mediaRecorder=null; let audioChunks=[]; let recStartTime=0;
-
     const supportSpeechRecognition = ()=> ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
-
     function startLocalRecognition(){
       const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if(!SR) return null;
-      const sessionId = ++sttSession; // new session
+      const sessionId = ++sttSession;
       const rec = new SR();
       rec.lang = (LANG==='ar' ? 'ar-EG' : 'en-US');
       rec.interimResults = true; rec.continuous = true;
       rec.onresult = (e)=>{
-        if(sessionId !== sttSession) return; // stale session, ignore
+        if(sessionId !== sttSession) return;
         let final=''; let interim='';
         for(let i=e.resultIndex;i<e.results.length;i++){
           const r=e.results[i];
@@ -376,22 +413,18 @@
         const text = (final || interim).trim();
         if(text){ userInput.value = text; userInput.focus(); }
       };
-      rec.onerror = ()=>{};
-      rec.onend = ()=>{ /* stop writing when ended */ };
+      rec.onerror = ()=>{}; rec.onend = ()=>{};
       rec.start();
       return { rec, sessionId };
     }
-
     async function startRecording(){
       if(recording) return; recording=true;
-      // Prefer on-device speech recognition when available (no audio capture needed)
       if(supportSpeechRecognition()){
         const h = startLocalRecognition();
         recognition = h?.rec || null;
         micBtn.classList.add('mic-live'); recHintWrap.classList.remove('hidden'); $('recHint').textContent = i18n[LANG].recStart;
         return;
       }
-      // Fallback: capture audio and use server STT
       try{
         mediaStream = await navigator.mediaDevices.getUserMedia({audio:true});
         const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg');
@@ -403,25 +436,24 @@
         micBtn.classList.add('mic-live'); recHintWrap.classList.remove('hidden'); $('recHint').textContent = i18n[LANG].recStart;
       }catch(e){ toast(i18n[LANG].recDenied); recording=false; }
     }
-
     function stopRecording(){
       if(!recording) return; recording=false;
-      // Stop SR if used
       if(recognition && recognition.stop){ try{ recognition.stop(); }catch(_){}; recognition=null; }
-      // Stop fallback recorder if used
       try{ mediaRecorder && mediaRecorder.state!=='inactive' && mediaRecorder.stop(); }catch(_){}
       try{ mediaStream && mediaStream.getTracks().forEach(t=>t.stop()); }catch(_){}
       micBtn.classList.remove('mic-live'); recHintWrap.classList.add('hidden');
-      // Freeze current session so late events are ignored
       sttSession++;
     }
-
     async function handleRecordingStopFallback(){
       const duration = (Date.now()-recStartTime)/1000; if(duration < 0.6){ toast(i18n[LANG].recTooShort); return }
       const blob = new Blob(audioChunks, {type: mediaRecorder.mimeType});
       const reader = new FileReader(); reader.onload = async () => {
         const base64 = reader.result.split(',')[1];
-        const sttPrompt = `أعد فقط JSON صالح بهذا الشكل بدون أي كلام آخر:\n{\n  "transcript": string\n}\nحوّل الصوت إلى نص ${(LANG==='ar'?'عربي':'English')} واضح.`;
+        const sttPrompt = `أعد فقط JSON صالح بهذا الشكل بدون أي كلام آخر:
+{
+  "transcript": string
+}
+حوّل الصوت إلى نص ${(LANG==='ar'?'عربي':'English')} واضح.`;
         const raw = await callAI(sttPrompt, { audio: { mime: blob.type, data: base64 } });
         let transcript=''; try{ const s=raw.indexOf('{'); const e=raw.lastIndexOf('}'); const j = JSON.parse(raw.slice(s,e+1)); transcript = (j.transcript||'').trim(); }catch(_){ transcript='' }
         if(transcript){ userInput.value = transcript; userInput.focus(); toast(i18n[LANG].recSaved) }
@@ -429,73 +461,111 @@
       reader.readAsDataURL(blob);
     }
 
+    /* ===== Conversation Engine ===== */
+    async function processAIResponse(message){
+      const typingEl = showTyping('ai');
+
+      // تحديث حالة مبسّط من الرسالة (اختياري)
+      if (/خطة|أخس|تخسيس|تضخيم|عضل/i.test(message)) userState.data.goal = userState.data.goal || 'خطة مخصصة';
+      if (/جيم|بيت|منزل/i.test(message)) userState.data.gym = userState.data.gym || 'غير محدد';
+      if (MED_FLAGS.test(message)) userState.data.health = (userState.data.health || 'قيود صحية') ;
+
+      const state = buildInternalStateSummary();
+      const convo = buildConversationSnippet();
+
+      const coachPrompt =
+`${buildCoachSystemPrompt()}
+
+${state ? state + '\n' : ''}سجل مختصر (آخر الرسائل):
+${convo}
+
+رد كمدرّب محترف على رسالة المستخدم الأخيرة فقط، والتزم بسؤال واحد كحد أقصى لو لزم:
+رسالة المستخدم الأخيرة: ${message}`;
+
+      let response = '';
+      try{
+        response = await callAI(coachPrompt);
+      }catch(e){
+        console.error(e);
+      }
+
+      removeNode(typingEl);
+
+      if(!response || !response.trim()){
+        response = (LANG==='ar')
+          ? 'خلّينا نكمل بخطوة عملية سريعة: امشِ 15–20 دقيقة النهارده، ولو عندك هدف محدد سبّهولي نثبّته ونبني عليه.'
+          : 'Let’s keep momentum: take a 15–20 min walk today. Share your main goal and we’ll lock it.';
+      }
+
+      chatHistory.push({role:'assistant',parts:[{text:response}]});
+      displayMessage(response,'ai');
+      togglePlanCTA();
+    }
+
+    function sendMessage(){
+      const message=(userInput.value||'').trim(); if(!message) return;
+      displayMessage(message,'user');
+      chatHistory.push({role:'user',parts:[{text:message}]});
+      analyzeUserMessage(message);
+      processAIResponse(message);
+      userInput.value='';
+    }
+
     /* ===== Events ===== */
     document.addEventListener('DOMContentLoaded',()=>{
-      startBtn.addEventListener('click',()=>{ welcomeScreen.classList.add('hidden'); userDataScreen.classList.remove('hidden'); setLang(LANG) })
-      nextBtn.addEventListener('click',()=>{ const name=(userNameInput.value||'').trim(); const age=(userAgeInput.value||'').trim(); const country=(userCountryInput.value||'').trim(); if(!name||!age||!country){ toast(i18n[LANG].emptyFields); return } userState.data={...userState.data,name,age,country}; userDataScreen.classList.add('hidden'); chatContainer.classList.remove('hidden'); const welcomeMsg = `مرحبًا ${name}. نمشي خطوة خطوة لتجميع بياناتك وبناء خطة دقيقة قابلة للتنفيذ.`; chatHistory.push({role:'assistant',parts:[{text:welcomeMsg}]}); displayMessage(welcomeMsg,'ai'); togglePlanCTA() })
+      startBtn.addEventListener('click',()=>{ welcomeScreen.classList.add('hidden'); userDataScreen.classList.remove('hidden'); setLang(LANG) });
+      nextBtn.addEventListener('click',()=>{
+        const name=(userNameInput.value||'').trim();
+        const age=(userAgeInput.value||'').trim();
+        const country=(userCountryInput.value||'').trim();
+        if(!name||!age||!country){ toast(i18n[LANG].emptyFields); return }
+        userState.data={...userState.data,name,age,country};
+        userDataScreen.classList.add('hidden'); chatContainer.classList.remove('hidden');
+        const welcomeMsg = `مرحبًا ${name}. نمشي خطوة خطوة لتجميع بياناتك وبناء خطة دقيقة قابلة للتنفيذ.`;
+        chatHistory.push({role:'assistant',parts:[{text:welcomeMsg}]}); displayMessage(welcomeMsg,'ai'); togglePlanCTA();
+      });
 
-      btnTheme.addEventListener('click', setTheme); btnLang.addEventListener('click',()=> setLang(LANG==='ar' ? 'en' : 'ar'))
+      btnTheme.addEventListener('click', setTheme);
+      btnLang.addEventListener('click',()=> setLang(LANG==='ar' ? 'en' : 'ar'));
       plusBtn.addEventListener('click',()=> imageInput.click());
 
-      // Image -> AI analysis (robust)
       imageInput.addEventListener('change', async (e)=>{
         const file=e.target.files[0]; if(!file) return;
         const reader=new FileReader(); reader.onload= async (ev)=>{
           const dataUrl = ev.target.result;
           const imgHTML=`<img src="${dataUrl}" class="max-w-[220px] rounded-lg my-2" alt="uploaded"/>`;
-          displayMessage(imgHTML,'user');
-          toast(i18n[LANG].imageUpload);
+          displayMessage(imgHTML,'user'); toast(i18n[LANG].imageUpload);
           const typingEl = showTyping('ai');
           let aiResp = await callAI(buildImagePrompt(), { images: [dataUrl] });
           removeNode(typingEl);
-          // Guard against generic fallback responses
           const bad = /قدّم|provide|يرجى تقديم|please provide|لا أستطيع رؤية الصورة/i.test(aiResp||'');
-          const reply = bad || !aiResp ? (LANG==='ar'? 'تم استلام الصورة ومعالجتها. لو حابب تحليل أدق (سعرات/عناصر/اقتراحات تدريب)، التقط صورة أوضح وسأحلّلها بالتفصيل.' : 'Image received and processed. For a deeper analysis, please upload a clearer photo.') : aiResp;
+          const reply = bad || !aiResp ? (LANG==='ar'? 'تم استلام الصورة ومعالجتها. لو عايز تحليل أدق، ابعت صورة أوضح وهحلّلها بالتفصيل.' : 'Image received and processed. For deeper analysis, upload a clearer photo.') : aiResp;
           displayMessage(reply, 'ai');
           chatHistory.push({role:'user',parts:[{text:'[صورة مرفوعة]'}]});
           chatHistory.push({role:'assistant',parts:[{text:reply}]});
           togglePlanCTA();
         };
         reader.readAsDataURL(file)
-      })
+      });
 
-      async function processAIResponse(message){
-        const typingEl = showTyping('ai');
-        const coachPrompt = `${buildCoachSystemPrompt()}\n\nسجل المحادثة:\n${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}\n\nرسالة المستخدم الأخيرة: ${message}`;
-        const response = await callAI(coachPrompt);
-        removeNode(typingEl);
-        chatHistory.push({role:'assistant',parts:[{text:response}]});
-        displayMessage(response||'…','ai');
-        togglePlanCTA()
-      }
+      function keyHandler(e){ if(e.key==='Enter') sendMessage() }
+      sendBtn.addEventListener('click', sendMessage);
+      userInput.addEventListener('keypress', keyHandler);
 
-      function sendMessage(){ const message=(userInput.value||'').trim(); if(!message) return; displayMessage(message,'user'); chatHistory.push({role:'user',parts:[{text:message}]}); analyzeUserMessage(message); processAIResponse(message); userInput.value='' }
-      sendBtn.addEventListener('click', sendMessage); userInput.addEventListener('keypress', e=>{ if(e.key==='Enter') sendMessage() })
-
-      // Mic interactions (press & hold)
+      // Mic interactions
       const startEvents = ['pointerdown','touchstart','mousedown'];
       const endEvents = ['pointerup','touchend','mouseup','mouseleave','pointercancel'];
       startEvents.forEach(ev => micBtn.addEventListener(ev, (e)=>{ e.preventDefault(); startRecording() }, {passive:false}));
       endEvents.forEach(ev => micBtn.addEventListener(ev, (e)=>{ e.preventDefault(); stopRecording() }, {passive:false}));
 
-      // CTA -> contact options only (no plan generation code at all)
-      generatePlanBtn.addEventListener('click', ()=>{ contactModal.classList.add('open'); contactModal.setAttribute('aria-hidden','false') })
-      closeContactBtn.addEventListener('click',()=>{ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') })
-      contactModal.addEventListener('click', e=>{ if(e.target===contactModal){ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') } })
+      // CTA -> contact
+      generatePlanBtn.addEventListener('click', ()=>{ contactModal.classList.add('open'); contactModal.setAttribute('aria-hidden','false') });
+      closeContactBtn.addEventListener('click',()=>{ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') });
+      contactModal.addEventListener('click', e=>{ if(e.target===contactModal){ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') } });
 
-      const savedTheme=localStorage.getItem('theme'); if(savedTheme==='dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent='🌙' } setLang('ar')
+      const savedTheme=localStorage.getItem('theme'); if(savedTheme==='dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent='🌙' }
+      setLang('ar');
     })
   </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
