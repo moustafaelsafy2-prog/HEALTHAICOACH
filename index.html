@@ -27,14 +27,40 @@
       --backdrop: rgba(0,0,0,0.7);
     }
     * { box-sizing: border-box; }
-    body { font-family: 'Tajawal', sans-serif; background-color: var(--chat-bg); color: #333; transition: background-color 0.3s, color 0.3s; }
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background-color: var(--chat-bg);
+      color: #333;
+      transition: background-color 0.3s, color 0.3s;
+    }
     .dark body { color: #E5E7EB; }
 
     /* Chat shell */
-    .chat-container { max-width: 720px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; background-color: var(--chat-bg); box-shadow: 0 0 25px rgba(0,0,0,0.08); border-radius: 1rem; overflow: hidden; position: relative; }
-    .chat-header { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; padding: 0.875rem 1rem; position: sticky; top: 0; z-index: 10; display: flex; justify-content: space-between; align-items: center; }
-    .chat-messages { flex: 1; padding: 1rem; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6rem; }
-    .message-bubble { padding: 0.85rem 1.15rem; border-radius: 1.25rem; max-width: 82%; margin-bottom: 0.75rem; position: relative; animation: fadeIn 0.25s ease-in-out; }
+    .chat-container {
+      max-width: 720px;
+      margin: 0 auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--chat-bg);
+      box-shadow: 0 0 25px rgba(0,0,0,0.08);
+      border-radius: 1rem;
+      overflow: hidden;
+      position: relative;
+    }
+    .chat-header {
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      padding: 0.875rem 1rem;
+      position: sticky; top: 0; z-index: 10;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .chat-messages {
+      flex: 1; padding: 1rem; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6rem;
+    }
+    .message-bubble {
+      padding: 0.85rem 1.15rem; border-radius: 1.25rem; max-width: 82%; margin-bottom: 0.75rem; position: relative; animation: fadeIn 0.25s ease-in-out;
+    }
     .message-bubble.user { background-color: var(--bubble-user); margin-left: auto; border-bottom-right-radius: 0.25rem; }
     .message-bubble.ai { background-color: var(--bubble-ai); margin-right: auto; border-bottom-left-radius: 0.25rem; }
     .dark .message-bubble.ai { color: #E5E7EB; }
@@ -201,13 +227,13 @@
         chatTitle: 'Coach AI',
         inputPlaceholder: 'اكتب رسالتك...',
         emptyFields: 'الرجاء إدخال اسمك وعمرك ودولتك للبدء.',
-        imageUpload: 'تم إرسال الصورة. جاري المعالجة…',
-        generationStart: 'جاري تجهيز الخطة… قسمًا قسمًا.',
-        generationDone: 'الخطة جاهزة. لو محتاج تعديل، قول لي.',
-        initialPrompt: 'أهلاً يا {name}. هنمشي خطوة خطوة لغاية ما نطلع خطة دقيقة ومناسبة لك.',
+        imageUpload: 'تم إرسال الصورة. المدرب بيحللها الآن...',
+        generationStart: 'تمام يا بطل، لحظات وهتكون خطتك جاهزة. أنا بجهزها قسم بقسم دلوقتي.',
+        generationDone: 'تم يا بطل! الخطة كاملة عندك. لو فيه أي تعديل أو سؤال، أنا موجود.',
+        initialPrompt: 'أهلاً يا {name}! معاك مصطفى الصافي – مدربك الصحي الذكي. هنتكلم ببساطة وبطريقة بشرية 100% علشان نصمملك خطة دقيقة ومخصصة ليك.',
         planButtonText: 'احصل على خطتك الآن',
-        planButtonNote: 'تقدر تكمل الحديث لو عندك أي استفسار.',
-        planPreparingInModal: 'جاري تحضير الخطة في نافذة فوق المحادثة.'
+        planButtonNote: 'يمكنك الاستمرار في الحديث إذا كانت لديك أي استفسارات أخرى.',
+        planPreparingInModal: 'تم، جاري تحضير الخطة في نافذة منبثقة فوق المحادثة.'
       },
       en: {
         welcomeTitle: 'Your Personal Health Coach',
@@ -222,10 +248,10 @@
         chatTitle: 'Coach AI',
         inputPlaceholder: 'Type your message...',
         emptyFields: 'Please enter your name, age, and country to get started.',
-        imageUpload: 'Image sent. Processing…',
-        generationStart: 'Preparing your plan… section by section.',
-        generationDone: 'Your plan is ready. If you need changes, tell me.',
-        initialPrompt: 'Hi {name}. We’ll work step by step to build a precise plan that fits you.',
+        imageUpload: 'Image sent. The coach is analyzing it now...',
+        generationStart: "Okay! Your plan will be ready in moments. I'm preparing it section by section.",
+        generationDone: "Done! Your complete plan is ready. If you need changes, I'm here.",
+        initialPrompt: 'Hello {name}, this is your friendly coach Mustafa Elsafy. We will build a precise, human, fully-personalized plan for you.',
         planButtonText: 'Get Your Plan Now',
         planButtonNote: 'You can keep chatting if you have questions.',
         planPreparingInModal: 'Working on your plan in a modal above the chat.'
@@ -287,34 +313,53 @@
     }
 
     /* ==========================
-       AI Orchestration (Natural, no AI mentions)
+       AI Orchestration
     ===========================*/
     function buildCoachSystemPrompt(){
       return `
-اكتب ردود دردشة طبيعية ومحترفة، بلا مبالغة أو مديح زائد، ولا تذكر أنك نظام أو ذكاء اصطناعي أو روبوت.
-الدور: مدرب صحي وأخصائي تغذية وطبيب.
-الهدف: جمع البيانات تدريجيًا وطلب التأكيد قبل بناء الخطة.
-
-اجمع هذه البيانات على مراحل وبحد أقصى سؤالين كل مرة:
+اكتب ردود دردشة طبيعية ومحترفة، دون مبالغة أو مديح زائد، ودون ذكر أنك نظام أو ذكاء اصطناعي. لا تستخدم عبارات مثل: بطريقة بشرية/أنا نموذج/روبوت.
+\nالدور: مدرب صحي وأخصائي تغذية وطبيب.
+الهدف: جمع البيانات تدريجيًا بتسلسل منطقي، وتقديم تعليقات مختصرة عند وجود أمراض/إصابات/أدوية، ثم تلخيص ما جُمِع وطلب تأكيد قبل بناء الخطة.
+\nاجمع المعلومات التالية على مراحل (سؤال أو سؤالان كحد أقصى في كل رسالة):
 - الهدف الأساسي (خسارة دهون/بناء عضل/صحة عامة/قوة).
 - العمر، الجنس، الطول، الوزن.
-- قياسات اختيارية (محيط خصر/نسبة دهون).
-- أيام التمرين/المدة/المكان/المعدات.
+- قياسات اختيارية (محيط خصر أو نسبة دهون إن وُجدت).
+- أيام التمرين بالأسبوع، مدة الحصة، المكان والمعدات.
 - التغذية: عدد الوجبات، المطبخ المفضل، وقت التحضير، الميزانية.
 - حساسيات/أطعمة ممنوعة، تحديات سابقة.
-- نمط حياة: العمل/الخطوات/النوم/الضغط/الكافيين.
+- نمط حياة: طبيعة العمل/الخطوات/النوم/الضغط/الكافيين.
 - الإصابات/الأمراض/الأدوية/المكملات.
 - مجموعات عضلية تحتاج تركيز.
+\نالأسلوب: مهني، واضح، مباشر، أسئلة قصيرة. عند ذكر مشكلة صحية جدية، انصح بمراجعة الطبيب دون تهويل.
+`;}
 
-الأسلوب: مهني، واضح، مباشر.
-عند ذكر مشكلة صحية مهمة، انصح بزيارة الطبيب دون تهويل.
-`;
-    }
-
-    function buildPlanPrompt(){
+    function buildPlanJSONPrompt(){
       return `
-اكتب خطة مخصصة 100% بصيغة Markdown دون أي تلميح لذكاء اصطناعي.
-استخدم هذه العناوين حرفيًا (H2):
+أعد خطة مخصصة بصيغة JSON فقط (بدون أي نص إضافي أو تعليمات أو شيفرات Markdown). استخدم المفاتيح التالية حصراً:
+{
+  "analysis": string | string[],
+  "allowed": {"allowed": string[] | string, "forbidden": string[] | string} | string,
+  "nutrition": [
+    {"day": 1, "meals": [{"name": string, "items": string[] | string, "kcal": number | string, "protein_g": number | string}]}
+  ],
+  "training": [
+    {"day": 1, "session": [{"exercise": string, "sets": number | string, "reps": number | string, "notes": string}]}
+  ],
+  "supplements": string | string[],
+  "safety": string | string[],
+  "closing": string
+}
+- اكتب المحتوى بالعربية.
+- اجعل القوائم عملية ومباشرة.
+- لا تضع أي نص خارج JSON.
+\nالمحادثة:
+${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
+`;}
+
+function buildPlanMarkdownPrompt(){
+      return `
+اكتب خطة مخصصة 100% بصيغة Markdown دون أي تلميح لوجود ذكاء اصطناعي. كن مهنيًا ومباشرًا.
+\nالتزم بالعناوين التالية حرفيًا (H2):
 ## التحليل
 ## المسموح والممنوع
 ## التغذية (7 أيام)
@@ -322,15 +367,14 @@
 ## المكملات
 ## السلامة
 ## الختام
-
-التفاصيل المتوقعة:
-- التغذية: 3 وجبات يوميًا × 7 أيام، مقادير واضحة وتوزيع سعرات تقريبي، بدائل اقتصادية.
-- التدريب: حسب بيانات المستخدم (منزل/جيم)، مجموعات/تكرارات، تقدم أسبوعي بسيط.
-- المكملات: فقط عند اللزوم، الجرعات وموانع الاستخدام.
-- السلامة: تنبيهات تبعًا للأمراض/الأدوية/الإصابات.
-
-المحادثة:
+\nالتفاصيل:
+- التغذية: 3 وجبات يوميًا × 7 أيام، مقادير واضحة وتوزيع سعرات تقريبي، بدائل سريعة اقتصادية عند اللزوم.
+- التدريب: وفق معطيات المستخدم (جيم/منزل)، مجموعات/تكرارات، ملاحظات أمان وتقدّم بسيط للأسبوع التالي.
+- المكملات: فقط إن لزم، الجرعات وموانع الاستخدام والتداخلات.
+- السلامة: تنبيهات حسب الأمراض/الأدوية/الإصابات.
+\nالمحادثة:
 ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
+`;}: ${m.parts[0].text}`).join('\n')}
 `;
     }
 
@@ -338,8 +382,8 @@ ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
       try{
         const res = await fetch('/.netlify/functions/gemini-proxy', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ prompt }) });
         const data = await res.json();
-        return data.text || '';
-      }catch(e){ console.error(e); return ''; }
+        return data.text || 'تعذّر الحصول على رد.';
+      }catch(e){ console.error(e); return 'عذراً، حدث خطأ أثناء التواصل. حاول مرة أخرى.'; }
     }
 
     async function processAIResponse(message){
@@ -347,30 +391,38 @@ ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
       const coachPrompt = `${buildCoachSystemPrompt()}\n\nسجل المحادثة:\n${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}\n\nرسالة المستخدم الأخيرة: ${message}`;
       const response = await callAI(coachPrompt);
       chatHistory.push({ role:'assistant', parts:[{text: response}] });
-      displayMessage(response || '…', 'ai');
+      displayMessage(response, 'ai');
       lockInputs(false);
       togglePlanCTA();
     }
 
     /* ==========================
-       Input enrichment & detection
+       Input enrichment & safety notes
     ===========================*/
-    const MED_FLAGS = /(سكري|ضغط|قلب|كورونا|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|مضاد|كورتيزون|مضادات|ضغط الدم|سكر الدم)/i;
-    function isPlanRequest(msg){ return /(الخطة|خطة|خطه|اعمل\s*خطة|جهز\s*الخطة|عايز\s*الخطة|generate\s*plan|my\s*plan)/i.test(msg); }
+    const MED_FLAGS = /(سكري|ضغط|قلب|كورونا|سرطان|حامل|حمل|رضاعة|غدة|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|مضاد|كورتيزون|مضادات|ضغط الدم|سكر الدم)/i;
 
     function analyzeUserMessage(msg){
-      if (MED_FLAGS.test(msg)){
-        displayMessage('لاحظت وجود حالة صحية/دواء. سأضع احتياطات مناسبة. لو فيه تفاصيل إضافية (اسم الدواء/الجرعة/التشخيص) اذكرها.', 'ai');
+      const flags = MED_FLAGS.test(msg);
+      if(flags){
+        displayMessage('👀 لاحظت إنك ذكرت حالة صحية/دواء. هنراعي ده في الخطة ونضيف احتياطات خاصة. لو في تفاصيل دقيقة (اسم الدواء/الجرعة/التشخيص) اكتبها ليا.', 'ai');
       }
     }
 
     /* ==========================
-       Modal plan generation (progressive + robust parsing)
+       Modal plan generation (progressive)
     ===========================*/
-    function openPlanModal(){ planModal.classList.add('open'); planModal.setAttribute('aria-hidden','false'); }
-    function closePlanModal(){ planModal.classList.remove('open'); planModal.setAttribute('aria-hidden','true'); }
+    function openPlanModal(){
+      planModal.classList.add('open');
+      planModal.setAttribute('aria-hidden','false');
+    }
+    function closePlanModal(){
+      planModal.classList.remove('open');
+      planModal.setAttribute('aria-hidden','true');
+    }
 
-    function lockInputs(state){ userInput.disabled = state; sendBtn.disabled = state; plusBtn.disabled = state; generatePlanBtn.disabled = state && !isDataComplete(); }
+    function lockInputs(state){
+      userInput.disabled = state; sendBtn.disabled = state; plusBtn.disabled = state; generatePlanBtn.disabled = state && !isDataComplete();
+    }
 
     function sectionBlock(title, contentHTML = '', collapsed = false){
       const wrapper = document.createElement('section');
@@ -378,10 +430,15 @@ ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
       const hdr = document.createElement('button');
       hdr.className = 'w-full text-right font-bold px-3 py-2 bg-gray-50 dark:bg-slate-800 flex items-center justify-between';
       hdr.innerHTML = `<span>${title}</span><span aria-hidden="true">${collapsed ? '＋' : '−'}</span>`;
-      const body = document.createElement('div'); body.className = 'p-3';
+      const body = document.createElement('div');
+      body.className = 'p-3';
       body.innerHTML = contentHTML || '<span class="skeleton" style="height:12px;width:90%"></span><span class="skeleton mt-2" style="height:12px;width:80%"></span>';
       if(collapsed) body.style.display = 'none';
-      hdr.addEventListener('click', ()=>{ const hidden = body.style.display === 'none'; body.style.display = hidden ? 'block' : 'none'; hdr.lastElementChild.textContent = hidden ? '−' : '＋'; });
+      hdr.addEventListener('click', ()=>{
+        const hidden = body.style.display === 'none';
+        body.style.display = hidden ? 'block' : 'none';
+        hdr.lastElementChild.textContent = hidden ? '−' : '＋';
+      });
       wrapper.appendChild(hdr); wrapper.appendChild(body);
       return { wrapper, body };
     }
@@ -403,31 +460,136 @@ ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
       const blocks = sections.map(s => sectionBlock(s.title));
       blocks.forEach(b => planOutput.appendChild(b.wrapper));
 
-      // Fetch one full plan for consistency; split locally
-      const full = await callAI(buildPlanPrompt());
-      if(!full){ blocks[0].body.innerHTML = '<p class="text-red-600">تعذر توليد الخطة. حاول مرة أخرى.</p>'; return; }
+      const delay = ms => new Promise(r => setTimeout(r, ms));
 
+      // ===== JSON First (structured plan) =====
+      async function fetchJSONPlan(retry=0){
+        let raw = await callAI(buildPlanJSONPrompt());
+        if(typeof raw !== 'string') return null;
+        let clean = raw.trim();
+        // إزالة أسوار الكود إن وُجدت
+        if (clean.startsWith('```')){
+          clean = clean.replace(/^```json/i,'').replace(/^```/i,'');
+          if (clean.endsWith('```')) clean = clean.slice(0, -3);
+          clean = clean.trim();
+        }
+        try { return JSON.parse(clean); } catch(e){}
+        const start = clean.indexOf('{');
+        const end = clean.lastIndexOf('}');
+        if(start !== -1 && end !== -1 && end > start){
+          try { return JSON.parse(clean.slice(start, end+1)); } catch(e){}
+        }
+        if(retry < 1) return await fetchJSONPlan(retry+1);
+        return null;
+      }
+
+      const plan = await fetchJSONPlan();
+      if(!plan){
+        for (let i=0;i<sections.length;i++){ await delay(i===0?250:150); blocks[i].body.innerHTML = '<p>—</p>'; }
+        blocks[0].body.innerHTML = '<p class="text-red-600">تعذر توليد الخطة. حاول مرة أخرى.</p>';
+        return;
+      }
+
+      const toMD = v => Array.isArray(v) ? v.map(x=>`- ${x}`).join('
+') : (typeof v==='string'? v : JSON.stringify(v, null, 2));
+
+      const buildNutritionMD = (arr)=>{
+        if(!Array.isArray(arr)) return toMD(arr);
+        return arr.map((d,i)=>{
+          const meals = Array.isArray(d.meals)? d.meals : [];
+          const lines = meals.map(m=>{
+            const items = Array.isArray(m.items)? m.items.join(', ') : (m.items||'');
+            const kcal = m.kcal? ` — ${m.kcal} ك.س` : '';
+            const pr = m.protein_g? ` | بروتين: ${m.protein_g}غ` : '';
+            return `- **${m.name||'وجبة'}**: ${items}${kcal}${pr}`;
+          }).join('
+');
+          return `### اليوم ${d.day||i+1}
+${lines}`;
+        }).join('
+
+');
+      };
+
+      const buildTrainingMD = (arr)=>{
+        if(!Array.isArray(arr)) return toMD(arr);
+        return arr.map((d,i)=>{
+          const sess = Array.isArray(d.session)? d.session : [];
+          const lines = sess.map(ex=>`- **${ex.exercise||'تمرين'}** — ${ex.sets||''}×${ex.reps||''}${ex.notes?` (${ex.notes})`:''}`).join('
+');
+          return `### اليوم ${d.day||i+1}
+${lines}`;
+        }).join('
+
+');
+      };
+
+      const allowedMD = (()=>{
+        if(typeof plan.allowed === 'string') return plan.allowed;
+        if(plan.allowed && (plan.allowed.allowed || plan.allowed.forbidden)){
+          const a = toMD(plan.allowed.allowed||[]);
+          const f = toMD(plan.allowed.forbidden||[]);
+          return `**مسموح:**
+${a}
+
+**ممنوع:**
+${f}`;
+        }
+        return toMD(plan.allowed||'');
+      })();
+
+      const mdMap = {
+        analysis: toMD(plan.analysis||''),
+        allowed: allowedMD,
+        nutrition: buildNutritionMD(plan.nutrition||[]),
+        training: buildTrainingMD(plan.training||[]),
+        supps: toMD(plan.supplements||''),
+        safety: toMD(plan.safety||''),
+        closing: toMD(plan.closing||'')
+      };
+
+      for (let i=0;i<sections.length;i++){
+        await delay(i===0?250:200);
+        const k = sections[i].key; const b = blocks[i].body;
+        const content = mdMap[k] && String(mdMap[k]).trim().length ? mdMap[k] : '—';
+        b.innerHTML = marked.parse(content);
+      }
+    },
+        { key:'allowed', title:'المسموح والممنوع' },
+        { key:'nutrition', title:'التغذية (7 أيام)' },
+        { key:'training', title:'التدريب (7 أيام)' },
+        { key:'supps', title:'المكملات' },
+        { key:'safety', title:'السلامة' },
+        { key:'closing', title:'الختام' },
+      ];
+
+      const blocks = sections.map(s => sectionBlock(s.title));
+      blocks.forEach(b => planOutput.appendChild(b.wrapper));
+
+      // Single full prompt for accuracy; then split into sections client-side
+      const full = await callAI(buildPlanPrompt());
+      if(!full || typeof full !== 'string'){ planOutput.innerHTML += '<p class="text-red-600">تعذر توليد الخطة. حاول مرة أخرى.</p>'; return; }
+
+      // Render progressively (simulate stream by slicing headings)
       const md = full;
-      // Tolerant regex: optional spaces, optional parentheses, possible dash replacement
+
       const map = {
-        analysis: /##\s*التحليل\b([\s\S]*?)(?=##\s*(?:المسموح\s*و?\s*الممنوع)\b|$)/,
-        allowed: /##\s*المسموح\s*و?\s*الممنوع\b([\s\S]*?)(?=##\s*(?:التغذية|التدريب|المكملات|السلامة|الختام)|$)/,
-        nutrition: /##\s*التغذية\s*(?:[-–]\s*)?(?:\(\s*7\s*أيام\s*\)|7\s*أيام)?\b([\s\S]*?)(?=##\s*(?:التدريب|المكملات|السلامة|الختام)|$)/,
-        training: /##\s*التدريب\s*(?:[-–]\s*)?(?:\(\s*7\s*أيام\s*\)|7\s*أيام)?\b([\s\S]*?)(?=##\s*(?:المكملات|السلامة|الختام)|$)/,
-        supps: /##\s*المكملات\b([\s\S]*?)(?=##\s*(?:السلامة|الختام)|$)/,
-        safety: /##\s*السلامة\b([\s\S]*?)(?=##\s*الختام|$)/,
-        closing: /##\s*الختام\b([\s\S]*$)/,
+        analysis: /##\s*التحليل([\s\S]*?)(?=##\s*المسموح والممنوع|$)/,
+        allowed: /##\s*المسموح والممنوع([\s\S]*?)(?=##\s*التغذية|$)/,
+        nutrition: /##\s*التغذية\s*\(7\s*أيام\)([\s\S]*?)(?=##\s*التدريب|$)/,
+        training: /##\s*التدريب\s*\(7\s*أيام\)([\s\S]*?)(?=##\s*المكملات|$)/,
+        supps: /##\s*المكملات([\s\S]*?)(?=##\s*السلامة|$)/,
+        safety: /##\s*السلامة([\s\S]*?)(?=##\s*الختام|$)/,
+        closing: /##\s*الختام([\s\S]*$)/,
       };
 
       const delay = ms => new Promise(r => setTimeout(r, ms));
-      let matched = 0;
+
       for (let i=0; i<sections.length; i++){
         const k = sections[i].key; const b = blocks[i].body; const match = md.match(map[k]);
-        await delay(i===0?250:180);
-        if(match && match[1] && match[1].trim()){ matched++; b.innerHTML = marked.parse(match[1].trim()); }
-        else { b.innerHTML = '<p>—</p>'; }
+        await delay(i===0?300:250); // snappy staged reveal
+        b.innerHTML = match ? marked.parse(match[1].trim()) : '<p>—</p>';
       }
-      if(matched === 0){ blocks[0].body.innerHTML = marked.parse(md); }
     }
 
     /* ==========================
@@ -468,7 +630,7 @@ ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
         const message = (userInput.value||'').trim(); if(!message) return;
         displayMessage(message, 'user'); chatHistory.push({ role:'user', parts:[{text: message}] });
         analyzeUserMessage(message);
-        if (isPlanRequest(message)){
+        if (/(الخطة|خطة|خطه|اعمل\s*خطة|جهز\s*الخطة|عايز\s*الخطة|generate\s*plan|my\s*plan)/i.test(message)){
           displayMessage(i18n[LANG].planPreparingInModal, 'ai');
           generatePlanProgressive();
           userInput.value = '';
@@ -476,11 +638,16 @@ ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
         }
         processAIResponse(message);
         userInput.value = '';
+      }] });
+        analyzeUserMessage(message);
+        processAIResponse(message);
+        userInput.value = '';
       }
       sendBtn.addEventListener('click', sendMessage);
       userInput.addEventListener('keypress', e => { if(e.key==='Enter'){ sendMessage(); }});
 
       generatePlanBtn.addEventListener('click', async ()=>{
+        // Confirm user has validated data via a brief summary request first
         displayMessage(i18n[LANG].generationStart, 'ai');
         await generatePlanProgressive();
         displayMessage(i18n[LANG].generationDone, 'ai');
@@ -494,6 +661,7 @@ ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
         planOutput.querySelectorAll('section > button span:last-child').forEach(ic => ic.textContent='−');
       });
 
+      // Theme restore
       const savedTheme = localStorage.getItem('theme');
       if(savedTheme === 'dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent = '🌙'; }
       setLang('ar');
