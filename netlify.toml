@@ -1,6 +1,29 @@
-[build]
-command = "echo 'Netlify build successful'"
-publish = "."
+# netlify.toml
 
+[build]
+  publish   = "."
+  functions = "netlify/functions"
+
+# Use esbuild to bundle Node functions (fast, compatible with CJS/ESM)
 [functions]
-directory = "netlify/functions"
+  node_bundler = "esbuild"
+  # optional: increase function timeout/memory if تحتاج تحميل أثقل
+  # node_bundler = "esbuild"
+  # included_files = []
+  # external_node_modules = []
+  # directory = "netlify/functions"
+
+# Route frontend calls to your function
+[[redirects]]
+  from = "/api/generate"
+  to   = "/.netlify/functions/gemini-proxy"
+  status = 200
+  force  = true
+
+# (اختياري) تأمين رؤوس الاستجابة العامة
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
