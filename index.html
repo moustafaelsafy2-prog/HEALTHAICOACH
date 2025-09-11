@@ -81,6 +81,12 @@
     .contact-whatsapp{background:#25D366;color:#fff}
     .contact-phone{background:#0ea5e9;color:#fff}
 
+    /* Voice recording UI */
+    .mic-btn{position:relative}
+    .mic-live::after{content:'';position:absolute;inset:-2px;border:2px solid #ef4444;border-radius:999px;animation:pulse 1s infinite}
+    @keyframes pulse{0%{transform:scale(.95);opacity:.9}70%{transform:scale(1.05);opacity:.2}100%{transform:scale(.95);opacity:.9}}
+    .rec-hint{font-size:.8rem;color:#ef4444;margin-inline-end:.35rem}
+
     .footer{text-align:center;padding:.75rem;font-size:.9rem;color:#6b7280}
 
     /* Responsive tweak: hide title near avatar on xs */
@@ -128,18 +134,26 @@
         <div class="typewriter-text" id="prepStatus">جاهز تبدأ بخطتك معنا؟ تواصل بخطوة واحدة</div>
         <button id="generatePlanBtn" class="btn btn-primary" disabled>احصل على خطتك الآن</button>
       </div>
-      <p id="planButtonNote" class="text-gray-500 text-sm mt-2">جاهز تبدأ بخطتك معنا؟ تواصل فورًا بخطوة بسيطة</p>
+      <p id="planButtonNote" class="text-gray-500 text-sm mt-2">يمكنك الاستمرار في الحديث إذا كانت لديك أسئلة.</p>
     </div>
 
     <div class="input-area" id="inputArea">
       <input type="text" id="userInput" placeholder="اكتب رسالتك..." dir="rtl" />
       <input type="file" id="imageInput" accept="image/*" class="hidden" />
+      <input type="file" id="audioInput" accept="audio/*" class="hidden" />
       <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة">➕</button>
+      <!-- Mic (press & hold to record) -->
+      <button id="micBtn" class="icon-btn mic-btn" aria-label="تسجيل صوتي" title="اضغط مطولاً للتسجيل">
+        <!-- Mic SVG -->
+        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V7a3 3 0 0 0-6 0v4a3 3 0 0 0 3 3z"></path><path d="M19 11a7 7 0 0 1-14 0"></path><path d="M12 21v-4"></path></svg>
+      </button>
       <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل">↪</button>
     </div>
+
+    <div class="px-4 pb-2 -mt-2 hidden" id="recHintWrap"><span class="rec-hint" id="recHint">● جاري التسجيل… ارفع إصبعك للإرسال</span></div>
   </div>
 
-  <!-- Plan Modal (kept for later use) -->
+  <!-- Plan Modal (kept for later use / progressive sections) -->
   <div id="planModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog" aria-labelledby="planModalTitle">
     <div class="modal-content">
       <div class="modal-header">
@@ -157,32 +171,6 @@
       <div class="plan-actions">
         <button id="printBtn" class="btn btn-primary">طباعة الخطة</button>
         <button id="expandAllBtn" class="btn btn-secondary">عرض كل الأقسام</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Contact Modal (WhatsApp / Phone) -->
-  <div id="contactModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog" aria-labelledby="contactModalTitle">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h3 id="contactModalTitle" class="text-lg font-extrabold">اختر طريقة التواصل</h3>
-        <button id="closeContactBtn" class="close-button" title="إغلاق" aria-label="إغلاق">×</button>
-      </div>
-      <div class="modal-body">
-        <p class="mb-3 text-sm text-gray-600 dark:text-gray-300">اختر الطريقة المناسبة للتواصل المباشر مع المدرب.</p>
-        <div class="contact-actions">
-          <a class="contact-btn contact-whatsapp" href="https://wa.me/971502061209" target="_blank" rel="noopener">
-            <!-- WhatsApp Icon -->
-            <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M19.11 17.18c-.28-.14-1.65-.81-1.9-.9-.26-.1-.44-.14-.62.14-.18.27-.71.9-.87 1.09-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.66-1.55-1.94-.16-.27-.02-.42.12-.56.12-.12.28-.3.42-.46.14-.16.18-.27.28-.46.1-.18.06-.34-.02-.48-.08-.14-.62-1.5-.84-2.06-.22-.52-.44-.45-.62-.46h-.54c-.18 0-.48.07-.74.34-.26.27-1 1-1 2.42s1.03 2.8 1.18 2.99c.14.2 2.03 3.1 4.93 4.33.69.3 1.22.48 1.64.62.69.22 1.32.19 1.82.12.56-.08 1.65-.68 1.88-1.35.24-.67.24-1.24.16-1.35-.06-.1-.24-.16-.52-.3z"/><path d="M26.9 5.1A13.9 13.9 0 0 0 16 .1C7.3.1.2 7.1.2 15.8c0 2.7.7 5.2 2 7.4L.1 31.9l8.9-2.3c2.1 1.1 4.5 1.7 7 1.7h.1c8.7 0 15.8-7 15.8-15.7 0-4.2-1.6-8.1-4.9-10.9zM16 28.7h-.1c-2.2 0-4.4-.6-6.3-1.6l-.4-.2-5.3 1.4 1.4-5.1-.2-.4c-1.2-2-1.8-4.3-1.8-6.7 0-7.1 5.8-12.8 12.9-12.8 3.4 0 6.7 1.3 9.1 3.6 2.4 2.4 3.8 5.6 3.8 9 .1 7.1-5.7 12.8-13 12.8z"/></svg>
-            <span>واتساب مباشر</span>
-          </a>
-          <a class="contact-btn contact-phone" href="tel:+971502061209">
-            <!-- Phone Icon -->
-            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.11.37 2.3.57 3.58.57a1 1 0 0 1 1 1V21a1 1 0 0 1-1 1C10.61 22 2 13.39 2 3a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.27.2 2.47.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
-            <span>اتصال هاتفي</span>
-          </a>
-        </div>
-        <p class="text-xs text-gray-500 mt-2">أو أغلق النافذة للمتابعة داخل المحادثة.</p>
       </div>
     </div>
   </div>
@@ -207,6 +195,9 @@
     const btnLang = $('btnLang');
     const plusBtn = $('plusBtn');
     const imageInput = $('imageInput');
+    const audioInput = $('audioInput');
+    const micBtn = $('micBtn');
+    const recHintWrap = $('recHintWrap');
     const planButtonArea = $('planButtonArea');
     const generatePlanBtn = $('generatePlanBtn');
     const planModal = $('planModal');
@@ -214,8 +205,6 @@
     const planOutput = $('planOutput');
     const printBtn = $('printBtn');
     const expandAllBtn = $('expandAllBtn');
-    const contactModal = $('contactModal');
-    const closeContactBtn = $('closeContactBtn');
 
     let userState = { step: 0, data: {} };
     let LANG = 'ar';
@@ -233,8 +222,9 @@
         inputPlaceholder:'اكتب رسالتك...', emptyFields:'أدخل الاسم والعمر والدولة للمتابعة.', imageUpload:'تم استلام الصورة — يتم التحليل الآن.',
         generationStart:'جاري تجهيز الخطة… قسمًا قسمًا.', generationDone:'الخطة جاهزة. لو محتاج تعديل، بلغني.',
         initialPrompt:'مرحبًا {name}. نمشي خطوة خطوة لتجميع بياناتك وبناء خطة دقيقة قابلة للتنفيذ.',
-        planButtonText:'احصل على خطتك الآن', planButtonNote:'جاهز تبدأ بخطتك معنا؟ تواصل فورًا بخطوة بسيطة',
-        typing:'… يتم الرد الآن'
+        planButtonText:'احصل على خطتك الآن', planButtonNote:'يمكنك الاستمرار في الحديث إذا كانت لديك أسئلة.',
+        typing:'… يتم الرد الآن',
+        recStart:'● جاري التسجيل… ارفع إصبعك للإرسال', recDenied:'تعذّر الوصول للميكروفون.', recTooShort:'التسجيل قصير جدًا.', recSaved:'تم إرسال مذكرة صوتية.'
       },
       en: {
         appName:'Smart Personal Coach', welcomeSubtitle:'Welcome — we build a precise, doable plan step by step.', startButtonText:'Start now',
@@ -243,7 +233,8 @@
         generationStart:'Preparing your plan… section by section.', generationDone:'Plan is ready. Tell me if you need changes.',
         initialPrompt:'Hi {name}. We’ll collect your data stepwise and build a precise, actionable plan.',
         planButtonText:'Get your plan now', planButtonNote:'You can keep chatting if you have questions.',
-        typing:'typing…'
+        typing:'typing…',
+        recStart:'● Recording… release to send', recDenied:'Microphone permission denied.', recTooShort:'Recording too short.', recSaved:'Voice note sent.'
       }
     };
 
@@ -269,24 +260,23 @@
     function removeNode(n){ if(n && n.parentNode) n.parentNode.removeChild(n) }
 
     /* ===== AI Prompts ===== */
-function buildCoachSystemPrompt(){ return `
-اكتب ردود محادثة قصيرة، دقيقة، ومحترفة.  
-لا ثناء زائد، ولا ذكر لتقنيات أو روبوتات.  
+    function buildCoachSystemPrompt(){ return `
+اكتب ردود محادثة قصيرة، دقيقة، ومحترفة.
+لا ثناء زائد، ولا ذكر لتقنيات أو روبوتات.
 
-الدور: خبير عالمي في التدريب والتغذية والطب البشري.  
+الدور: خبير عالمي في التدريب والتغذية والطب البشري.
 
-المهمة:  
-- جمع البيانات لتصميم خطة تدريب وتغذية ومكملات غذائية بناءا علي احتياجات المستخدم إحترافية ومخصصة بنسبة 100% على مراحل (بحد أقصى سؤالين في كل رسالة).  
-- تلخيص ما جُمِع وطلب تأكيد قبل البناء.  
+المهمة:
+- جمع البيانات على مراحل (بحد أقصى سؤالين في كل رسالة).
+- تلخيص ما جُمِع وطلب تأكيد قبل البناء.
 
-الحالات الخاصة (أمراض/أدوية/إصابات):  
-- قدّم احتياطات محددة ومبنية على الحالة، مع توجيه مباشر لما يجب الالتزام به أو تجنّبه.  
+الحالات الخاصة (أمراض/أدوية/إصابات):
+- قدّم احتياطات محددة ومبنية على الحالة، مع توجيه مباشر لما يجب الالتزام به أو تجنّبه.
 
-الأسلوب:  
-- تواصل إنساني طبيعي يحاكي حديث الخبراء.  
-- فصحى مبسطة مع لمسة عامية مفهومة عند الحاجة.  
+الأسلوب:
+- تواصل إنساني طبيعي يحاكي حديث الخبراء.
+- فصحى مبسطة مع لمسة عامية مفهومة عند الحاجة.
 ` }
-
 
     function buildPlanJSONPrompt(){ return `أعِد فقط JSON صالحًا بدون أي نص آخر أو أسوار كود.
 {
@@ -312,20 +302,27 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
 اعتمد على المحادثة التالية:
 ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
 
-    function buildImagePrompt(){ return `حلّل الصورة في 2-3 أسطر: ماذا ترى؟ وما دلالته الصحية/الرياضية إن وُجدت. كن محددًا وعمليًا.` }
+    function buildImagePrompt(){ return `حلّل الصورة في 2-4 أسطر: 1) ما الذي تراه؟ 2) أي نص/مكوّنات ظاهرة (اقرأها إن وُجدت). 3) الدلالة الصحية/الرياضية أو السعرات التقريبية إن كان طعامًا. كن محددًا وعمليًا.` }
 
-    async function callAI(prompt, images){
-      try{ const res = await fetch('/.netlify/functions/gemini-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt, images})}); const data = await res.json(); return data.text || '' }catch(e){ console.error(e); return '' }
+    async function callAI(prompt, {images, audio} = {}){
+      try{
+        const payload = { prompt };
+        if (images && images.length) payload.images = images; // array of base64 data URLs
+        if (audio) payload.audio = audio; // { mime, data }
+        const res = await fetch('/.netlify/functions/gemini-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+        const data = await res.json();
+        return data.text || ''
+      }catch(e){ console.error(e); return '' }
     }
 
     /* ===== Health flags ===== */
     const MED_FLAGS=/(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i;
-    function analyzeUserMessage(msg){ if(MED_FLAGS.test(msg)){ displayMessage('تم رصد حالة صحية — سأضبط التوصيات بناءً عليها. لو في تفاصيل إضافية (تشخيص/جرعة) اذكرها.', 'ai') } }
+    function analyzeUserMessage(msg){ if(MED_FLAGS.test(msg)){ displayMessage('تم رصد حالة صحية — سنضيف احتياطات مناسبة. اذكر تفاصيل الدواء/الجرعة أو التشخيص إن وُجد.', 'ai') } }
 
     /* ===== Plan modal helpers ===== */
     const openModal = (el)=>{ el.classList.add('open'); el.setAttribute('aria-hidden','false') }
     const closeModal = (el)=>{ el.classList.remove('open'); el.setAttribute('aria-hidden','true') }
-    function lockInputs(state){ userInput.disabled=state; sendBtn.disabled=state; plusBtn.disabled=state; generatePlanBtn.disabled=state && !isDataComplete() }
+    function lockInputs(state){ userInput.disabled=state; sendBtn.disabled=state; plusBtn.disabled=state; micBtn.disabled=state; generatePlanBtn.disabled=state && !isDataComplete() }
 
     function sectionBlock(title, html=''){
       const s=document.createElement('section'); s.className='section-card';
@@ -355,6 +352,64 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
       let matched=0; for(let i=0;i<sections.length;i++){ const k=sections[i].key; const b=blocks[i].body; const m=mdFull.match(map[k]); await new Promise(r=>setTimeout(r,i===0?250:180)); if(m && m[1] && m[1].trim()){ matched++; b.innerHTML = marked.parse(m[1].trim()) } else { b.innerHTML = '<p>—</p>' } } if(!matched){ blocks[0].body.innerHTML = marked.parse(mdFull) }
     }
 
+    /* ===== Voice: record + STT ===== */
+    let mediaStream = null; let mediaRecorder = null; let audioChunks = []; let recStartTime = 0; let recognition = null; let interimText = '';
+
+    function supportSpeechRecognition(){ return 'webkitSpeechRecognition' in window || 'SpeechRecognition' in window }
+
+    function startLocalRecognition(){
+      try{
+        const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if(!SR) return null;
+        const rec = new SR(); rec.lang = (LANG==='ar' ? 'ar-EG' : 'en-US'); rec.interimResults = true; rec.continuous = true;
+        interimText = '';
+        rec.onresult = (e)=>{ let final = ''; for(let i=e.resultIndex;i<e.results.length;i++){ const r=e.results[i]; if(r.isFinal){ final += r[0].transcript; } else { interimText = r[0].transcript } } if(final){ // push immediately like WhatsApp caption
+            displayMessage(final.trim(), 'user'); chatHistory.push({role:'user', parts:[{text: final.trim()}]}); analyzeUserMessage(final.trim()); processAIResponse(final.trim()); }
+        };
+        rec.onerror = ()=>{}; rec.onend = ()=>{}; rec.start(); return rec;
+      }catch(_){ return null }
+    }
+
+    async function startRecording(){
+      try{
+        mediaStream = await navigator.mediaDevices.getUserMedia({audio:true});
+        mediaRecorder = new MediaRecorder(mediaStream, {mimeType: (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'audio/webm')});
+        audioChunks = []; recStartTime = Date.now();
+        mediaRecorder.ondataavailable = e => { if(e.data.size>0) audioChunks.push(e.data) };
+        mediaRecorder.onstop = handleRecordingStop;
+        mediaRecorder.start();
+        // Local STT parallel (if supported)
+        recognition = supportSpeechRecognition()? startLocalRecognition() : null;
+        micBtn.classList.add('mic-live'); recHintWrap.classList.remove('hidden'); $('recHint').textContent = i18n[LANG].recStart;
+      }catch(e){ toast(i18n[LANG].recDenied) }
+    }
+
+    function stopRecording(){ try{ mediaRecorder && mediaRecorder.state!=='inactive' && mediaRecorder.stop(); }catch(_){}; try{ mediaStream && mediaStream.getTracks().forEach(t=>t.stop()); }catch(_){}; try{ recognition && recognition.stop && recognition.stop(); }catch(_){}; micBtn.classList.remove('mic-live'); recHintWrap.classList.add('hidden') }
+
+    async function handleRecordingStop(){
+      const duration = (Date.now()-recStartTime)/1000; if(duration < 0.6){ toast(i18n[LANG].recTooShort); return }
+      const blob = new Blob(audioChunks, {type: mediaRecorder.mimeType}); const url = URL.createObjectURL(blob);
+      // Show voice bubble
+      const audioHTML = `<audio controls src="${url}" class="w-full max-w-xs"></audio>`;
+      displayMessage(audioHTML, 'user');
+      toast(i18n[LANG].recSaved);
+
+      // If no local STT result came in, send to backend for STT + reply
+      if(!interimText || interimText.trim().length<2){
+        const reader = new FileReader(); reader.onload = async () => {
+          const base64 = reader.result.split(',')[1];
+          const typingEl = showTyping('ai');
+          const aiText = await callAI('رجاءً حوِّل المقطع الصوتي إلى نص، فسِّره كرسالة من المستخدم، ثم ردّ باحتراف على المقصود.', { audio: { mime: blob.type, data: base64 } });
+          removeNode(typingEl);
+          const finalText = aiText && aiText.trim().length ? aiText : (LANG==='ar'?'تم استلام مذكرة صوتية.':'Voice note received.');
+          chatHistory.push({role:'user', parts:[{text:'[مذكرة صوتية]'}]});
+          chatHistory.push({role:'assistant', parts:[{text: finalText}]});
+          displayMessage(finalText, 'ai');
+          togglePlanCTA();
+        };
+        reader.readAsDataURL(blob);
+      }
+    }
+
     /* ===== Events ===== */
     document.addEventListener('DOMContentLoaded',()=>{
       startBtn.addEventListener('click',()=>{ welcomeScreen.classList.add('hidden'); userDataScreen.classList.remove('hidden'); setLang(LANG) })
@@ -362,20 +417,24 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
 
       btnTheme.addEventListener('click', setTheme); btnLang.addEventListener('click',()=> setLang(LANG==='ar' ? 'en' : 'ar'))
       plusBtn.addEventListener('click',()=> imageInput.click());
-      imageInput.addEventListener('change', async (e)=>{ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload= async (ev)=>{ const imgHTML=`<img src="${ev.target.result}" class="max-w-[220px] rounded-lg my-2" alt="uploaded"/>`; displayMessage(imgHTML,'user'); toast(i18n[LANG].imageUpload); const typingEl = showTyping('ai'); const imgBase64 = ev.target.result; const aiResp = await callAI(buildImagePrompt(), [imgBase64]); removeNode(typingEl); displayMessage(aiResp || 'تم استلام الصورة. أعطني تفاصيل إضافية إن وجدت.', 'ai'); chatHistory.push({role:'user',parts:[{text:'[صورة مرفوعة]'}]}); chatHistory.push({role:'assistant',parts:[{text:aiResp}]}); togglePlanCTA(); }; reader.readAsDataURL(file) })
+
+      // Image -> AI analysis
+      imageInput.addEventListener('change', async (e)=>{ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload= async (ev)=>{ const dataUrl = ev.target.result; const imgHTML=`<img src="${dataUrl}" class="max-w-[220px] rounded-lg my-2" alt="uploaded"/>`; displayMessage(imgHTML,'user'); toast(i18n[LANG].imageUpload); const typingEl = showTyping('ai'); const aiResp = await callAI(buildImagePrompt(), { images: [dataUrl] }); removeNode(typingEl); const reply = aiResp || (LANG==='ar'?'تم استلام الصورة.':'Image received.'); displayMessage(reply, 'ai'); chatHistory.push({role:'user',parts:[{text:'[صورة مرفوعة]'}]}); chatHistory.push({role:'assistant',parts:[{text:reply}]}); togglePlanCTA(); }; reader.readAsDataURL(file) })
 
       async function processAIResponse(message){ lockInputs(true); const typingEl = showTyping('ai'); const coachPrompt = `${buildCoachSystemPrompt()}\n\nسجل المحادثة:\n${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}\n\nرسالة المستخدم الأخيرة: ${message}`; const response = await callAI(coachPrompt); removeNode(typingEl); chatHistory.push({role:'assistant',parts:[{text:response}]}); displayMessage(response||'…','ai'); lockInputs(false); togglePlanCTA() }
 
       function sendMessage(){ const message=(userInput.value||'').trim(); if(!message) return; displayMessage(message,'user'); chatHistory.push({role:'user',parts:[{text:message}]}); analyzeUserMessage(message); processAIResponse(message); userInput.value='' }
       sendBtn.addEventListener('click', sendMessage); userInput.addEventListener('keypress', e=>{ if(e.key==='Enter') sendMessage() })
 
-      // Contact modal on main CTA
-      generatePlanBtn.addEventListener('click', ()=>{ openModal(contactModal) })
-      closeContactBtn.addEventListener('click',()=> closeModal(contactModal));
-      contactModal.addEventListener('click', e=>{ if(e.target===contactModal) closeModal(contactModal) })
+      // Mic interactions (press & hold)
+      const startEvents = ['pointerdown','touchstart','mousedown'];
+      const endEvents = ['pointerup','touchend','mouseup','mouseleave'];
+      startEvents.forEach(ev => micBtn.addEventListener(ev, (e)=>{ e.preventDefault(); startRecording() }, {passive:false}));
+      endEvents.forEach(ev => micBtn.addEventListener(ev, (e)=>{ e.preventDefault(); stopRecording() }, {passive:false}));
 
-      // Plan modal (kept) controls
-      closePlanBtn.addEventListener('click',()=> closeModal(planModal)); planModal.addEventListener('click',e=>{ if(e.target===planModal) closeModal(planModal) })
+      // Plan modal controls (kept)
+      generatePlanBtn.addEventListener('click', async ()=>{ displayMessage(i18n[LANG].generationStart,'ai'); const typingEl = showTyping('ai'); await generatePlanProgressive(); removeNode(typingEl); displayMessage(i18n[LANG].generationDone,'ai') })
+      $('closePlanBtn').addEventListener('click',()=> closeModal(planModal)); planModal.addEventListener('click',e=>{ if(e.target===planModal) closeModal(planModal) })
       printBtn.addEventListener('click',()=> window.print()); expandAllBtn.addEventListener('click',()=>{ planOutput.querySelectorAll('.section-body').forEach(d=>d.style.display='block'); planOutput.querySelectorAll('.section-head span:last-child').forEach(ic=>ic.textContent='−') })
 
       const savedTheme=localStorage.getItem('theme'); if(savedTheme==='dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent='🌙' } setLang('ar')
@@ -383,4 +442,3 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
   </script>
 </body>
 </html>
-
