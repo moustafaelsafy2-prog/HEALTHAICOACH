@@ -117,7 +117,7 @@
 
     <div id="planButtonArea" class="px-4 py-3 hidden">
       <div class="rounded-xl bg-white shadow dark:bg-slate-800 p-3 flex items-center justify-between">
-        <div class="typewriter-text" id="prepStatus">.جاهز تبدأ بخطتك معنا؟ تواصل فورًا بخطوة بسيطة</div>
+        <div class="typewriter-text" id="prepStatus">جاهز تبدأ بخطتك معنا؟ تواصل فورًا بخطوة بسيطة</div>
         <button id="generatePlanBtn" class="btn btn-primary" disabled>احصل على خطتك الآن</button>
       </div>
       <p id="planButtonNote" class="text-gray-500 text-sm mt-2">يمكنك الاستمرار في الحديث إذا كانت لديك أي استفسارات أخرى.</p>
@@ -189,9 +189,9 @@
     const i18n = {
       ar: {
         appName: 'مدربك الشخصي الذكي',
-        welcomeSubtitle: 'مرحبا بك — هنا نعمل بخطة دقيقة ومناسبة لك، خطوة بخطوة.',
+        welcomeSubtitle: 'جاهز للتغيير؟ خطتك مصممة خصيصاً لك—تنفيذ محكم، متابعة دقيقة، ونتيجة ملموسة تستحق الاستثمار.',
         startButtonText: 'ابدأ الآن',
-        userDataTitle: 'أهلاً — لنبني ملفك السريع',
+        userDataTitle: ' لنبني ملفك السريع',
         userDataSubtitle: 'اسمك وعُمرك ودولتك كبداية',
         namePlaceholder:'اسمك', agePlaceholder:'عمرك', countryPlaceholder:'دولتك', nextButtonText:'ابدأ المحادثة',
         inputPlaceholder:'اكتب رسالتك...', emptyFields:'أدخل الاسم والعمر والدولة للمتابعة.', imageUpload:'تم استلام الصورة — يتم التحليل الآن.',
@@ -343,5 +343,6 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
   </script>
 </body>
 </html>
+
 
 
