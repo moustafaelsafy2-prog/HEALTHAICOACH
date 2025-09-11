@@ -265,10 +265,11 @@
         margin-top: 0.5rem;
     }
     .plan-page {
-        padding: 2rem;
-        display: none;
-        overflow-y: auto;
-        height: 100vh;
+      padding: 2rem;
+      display: none;
+      height: 100vh;
+      width: 100%;
+      overflow-y: auto;
     }
     .plan-page h1, .plan-page h2, .plan-page h3 {
         font-weight: 700;
@@ -316,7 +317,7 @@
       padding: 1rem;
     }
     .plan-button {
-      background-color: var(--primary);
+      background-color: var(--accent);
       color: white;
       padding: 0.75rem 1.5rem;
       border-radius: 0.5rem;
@@ -330,10 +331,25 @@
     .back-button {
       background-color: #6B7280;
     }
-    @media print {
-      .plan-actions { display: none; }
-      body { background-color: white; padding: 0; }
-      .container { box-shadow: none; padding: 0; }
+    .typewriter-text {
+      font-size: 1.25rem;
+      font-weight: 500;
+      color: var(--primary);
+      text-align: center;
+    }
+    .dark .typewriter-text {
+      color: var(--accent);
+    }
+    .typing-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 1.5em;
+      background-color: currentColor;
+      animation: blink-caret .75s step-end infinite;
+    }
+    @keyframes blink-caret {
+      from, to { background-color: transparent }
+      50% { background-color: currentColor }
     }
   </style>
 </head>
