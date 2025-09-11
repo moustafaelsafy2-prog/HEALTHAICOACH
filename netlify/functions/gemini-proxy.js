@@ -1,10 +1,10 @@
 // netlify/functions/gemini-proxy.js
 // Hardened multimodal proxy for Google Generative AI (Gemini)
-// - Supports text + images (data URLs or {data, mime}) + audio ({data, mime})
-// - Optional system instruction
-// - Optional JSON-mode via response_mime_type
-// - Strict guards to avoid "example" image analyses when no image is provided
-// - Retries with backoff; clear error messages
+// ✅ Supports: text + images (data URLs or {data, mime}) + audio ({data, mime})
+// ✅ Optional: system instruction, chat history, JSON-mode
+// ✅ Guards: blocks fake image analyses when no image is sent
+// ✅ Clear errors + retries with backoff
+// ✅ Returns extra metadata to help the frontend decide what to show
 
 exports.handler = async (event) => {
   const baseHeaders = {
@@ -29,10 +29,10 @@ exports.handler = async (event) => {
     return { statusCode: 500, headers: baseHeaders, body: JSON.stringify({ error: "GEMINI_API_KEY is missing" }) };
   }
 
-  // ---- Helpers ----
+  // ---------- Helpers ----------
   const parseJSON = (str) => { try { return JSON.parse(str || "{}"); } catch { return null; } };
 
-  const isDataURL = (s) => typeof s === "string" && s.startsWith("data:");
+  const isDataURL = (s) => typeof s === "string" && /^data:[^;]+;base64,/i.test(s || "");
   const parseDataURL = (s) => {
     // data:<mime>;base64,<payload>
     const m = /^data:([^;]+);base64,(.*)$/i.exec(s || "");
@@ -40,15 +40,16 @@ exports.handler = async (event) => {
     return { mimeType: m[1], data: m[2] };
   };
 
+  const cleanBase64 = (b64) => (b64 || "").replace(/^base64,/, "").replace(/\s+/g, "");
+
   const imageToInlineData = (item) => {
     if (!item) return null;
     if (typeof item === "string") {
       if (isDataURL(item)) return parseDataURL(item);
-      // Assume it's raw base64 (jpeg by default)
-      return { mimeType: "image/jpeg", data: item.replace(/^base64,/, "") };
+      return { mimeType: "image/jpeg", data: cleanBase64(item) };
     }
     if (typeof item === "object") {
-      const data = item.data || item.base64 || null;
+      const data = cleanBase64(item.data || item.base64 || item.payload);
       const mimeType = item.mime || item.mimeType || "image/jpeg";
       if (!data) return null;
       return { mimeType, data };
@@ -58,13 +59,15 @@ exports.handler = async (event) => {
 
   const audioToInlineData = (audio) => {
     if (!audio || typeof audio !== "object") return null;
-    const data = audio.data || audio.base64 || null;
+    const data = cleanBase64(audio.data || audio.base64 || audio.payload);
     const mimeType = audio.mime || audio.mimeType || "audio/webm";
     if (!data) return null;
     return { mimeType, data };
   };
 
-  // ---- Parse request body ----
+  const looksLikeImageAnalysis = (text) => /(?:حل\s*ل|حلّ?ل|تحليل\s*الصورة|analy(?:s|z)e\s+(?:the|this)\s+(?:image|photo|picture))/i.test(text || "");
+
+  // ---------- Parse request ----------
   const payload = parseJSON(event.body);
   if (!payload) {
     return { statusCode: 400, headers: baseHeaders, body: JSON.stringify({ error: "Invalid JSON" }) };
@@ -76,19 +79,21 @@ exports.handler = async (event) => {
     temperature = 0.6,
     top_p = 0.9,
     max_output_tokens = 2048,
-    system,                   // optional system instruction (string)
-    images,                   // array of data URLs or [{data, mime}]
-    audio,                    // { data, mime }
-    response_mime_type,       // e.g. "application/json" to force JSON output
-    require_images = false,   // if true, reject when analyzing image without images
-    history                   // optional: [{ role: 'user'|'assistant', text: '...' }]
+    system,                 // string
+    images,                 // string dataURL[] or [{data, mime}] or raw base64[]
+    audio,                  // { data, mime }
+    response_mime_type,     // e.g. "application/json"
+    require_images = false, // force images for image-analysis prompts
+    history,                // [{ role: 'user'|'assistant', text }]
+    safetySettings,         // optional passthrough
+    timeout_ms              // optional custom timeout
   } = payload;
 
   if (!prompt || typeof prompt !== "string") {
     return { statusCode: 400, headers: baseHeaders, body: JSON.stringify({ error: "Missing prompt" }) };
   }
 
-  // ---- Build parts (images/audio first, then text) ----
+  // ---------- Build parts (images/audio first, then text) ----------
   const parts = [];
 
   const imageParts = Array.isArray(images)
@@ -101,12 +106,9 @@ exports.handler = async (event) => {
 
   parts.push({ text: prompt });
 
-  // ---- Defensive guard: if the prompt clearly asks to analyze an image but none provided ----
-  const looksLikeImageAnalysis = /(?:حل[\- ]?ل|حلّ?ل|حلل|حل(?:ل)?|حلل\s*الصورة|حلل الصورة|حلّل الصورة|حل الصورة|تحليل الصورة|analy(?:s|z)e\s+(?:an\s+)?image|analyze\s+(?:this|the)\s+(?:image|photo|picture))/i.test(prompt);
-  const hasImages = imageParts.length > 0;
-
-  if ((require_images || looksLikeImageAnalysis) && !hasImages && !audioPart) {
-    // Return a strict error so the frontend can show a friendly toast instead of the model hallucinating
+  // Guard: block analysis without image content when it looks like an image task
+  const wantsImage = require_images || looksLikeImageAnalysis(prompt);
+  if (wantsImage && imageParts.length === 0 && !audioPart) {
     return {
       statusCode: 422,
       headers: baseHeaders,
@@ -114,11 +116,9 @@ exports.handler = async (event) => {
     };
   }
 
-  // ---- Build request body for Gemini ----
+  // ---------- Build Gemini request ----------
   const reqBody = {
-    contents: [
-      { role: "user", parts }
-    ],
+    contents: [ { role: "user", parts } ],
     generationConfig: {
       temperature,
       topP: top_p,
@@ -127,31 +127,31 @@ exports.handler = async (event) => {
   };
 
   if (response_mime_type && typeof response_mime_type === "string") {
-    // Supported on 1.5 models; ignored gracefully by older models
-    reqBody.generationConfig.responseMimeType = response_mime_type;
+    reqBody.generationConfig.responseMimeType = response_mime_type; // JSON-mode etc.
   }
-
   if (Array.isArray(history) && history.length) {
-    // Prepend chat history (older -> newer) before the latest user turn
     const histContents = history.map(m => ({
       role: m && m.role === "assistant" ? "model" : "user",
-      parts: [{ text: String(m && m.text || "") }]
+      parts: [{ text: String((m && m.text) || "") }]
     })).filter(c => c.parts[0].text.length > 0);
     reqBody.contents = [...histContents, { role: "user", parts }];
   }
-
   if (system && typeof system === "string" && system.trim().length) {
     reqBody.systemInstruction = { parts: [{ text: system }] };
+  }
+  if (Array.isArray(safetySettings) && safetySettings.length) {
+    reqBody.safetySettings = safetySettings; // passthrough when provided
   }
 
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${API_KEY}`;
 
-  // ---- Fetch with retries ----
+  // ---------- Fetch with retries ----------
   const MAX_TRIES = 3;
-  for (let attempt = 1; attempt <= MAX_TRIES; attempt++) {
-    const abort = new AbortController();
-    const timeout = setTimeout(() => abort.abort(), 26000); // 26s timeout
+  const RETRYABLE = new Set([429, 500, 502, 503, 504]);
 
+  const doFetch = async () => {
+    const abort = new AbortController();
+    const to = setTimeout(() => abort.abort(), Math.max(1000, Math.min(60000, Number(timeout_ms) || 26000)));
     try {
       const resp = await fetch(url, {
         method: "POST",
@@ -159,39 +159,43 @@ exports.handler = async (event) => {
         body: JSON.stringify(reqBody),
         signal: abort.signal
       });
-      clearTimeout(timeout);
+      clearTimeout(to);
 
-      const textBody = await resp.text();
-      let data; try { data = JSON.parse(textBody); } catch { data = null; }
+      const rawText = await resp.text();
+      let data; try { data = JSON.parse(rawText); } catch { data = null; }
 
       if (!resp.ok) {
-        const details = (data && (data.error?.message || data.message)) || textBody.slice(0, 600);
-        if ((resp.status === 429 || resp.status >= 500) && attempt < MAX_TRIES) {
-          await new Promise(r => setTimeout(r, attempt * 800));
-          continue;
-        }
-        return { statusCode: resp.status, headers: baseHeaders, body: JSON.stringify({ error: "Upstream error", details }) };
+        const details = (data && (data.error?.message || data.message)) || rawText.slice(0, 800);
+        return { ok: false, status: resp.status, details, data };
       }
 
-      const partsOut = data?.candidates?.[0]?.content?.parts || [];
+      const candidate = data?.candidates?.[0] || {};
+      const partsOut = candidate?.content?.parts || [];
       const text = partsOut.map(p => p?.text || "").join("\n").trim();
+      const finishReason = candidate?.finishReason || data?.promptFeedback?.blockReason || null;
+      const safety = candidate?.safetyRatings || data?.promptFeedback || null;
+      const usage = data?.usageMetadata || null;
 
       if (!text) {
-        const safety = data?.promptFeedback || data?.candidates?.[0]?.safetyRatings;
-        return { statusCode: 502, headers: baseHeaders, body: JSON.stringify({ error: "Empty/blocked response", safety, raw: data }) };
+        return { ok: false, status: 502, details: "Empty/blocked response", data: { safety, finishReason, raw: data } };
       }
-
-      return { statusCode: 200, headers: baseHeaders, body: JSON.stringify({ text }) };
+      return { ok: true, status: 200, text, meta: { finishReason, safety, usage } };
     } catch (err) {
-      clearTimeout(timeout);
-      if (attempt < MAX_TRIES) {
-        await new Promise(r => setTimeout(r, attempt * 800));
-        continue;
-      }
-      return { statusCode: 500, headers: baseHeaders, body: JSON.stringify({ error: String(err && err.message || err) }) };
+      return { ok: false, status: 500, details: String(err && err.message || err) };
     }
+  };
+
+  let lastErr = null;
+  for (let attempt = 1; attempt <= MAX_TRIES; attempt++) {
+    const res = await doFetch();
+    if (res.ok) {
+      return { statusCode: 200, headers: baseHeaders, body: JSON.stringify({ text: res.text, meta: res.meta }) };
+    }
+    lastErr = res;
+    if (!RETRYABLE.has(res.status) || attempt === MAX_TRIES) break;
+    await new Promise(r => setTimeout(r, attempt * 800));
   }
 
-  // Should not reach
-  return { statusCode: 500, headers: baseHeaders, body: JSON.stringify({ error: "Unknown failure" }) };
+  const payloadErr = lastErr || { status: 500, details: "Unknown failure" };
+  return { statusCode: payloadErr.status || 500, headers: baseHeaders, body: JSON.stringify({ error: payloadErr.details || "Upstream error", raw: payloadErr.data || null }) };
 };
