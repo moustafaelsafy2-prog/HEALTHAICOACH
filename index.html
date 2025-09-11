@@ -308,6 +308,33 @@
         background-color: #374151;
         color: #E5E7EB;
     }
+    .plan-actions {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding: 1rem;
+    }
+    .plan-button {
+      background-color: var(--primary);
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 0.5rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: block;
+      width: fit-content;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .back-button {
+      background-color: #6B7280;
+    }
+    @media print {
+      .plan-actions { display: none; }
+      body { background-color: white; padding: 0; }
+      .container { box-shadow: none; padding: 0; }
+    }
   </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
@@ -675,7 +702,8 @@ ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
         const aiResponse = await callAI(planPrompt);
 
         if (aiResponse) {
-          const planHTML = `
+          localStorage.setItem('planContent', aiResponse);
+          document.body.innerHTML = `
             <div class="plan-header">
                 <div class="flex items-center space-x-2 space-x-reverse">
                     <img src="https://placehold.co/40x40/ffffff/0D47A1?text=AI" alt="Coach AI Avatar" class="rounded-full"/>
@@ -691,7 +719,11 @@ ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
                 <button id="backToChatBtn" class="plan-button back-button">استكمال المحادثة</button>
             </div>
           `;
-          document.body.innerHTML = planHTML;
+          document.getElementById('backToChatBtn').addEventListener('click', () => {
+            document.body.innerHTML = originalBodyHTML;
+            document.addEventListener('DOMContentLoaded', initializeListeners);
+            setLang(LANG);
+          });
         } else {
             const errorHTML = `<div class="container plan-content"><p>عذراً، حدث خطأ أثناء توليد الخطة. الرجاء المحاولة مرة أخرى.</p></div>`;
             document.body.innerHTML = errorHTML;
