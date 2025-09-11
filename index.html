@@ -73,14 +73,6 @@
     .dot:nth-child(3){animation-delay:.4s}
     @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
 
-    /* Contact modal */
-    .contact-actions{display:grid;grid-template-columns:1fr;gap:.75rem;padding:1rem}
-    @media (min-width:520px){ .contact-actions{grid-template-columns:1fr 1fr} }
-    .contact-btn{display:flex;align-items:center;gap:.75rem;padding:1rem;border-radius:.8rem;font-weight:800;justify-content:center}
-    .contact-btn svg{width:22px;height:22px}
-    .contact-whatsapp{background:#25D366;color:#fff}
-    .contact-phone{background:#0ea5e9;color:#fff}
-
     /* Voice recording UI */
     .mic-btn{position:relative}
     .mic-live::after{content:'';position:absolute;inset:-2px;border:2px solid #ef4444;border-radius:999px;animation:pulse 1s infinite}
@@ -143,17 +135,14 @@
       <input type="file" id="audioInput" accept="audio/*" class="hidden" />
       <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة">➕</button>
       <!-- Mic (press & hold to record) -->
-      <button id="micBtn" class="icon-btn mic-btn" aria-label="تسجيل صوتي" title="اضغط مطولاً للتسجيل">
-        <!-- Mic SVG -->
-        <svg viewBox="0 0 24 24" fill="currentColor" width="22" height="22" aria-hidden="true"><path d="M12 14a3 3 0 0 0 3-3V7a3 3 0 0 0-6 0v4a3 3 0 0 0 3 3z"></path><path d="M19 11a7 7 0 0 1-14 0"></path><path d="M12 21v-4"></path></svg>
-      </button>
+      <button id="micBtn" class="icon-btn mic-btn" aria-label="تسجيل صوتي" title="اضغط مطولاً للتسجيل">🎙️</button>
       <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل">↪</button>
     </div>
 
     <div class="px-4 pb-2 -mt-2 hidden" id="recHintWrap"><span class="rec-hint" id="recHint">● جاري التسجيل… ارفع إصبعك للإرسال</span></div>
   </div>
 
-  <!-- Plan Modal (kept for later use / progressive sections) -->
+  <!-- Plan Modal (kept for progressive plan sections) -->
   <div id="planModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog" aria-labelledby="planModalTitle">
     <div class="modal-content">
       <div class="modal-header">
@@ -264,7 +253,7 @@
 اكتب ردود محادثة قصيرة، دقيقة، ومحترفة.
 لا ثناء زائد، ولا ذكر لتقنيات أو روبوتات.
 
-الدور: خبير عالمي في التدريب والتغذية والطب البشري.
+الدور: خبير عالمي في التدريب والتغذية 
 
 المهمة:
 - جمع البيانات على مراحل (بحد أقصى سؤالين في كل رسالة).
@@ -362,9 +351,7 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
         const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if(!SR) return null;
         const rec = new SR(); rec.lang = (LANG==='ar' ? 'ar-EG' : 'en-US'); rec.interimResults = true; rec.continuous = true;
         interimText = '';
-        rec.onresult = (e)=>{ let final = ''; for(let i=e.resultIndex;i<e.results.length;i++){ const r=e.results[i]; if(r.isFinal){ final += r[0].transcript; } else { interimText = r[0].transcript } } if(final){ // push immediately like WhatsApp caption
-            displayMessage(final.trim(), 'user'); chatHistory.push({role:'user', parts:[{text: final.trim()}]}); analyzeUserMessage(final.trim()); processAIResponse(final.trim()); }
-        };
+        rec.onresult = (e)=>{ let final = ''; for(let i=e.resultIndex;i<e.results.length;i++){ const r=e.results[i]; if(r.isFinal){ final += r[0].transcript; } else { interimText = r[0].transcript } } if(final){ const txt = final.trim(); displayMessage(txt, 'user'); chatHistory.push({role:'user', parts:[{text: txt}]}); analyzeUserMessage(txt); processAIResponse(txt); } };
         rec.onerror = ()=>{}; rec.onend = ()=>{}; rec.start(); return rec;
       }catch(_){ return null }
     }
@@ -372,7 +359,8 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
     async function startRecording(){
       try{
         mediaStream = await navigator.mediaDevices.getUserMedia({audio:true});
-        mediaRecorder = new MediaRecorder(mediaStream, {mimeType: (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')?'audio/webm;codecs=opus':'audio/webm')});
+        const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg');
+        mediaRecorder = new MediaRecorder(mediaStream, {mimeType: mime});
         audioChunks = []; recStartTime = Date.now();
         mediaRecorder.ondataavailable = e => { if(e.data.size>0) audioChunks.push(e.data) };
         mediaRecorder.onstop = handleRecordingStop;
@@ -393,17 +381,18 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
       displayMessage(audioHTML, 'user');
       toast(i18n[LANG].recSaved);
 
-      // If no local STT result came in, send to backend for STT + reply
+      // If no local STT result came in, use backend STT + reply (JSON contract)
       if(!interimText || interimText.trim().length<2){
         const reader = new FileReader(); reader.onload = async () => {
           const base64 = reader.result.split(',')[1];
           const typingEl = showTyping('ai');
-          const aiText = await callAI('رجاءً حوِّل المقطع الصوتي إلى نص، فسِّره كرسالة من المستخدم، ثم ردّ باحتراف على المقصود.', { audio: { mime: blob.type, data: base64 } });
+          const jsonPrompt = `أعد فقط JSON صالح بهذا الشكل بدون أي كلام إضافي:\n{\n  \"transcript\": string,\n  \"reply\": string\n}\nالمطلوب: 1) حوّل الصوت إلى نص باللغة ${(LANG==='ar'?'العربية':'English')}، 2) فسّر ما يريد المستخدم، 3) اكتب ردًا مهنيًا مختصرًا.`;
+          const aiText = await callAI(jsonPrompt, { audio: { mime: blob.type, data: base64 } });
           removeNode(typingEl);
-          const finalText = aiText && aiText.trim().length ? aiText : (LANG==='ar'?'تم استلام مذكرة صوتية.':'Voice note received.');
-          chatHistory.push({role:'user', parts:[{text:'[مذكرة صوتية]'}]});
-          chatHistory.push({role:'assistant', parts:[{text: finalText}]});
-          displayMessage(finalText, 'ai');
+          let transcript = '', reply = '';
+          try{ const s=aiText.indexOf('{'); const e=aiText.lastIndexOf('}'); const j = JSON.parse(aiText.slice(s,e+1)); transcript = (j.transcript||'').trim(); reply = (j.reply||'').trim(); }catch(_){}
+          if(transcript){ displayMessage(transcript, 'user'); chatHistory.push({role:'user', parts:[{text: transcript}]}); analyzeUserMessage(transcript); }
+          displayMessage(reply || (LANG==='ar'?'تم استلام المذكرة الصوتية.':'Voice note received.'), 'ai'); chatHistory.push({role:'assistant', parts:[{text: reply}]});
           togglePlanCTA();
         };
         reader.readAsDataURL(blob);
