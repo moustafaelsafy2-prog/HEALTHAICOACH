@@ -8,100 +8,62 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
-    :root {
-      --primary: #04364A;
-      --secondary: #176B87;
-      --accent: #64CCC5;
-      --chat-bg: #F8F9FA;
-      --bubble-user: #DCF8C6;
-      --bubble-ai: #fff;
-      --backdrop: rgba(2, 6, 23, 0.55);
-    }
-    html.dark {
-      --primary: #1F2937;
-      --secondary: #374151;
-      --accent: #10B981;
-      --chat-bg: #111827;
-      --bubble-user: #4B5563;
-      --bubble-ai: #374151;
-      --backdrop: rgba(0,0,0,0.7);
-    }
-    * { box-sizing: border-box; }
-    body {
-      font-family: 'Tajawal', sans-serif;
-      background-color: var(--chat-bg);
-      color: #333;
-      transition: background-color 0.3s, color 0.3s;
-    }
-    .dark body { color: #E5E7EB; }
+    :root { --primary:#04364A; --secondary:#176B87; --accent:#64CCC5; --chat-bg:#F8F9FA; --bubble-user:#DCF8C6; --bubble-ai:#fff; --backdrop:rgba(2,6,23,.55); }
+    html.dark { --primary:#1F2937; --secondary:#374151; --accent:#10B981; --chat-bg:#111827; --bubble-user:#4B5563; --bubble-ai:#374151; --backdrop:rgba(0,0,0,.7); }
+    *{box-sizing:border-box}
+    body{font-family:'Tajawal',sans-serif;background:var(--chat-bg);color:#333;transition:background-color .3s,color .3s}
+    .dark body{color:#E5E7EB}
 
     /* Chat shell */
-    .chat-container {
-      max-width: 720px;
-      margin: 0 auto;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      background-color: var(--chat-bg);
-      box-shadow: 0 0 25px rgba(0,0,0,0.08);
-      border-radius: 1rem;
-      overflow: hidden;
-      position: relative;
-    }
-    .chat-header {
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      padding: 0.875rem 1rem;
-      position: sticky; top: 0; z-index: 10;
-      display: flex; justify-content: space-between; align-items: center;
-    }
-    .chat-messages {
-      flex: 1; padding: 1rem; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6rem;
-    }
-    .message-bubble {
-      padding: 0.85rem 1.15rem; border-radius: 1.25rem; max-width: 82%; margin-bottom: 0.75rem; position: relative; animation: fadeIn 0.25s ease-in-out;
-    }
-    .message-bubble.user { background-color: var(--bubble-user); margin-left: auto; border-bottom-right-radius: 0.25rem; }
-    .message-bubble.ai { background-color: var(--bubble-ai); margin-right: auto; border-bottom-left-radius: 0.25rem; }
-    .dark .message-bubble.ai { color: #E5E7EB; }
+    .chat-container{max-width:720px;margin:0 auto;height:100vh;display:flex;flex-direction:column;background:var(--chat-bg);box-shadow:0 0 25px rgba(0,0,0,.08);border-radius:1rem;overflow:hidden}
+    .chat-header{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:.875rem 1rem;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center}
+    .chat-messages{flex:1;padding:1rem;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:6rem}
+    .message-bubble{padding:.85rem 1.15rem;border-radius:1.25rem;max-width:82%;margin-bottom:.75rem;animation:fadeIn .25s ease-in-out}
+    .message-bubble.user{background:var(--bubble-user);margin-left:auto;border-bottom-right-radius:.25rem}
+    .message-bubble.ai{background:var(--bubble-ai);margin-right:auto;border-bottom-left-radius:.25rem}
 
-    .input-area { display: flex; gap: 0.5rem; padding: 0.75rem; background-color: #F8F9FA; border-top: 1px solid #E0E0E0; position: sticky; bottom: 0; z-index: 10; align-items: center; }
-    .dark .input-area { background-color: #1F2937; border-top-color: #374151; }
-    .input-area input[type="text"] { flex: 1; border-radius: 2rem; padding: 0.75rem 1.2rem; border: 1px solid #CCC; outline: none; background-color: white; transition: all 0.3s; }
-    .dark .input-area input[type="text"] { background-color: #374151; border-color: #4B5563; color: #E5E7EB; }
-    .input-area input[type="text"]:focus { border-color: var(--accent); }
-    .icon-btn { background: transparent; color: var(--secondary); border-radius: 999px; width: 44px; height: 44px; display: grid; place-items: center; transition: 0.25s; }
-    .icon-btn:hover { background-color: rgba(0,0,0,0.06); }
-    .send-btn { background-color: var(--accent); color: white; }
+    .input-area{display:flex;gap:.5rem;padding:.75rem;background:#F8F9FA;border-top:1px solid #E0E0E0;position:sticky;bottom:0;z-index:10;align-items:center}
+    .dark .input-area{background:#1F2937;border-top-color:#374151}
+    .input-area input[type=text]{flex:1;border-radius:2rem;padding:.75rem 1.2rem;border:1px solid #CCC;background:#fff}
+    .dark .input-area input[type=text]{background:#374151;border-color:#4B5563;color:#E5E7EB}
+    .input-area input[type=text]:focus{border-color:var(--accent)}
+    .icon-btn{background:transparent;color:var(--secondary);border-radius:999px;width:44px;height:44px;display:grid;place-items:center;transition:.25s}
+    .icon-btn:hover{background:rgba(0,0,0,.06)}
+    .send-btn{background:var(--accent);color:#fff}
 
-    .welcome-screen,.user-data-screen{ display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; text-align:center; background:linear-gradient(135deg,var(--primary),var(--secondary)); color:white; }
-    .cta-btn{ background-color: var(--accent); font-weight:700; box-shadow:0 6px 16px rgba(0,0,0,0.25); padding:1rem 2rem; border-radius:999px; }
+    .welcome-screen,.user-data-screen{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;text-align:center;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff}
+    .cta-btn{background:var(--accent);font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.25);padding:1rem 2rem;border-radius:999px}
 
-    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background-color: #333; color: white; padding: 0.85rem 1rem; border-radius: 0.5rem; z-index: 60; opacity: 0; transition: opacity 0.4s; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0);} }
+    .toast{position:fixed;bottom:2rem;left:50%;transform:translateX(-50%);background:#333;color:#fff;padding:.85rem 1rem;border-radius:.5rem;z-index:60;opacity:0;transition:.4s}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
     /* Plan Modal */
-    .plan-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: var(--backdrop); z-index: 50; }
-    .plan-modal.open { display: flex; }
-    .plan-modal-content { width: min(920px, 96vw); max-height: 86vh; overflow: hidden; background: white; border-radius: 1rem; box-shadow: 0 20px 60px rgba(0,0,0,0.25); display: flex; flex-direction: column; }
-    .dark .plan-modal-content{ background:#0f172a; color:#E5E7EB; }
-    .plan-modal-header{ display:flex; justify-content:space-between; align-items:center; padding: 0.85rem 1rem; border-bottom: 1px solid #e5e7eb; background: linear-gradient(135deg, var(--primary), var(--secondary)); color:#fff; }
-    .plan-modal-body{ padding: 1rem 1rem 0.5rem; overflow-y:auto; }
-    .close-button{ background: transparent; color: #fff; font-size: 1.75rem; line-height: 1; padding: 0 0.25rem; }
-    .skeleton{ display:block; height:1rem; width:100%; background: linear-gradient(90deg,#eee,#f5f5f5,#eee); background-size:200% 100%; animation: shimmer 1.2s infinite; border-radius:0.35rem; }
-    .dark .skeleton{ background: linear-gradient(90deg,#374151,#4b5563,#374151); }
-    @keyframes shimmer{ 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .plan-modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:var(--backdrop);z-index:50}
+    .plan-modal.open{display:flex}
+    .plan-modal-content{width:min(920px,96vw);max-height:86vh;overflow:hidden;background:#fff;border-radius:1rem;box-shadow:0 20px 60px rgba(0,0,0,.25);display:flex;flex-direction:column}
+    .dark .plan-modal-content{background:#0f172a;color:#E5E7EB}
+    .plan-modal-header{display:flex;justify-content:space-between;align-items:center;padding:.85rem 1rem;border-bottom:1px solid #e5e7eb;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff}
+    .plan-modal-body{padding:1rem 1rem .5rem;overflow-y:auto}
+    .close-button{background:transparent;color:#fff;font-size:1.75rem;line-height:1;padding:0 .25rem}
+    .skeleton{display:block;height:1rem;width:100%;background:linear-gradient(90deg,#eee,#f5f5f5,#eee);background-size:200% 100%;animation:shimmer 1.2s infinite;border-radius:.35rem}
+    .dark .skeleton{background:linear-gradient(90deg,#374151,#4b5563,#374151)}
+    @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-    .plan-actions{ display:flex; justify-content:flex-start; gap:0.5rem; padding: 0.85rem 1rem 1rem; border-top: 1px solid #e5e7eb; }
-    .btn{ padding: 0.6rem 1rem; border-radius: 0.6rem; font-weight:700; cursor:pointer; }
-    .btn-primary{ background: var(--accent); color:white; }
-    .btn-secondary{ background:#6B7280; color:white; }
+    .plan-actions{display:flex;gap:.5rem;padding:.85rem 1rem 1rem;border-top:1px solid #e5e7eb}
+    .btn{padding:.6rem 1rem;border-radius:.6rem;font-weight:700;cursor:pointer}
+    .btn-primary{background:var(--accent);color:#fff}
+    .btn-secondary{background:#6B7280;color:#fff}
 
-    .typewriter-text { font-size: 1.05rem; font-weight: 600; color: var(--primary); }
-    .dark .typewriter-text { color: var(--accent); }
+    .typewriter-text{font-size:1.05rem;font-weight:600;color:var(--primary)}
+    .dark .typewriter-text{color:var(--accent)}
 
-    /* Footer */
-    .footer{ text-align:center; padding: 0.75rem; font-size: 0.9rem; color:#6b7280; }
+    /* Section cards */
+    .section-card{border:1px solid #e5e7eb;border-radius:.75rem;overflow:hidden;margin-bottom:1rem}
+    .section-head{display:flex;justify-content:space-between;align-items:center;background:#f9fafb;padding:.6rem .8rem;font-weight:800}
+    .dark .section-head{background:#111827;color:#E5E7EB}
+    .section-body{padding:.8rem}
+
+    .footer{text-align:center;padding:.75rem;font-size:.9rem;color:#6b7280}
   </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
@@ -110,7 +72,7 @@
     <img src="https://placehold.co/150x150/ffffff/0D47A1?text=AI+Coach" alt="AI Coach Avatar" class="rounded-full mb-6 shadow-xl"/>
     <h1 class="text-4xl font-bold mb-2" id="welcomeTitle">مدربك الصحي الشخصي</h1>
     <p class="text-xl font-light text-white/90 mb-8" id="welcomeSubtitle">ابدأ رحلتك نحو الأفضل الآن</p>
-    <button id="startBtn" class="cta-btn" id="startButtonText">ابدأ المحادثة</button>
+    <button id="startBtn" class="cta-btn">ابدأ المحادثة</button>
   </div>
 
   <!-- Basic user data -->
@@ -165,7 +127,7 @@
         <button id="closePlanBtn" class="close-button" title="إغلاق" aria-label="إغلاق">×</button>
       </div>
       <div id="planOutput" class="plan-modal-body">
-        <!-- Progressive sections will stream here -->
+        <!-- Progressive placeholder -->
         <div class="mb-4">
           <p class="typewriter-text">جارٍ تحضير الخطة قسمًا قسمًا…</p>
           <span class="skeleton" style="height:12px;width:85%"></span>
@@ -184,35 +146,39 @@
 
   <script type="module">
     /* ==========================
-       State & i18n
+       Elements & State
     ===========================*/
-    const chatMessages = document.getElementById('chatMessages');
-    const userInput = document.getElementById('userInput');
-    const sendBtn = document.getElementById('sendBtn');
-    const startBtn = document.getElementById('startBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const welcomeScreen = document.getElementById('welcomeScreen');
-    const userDataScreen = document.getElementById('userDataScreen');
-    const chatContainer = document.getElementById('chatContainer');
-    const userNameInput = document.getElementById('userName');
-    const userAgeInput = document.getElementById('userAge');
-    const userCountryInput = document.getElementById('userCountry');
-    const btnTheme = document.getElementById('btnTheme');
-    const btnLang = document.getElementById('btnLang');
-    const plusBtn = document.getElementById('plusBtn');
-    const imageInput = document.getElementById('imageInput');
-    const planButtonArea = document.getElementById('planButtonArea');
-    const generatePlanBtn = document.getElementById('generatePlanBtn');
-    const planModal = document.getElementById('planModal');
-    const closePlanBtn = document.getElementById('closePlanBtn');
-    const planOutput = document.getElementById('planOutput');
-    const printBtn = document.getElementById('printBtn');
-    const expandAllBtn = document.getElementById('expandAllBtn');
+    const $ = id => document.getElementById(id);
+    const chatMessages = $('chatMessages');
+    const userInput = $('userInput');
+    const sendBtn = $('sendBtn');
+    const startBtn = $('startBtn');
+    const nextBtn = $('nextBtn');
+    const welcomeScreen = $('welcomeScreen');
+    const userDataScreen = $('userDataScreen');
+    const chatContainer = $('chatContainer');
+    const userNameInput = $('userName');
+    const userAgeInput = $('userAge');
+    const userCountryInput = $('userCountry');
+    const btnTheme = $('btnTheme');
+    const btnLang = $('btnLang');
+    const plusBtn = $('plusBtn');
+    const imageInput = $('imageInput');
+    const planButtonArea = $('planButtonArea');
+    const generatePlanBtn = $('generatePlanBtn');
+    const planModal = $('planModal');
+    const closePlanBtn = $('closePlanBtn');
+    const planOutput = $('planOutput');
+    const printBtn = $('printBtn');
+    const expandAllBtn = $('expandAllBtn');
 
     let userState = { step: 0, data: {} };
     let LANG = 'ar';
     let chatHistory = [];
 
+    /* ==========================
+       i18n
+    ===========================*/
     const i18n = {
       ar: {
         welcomeTitle: 'مدربك الصحي الشخصي',
@@ -220,146 +186,67 @@
         startButtonText: 'ابدأ المحادثة',
         userDataTitle: 'لنبدأ رحلتك',
         userDataSubtitle: 'أخبرنا عن نفسك لتبدأ',
-        namePlaceholder: 'اسمك',
-        agePlaceholder: 'عمرك',
-        countryPlaceholder: 'دولتك',
-        nextButtonText: 'التالي',
-        chatTitle: 'Coach AI',
-        inputPlaceholder: 'اكتب رسالتك...',
-        emptyFields: 'الرجاء إدخال اسمك وعمرك ودولتك للبدء.',
-        imageUpload: 'تم إرسال الصورة. المدرب بيحللها الآن...',
-        generationStart: 'تمام يا بطل، لحظات وهتكون خطتك جاهزة. أنا بجهزها قسم بقسم دلوقتي.',
-        generationDone: 'تم يا بطل! الخطة كاملة عندك. لو فيه أي تعديل أو سؤال، أنا موجود.',
-        initialPrompt: 'أهلاً يا {name}! معاك مصطفى الصافي – مدربك الصحي الذكي. هنتكلم ببساطة وبطريقة بشرية 100% علشان نصمملك خطة دقيقة ومخصصة ليك.',
-        planButtonText: 'احصل على خطتك الآن',
-        planButtonNote: 'يمكنك الاستمرار في الحديث إذا كانت لديك أي استفسارات أخرى.',
-        planPreparingInModal: 'تم، جاري تحضير الخطة في نافذة منبثقة فوق المحادثة.'
+        namePlaceholder: 'اسمك', agePlaceholder: 'عمرك', countryPlaceholder: 'دولتك', nextButtonText: 'التالي',
+        chatTitle: 'Coach AI', inputPlaceholder: 'اكتب رسالتك...',
+        emptyFields: 'الرجاء إدخال اسمك وعمرك ودولتك للبدء.', imageUpload: 'تم استلام الصورة.',
+        generationStart: 'جاري تجهيز الخطة… قسمًا قسمًا.', generationDone: 'الخطة جاهزة. لو محتاج تعديل، بلغني.',
+        initialPrompt: 'أهلاً يا {name}. هنشتغل خطوة بخطوة لغاية ما نطلع خطة دقيقة ومناسبة لك.',
+        planButtonText: 'احصل على خطتك الآن', planButtonNote: 'تقدر تكمل الحديث لو عندك أي استفسار.',
+        planPreparingInModal: 'جاري تحضير الخطة في نافذة فوق المحادثة.'
       },
       en: {
-        welcomeTitle: 'Your Personal Health Coach',
-        welcomeSubtitle: 'Start your journey to a better you now',
-        startButtonText: 'Start Chat',
-        userDataTitle: 'Let’s start your journey',
-        userDataSubtitle: 'Tell us about yourself to begin',
-        namePlaceholder: 'Your Name',
-        agePlaceholder: 'Your Age',
-        countryPlaceholder: 'Your Country',
-        nextButtonText: 'Next',
-        chatTitle: 'Coach AI',
-        inputPlaceholder: 'Type your message...',
-        emptyFields: 'Please enter your name, age, and country to get started.',
-        imageUpload: 'Image sent. The coach is analyzing it now...',
-        generationStart: "Okay! Your plan will be ready in moments. I'm preparing it section by section.",
-        generationDone: "Done! Your complete plan is ready. If you need changes, I'm here.",
-        initialPrompt: 'Hello {name}, this is your friendly coach Mustafa Elsafy. We will build a precise, human, fully-personalized plan for you.',
-        planButtonText: 'Get Your Plan Now',
-        planButtonNote: 'You can keep chatting if you have questions.',
-        planPreparingInModal: 'Working on your plan in a modal above the chat.'
+        welcomeTitle: 'Your Personal Health Coach', welcomeSubtitle: 'Start your journey to a better you now', startButtonText: 'Start Chat',
+        userDataTitle: 'Let’s start your journey', userDataSubtitle: 'Tell us about yourself to begin', namePlaceholder: 'Your Name', agePlaceholder: 'Your Age', countryPlaceholder: 'Your Country', nextButtonText: 'Next',
+        chatTitle: 'Coach AI', inputPlaceholder: 'Type your message...', emptyFields: 'Please enter your name, age, and country to get started.', imageUpload: 'Image received.',
+        generationStart: 'Preparing your plan… section by section.', generationDone: 'Plan is ready. If you need changes, tell me.',
+        initialPrompt: 'Hi {name}. We’ll work step by step to build a precise plan that fits you.',
+        planButtonText: 'Get Your Plan Now', planButtonNote: 'You can keep chatting if you have questions.', planPreparingInModal: 'Preparing the plan in a modal above the chat.'
       }
     };
-
-    function setLang(lang) {
-      LANG = lang;
-      document.documentElement.lang = lang;
-      document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+    function setLang(lang){
+      LANG = lang; document.documentElement.lang = lang; document.documentElement.dir = lang==='ar'?'rtl':'ltr';
       const L = i18n[LANG];
-      (document.getElementById('welcomeTitle')||{}).textContent = L.welcomeTitle;
-      (document.getElementById('welcomeSubtitle')||{}).textContent = L.welcomeSubtitle;
-      (document.getElementById('startButtonText')||{}).textContent = L.startButtonText;
-      (document.getElementById('userDataTitle')||{}).textContent = L.userDataTitle;
-      (document.getElementById('userDataSubtitle')||{}).textContent = L.userDataSubtitle;
-      (document.getElementById('userName')||{}).placeholder = L.namePlaceholder;
-      (document.getElementById('userAge')||{}).placeholder = L.agePlaceholder;
-      (document.getElementById('userCountry')||{}).placeholder = L.countryPlaceholder;
-      (document.getElementById('nextBtn')||{}).textContent = L.nextButtonText;
-      (document.getElementById('chatTitle')||{}).textContent = L.chatTitle;
-      (document.getElementById('userInput')||{}).placeholder = L.inputPlaceholder;
-      (document.getElementById('generatePlanBtn')||{}).textContent = L.planButtonText;
-      (document.getElementById('planButtonNote')||{}).textContent = L.planButtonNote;
-      btnLang.textContent = lang === 'ar' ? 'AR' : 'EN';
-    }
-
-    function setTheme() {
-      document.documentElement.classList.toggle('dark');
-      const isDarkMode = document.documentElement.classList.contains('dark');
-      btnTheme.textContent = isDarkMode ? '🌙' : '☀️';
-      localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
-    }
-
-    function toast(msg) {
-      const t = document.createElement('div');
-      t.className = 'toast'; t.textContent = msg; document.body.appendChild(t);
-      setTimeout(()=> t.style.opacity = 1, 10);
-      setTimeout(()=> { t.style.opacity = 0; setTimeout(()=> t.remove(), 400); }, 2600);
-    }
-
-    function displayMessage(message, sender) {
-      const bubble = document.createElement('div');
-      bubble.classList.add('message-bubble', sender);
-      bubble.innerHTML = marked.parse(message);
-      chatMessages.appendChild(bubble);
-      chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
-
-    function isDataComplete() {
-      const required = ['name','age','country'];
-      return required.every(k => !!userState.data[k]);
-    }
-
-    function togglePlanCTA() {
-      const isReady = isDataComplete();
-      planButtonArea.classList.toggle('hidden', !isReady);
-      generatePlanBtn.disabled = !isReady;
+      $('welcomeTitle').textContent = L.welcomeTitle; $('welcomeSubtitle').textContent = L.welcomeSubtitle; $('userDataTitle').textContent = L.userDataTitle; $('userDataSubtitle').textContent = L.userDataSubtitle;
+      $('userName').placeholder = L.namePlaceholder; $('userAge').placeholder = L.agePlaceholder; $('userCountry').placeholder = L.countryPlaceholder; $('nextBtn').textContent = L.nextButtonText;
+      $('chatTitle').textContent = L.chatTitle; $('userInput').placeholder = L.inputPlaceholder; $('generatePlanBtn').textContent = L.planButtonText; $('planButtonNote').textContent = L.planButtonNote;
+      btnLang.textContent = lang==='ar' ? 'AR' : 'EN';
     }
 
     /* ==========================
-       AI Orchestration
+       Utilities
+    ===========================*/
+    function setTheme(){ document.documentElement.classList.toggle('dark'); btnTheme.textContent = document.documentElement.classList.contains('dark') ? '🌙' : '☀️'; localStorage.setItem('theme', document.documentElement.classList.contains('dark') ? 'dark' : 'light') }
+    function toast(msg){ const t=document.createElement('div'); t.className='toast'; t.textContent=msg; document.body.appendChild(t); setTimeout(()=>t.style.opacity=1,10); setTimeout(()=>{t.style.opacity=0; setTimeout(()=>t.remove(),400)},2600) }
+    function displayMessage(message, sender){ const b=document.createElement('div'); b.classList.add('message-bubble', sender); b.innerHTML = marked.parse(message); chatMessages.appendChild(b); chatMessages.scrollTop = chatMessages.scrollHeight }
+    function isDataComplete(){ return ['name','age','country'].every(k => !!userState.data[k]) }
+    function togglePlanCTA(){ const ready = isDataComplete(); planButtonArea.classList.toggle('hidden', !ready); generatePlanBtn.disabled = !ready }
+
+    /* ==========================
+       AI Prompts (Natural tone, no AI mentions)
     ===========================*/
     function buildCoachSystemPrompt(){
       return `
-اكتب ردود دردشة طبيعية ومحترفة، دون مبالغة أو مديح زائد، ودون ذكر أنك نظام أو ذكاء اصطناعي. لا تستخدم عبارات مثل: بطريقة بشرية/أنا نموذج/روبوت.
-\nالدور: مدرب صحي وأخصائي تغذية وطبيب.
-الهدف: جمع البيانات تدريجيًا بتسلسل منطقي، وتقديم تعليقات مختصرة عند وجود أمراض/إصابات/أدوية، ثم تلخيص ما جُمِع وطلب تأكيد قبل بناء الخطة.
-\nاجمع المعلومات التالية على مراحل (سؤال أو سؤالان كحد أقصى في كل رسالة):
-- الهدف الأساسي (خسارة دهون/بناء عضل/صحة عامة/قوة).
-- العمر، الجنس، الطول، الوزن.
-- قياسات اختيارية (محيط خصر أو نسبة دهون إن وُجدت).
-- أيام التمرين بالأسبوع، مدة الحصة، المكان والمعدات.
-- التغذية: عدد الوجبات، المطبخ المفضل، وقت التحضير، الميزانية.
-- حساسيات/أطعمة ممنوعة، تحديات سابقة.
-- نمط حياة: طبيعة العمل/الخطوات/النوم/الضغط/الكافيين.
-- الإصابات/الأمراض/الأدوية/المكملات.
-- مجموعات عضلية تحتاج تركيز.
-\نالأسلوب: مهني، واضح، مباشر، أسئلة قصيرة. عند ذكر مشكلة صحية جدية، انصح بمراجعة الطبيب دون تهويل.
-`;}
+اكتب ردودًا طبيعية ومهنية دون مبالغة أو عبارات إنشائية، ولا تذكر أنظمة أو روبوتات.
+الدور: مدرب صحي وأخصائي تغذية وطبيب.
+المهمة: جمع البيانات تدريجيًا (حتى سؤالين في كل رسالة)، إبداء ملاحظات مختصرة عند ذكر أمراض/أدوية/إصابات، ثم تلخيص وطلب تأكيد قبل بناء الخطة.
+`}
 
     function buildPlanJSONPrompt(){
-      return `
-أعد خطة مخصصة بصيغة JSON فقط (بدون أي نص إضافي أو تعليمات أو شيفرات Markdown). استخدم المفاتيح التالية حصراً:
+      return `أعِد فقط JSON صالحًا بدون أي نص آخر أو أسوار كود.
 {
   "analysis": string | string[],
-  "allowed": {"allowed": string[] | string, "forbidden": string[] | string} | string,
-  "nutrition": [
-    {"day": 1, "meals": [{"name": string, "items": string[] | string, "kcal": number | string, "protein_g": number | string}]}
-  ],
-  "training": [
-    {"day": 1, "session": [{"exercise": string, "sets": number | string, "reps": number | string, "notes": string}]}
-  ],
-  "supplements": string | string[],
-  "safety": string | string[],
+  "allowed": { "allowed": string[], "forbidden": string[] } | string,
+  "nutrition": [ { "day": number, "meals": [ { "name": string, "items": string[], "kcal": number, "protein_g": number } ] } ],
+  "training": [ { "day": number, "session": [ { "exercise": string, "sets": number, "reps": string, "notes": string } ], "duration_min": number, "location": "gym"|"home", "equipment": string[] } ],
+  "supplements": string | [ { "name": string, "dose": string, "timing": string, "notes": string } ],
+  "safety": string[] | string,
   "closing": string
 }
-- اكتب المحتوى بالعربية.
-- اجعل القوائم عملية ومباشرة.
-- لا تضع أي نص خارج JSON.
-\nالمحادثة:
-${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
-`;}
+المحادثة:
+${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}`}
 
-function buildPlanMarkdownPrompt(){
-      return `
-اكتب خطة مخصصة 100% بصيغة Markdown دون أي تلميح لوجود ذكاء اصطناعي. كن مهنيًا ومباشرًا.
-\nالتزم بالعناوين التالية حرفيًا (H2):
+    function buildPlanMDPrompt(){
+      return `اكتب خطة Markdown واضحة بالعناوين التالية فقط:
 ## التحليل
 ## المسموح والممنوع
 ## التغذية (7 أيام)
@@ -367,85 +254,51 @@ function buildPlanMarkdownPrompt(){
 ## المكملات
 ## السلامة
 ## الختام
-\nالتفاصيل:
-- التغذية: 3 وجبات يوميًا × 7 أيام، مقادير واضحة وتوزيع سعرات تقريبي، بدائل سريعة اقتصادية عند اللزوم.
-- التدريب: وفق معطيات المستخدم (جيم/منزل)، مجموعات/تكرارات، ملاحظات أمان وتقدّم بسيط للأسبوع التالي.
-- المكملات: فقط إن لزم، الجرعات وموانع الاستخدام والتداخلات.
-- السلامة: تنبيهات حسب الأمراض/الأدوية/الإصابات.
-\nالمحادثة:
-${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
-`;}: ${m.parts[0].text}`).join('\n')}
-`;
-    }
+
+اعتمد على المحادثة التالية:
+${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}`}
 
     async function callAI(prompt){
-      try{
-        const res = await fetch('/.netlify/functions/gemini-proxy', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ prompt }) });
-        const data = await res.json();
-        return data.text || 'تعذّر الحصول على رد.';
-      }catch(e){ console.error(e); return 'عذراً، حدث خطأ أثناء التواصل. حاول مرة أخرى.'; }
-    }
-
-    async function processAIResponse(message){
-      lockInputs(true);
-      const coachPrompt = `${buildCoachSystemPrompt()}\n\nسجل المحادثة:\n${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}\n\nرسالة المستخدم الأخيرة: ${message}`;
-      const response = await callAI(coachPrompt);
-      chatHistory.push({ role:'assistant', parts:[{text: response}] });
-      displayMessage(response, 'ai');
-      lockInputs(false);
-      togglePlanCTA();
+      try{ const res = await fetch('/.netlify/functions/gemini-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt})}); const data = await res.json(); return data.text || '' }catch(e){ console.error(e); return '' }
     }
 
     /* ==========================
-       Input enrichment & safety notes
+       Message analysis & triggers
     ===========================*/
-    const MED_FLAGS = /(سكري|ضغط|قلب|كورونا|سرطان|حامل|حمل|رضاعة|غدة|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|مضاد|كورتيزون|مضادات|ضغط الدم|سكر الدم)/i;
-
-    function analyzeUserMessage(msg){
-      const flags = MED_FLAGS.test(msg);
-      if(flags){
-        displayMessage('👀 لاحظت إنك ذكرت حالة صحية/دواء. هنراعي ده في الخطة ونضيف احتياطات خاصة. لو في تفاصيل دقيقة (اسم الدواء/الجرعة/التشخيص) اكتبها ليا.', 'ai');
-      }
-    }
+    const MED_FLAGS = /(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i;
+    function isPlanRequest(msg){ return /(الخطة|خطة|خطه|اعمل\s*خطة|جهز\s*الخطة|عايز\s*الخطة|generate\s*plan|my\s*plan)/i.test(msg) }
+    function analyzeUserMessage(msg){ if(MED_FLAGS.test(msg)){ displayMessage('تم تسجيل ملاحظة صحية. سنأخذها في الاعتبار ونضيف احتياطات مناسبة. لو فيه تفاصيل إضافية اكتبها.', 'ai') } }
 
     /* ==========================
-       Modal plan generation (progressive)
+       Modal helpers
     ===========================*/
-    function openPlanModal(){
-      planModal.classList.add('open');
-      planModal.setAttribute('aria-hidden','false');
-    }
-    function closePlanModal(){
-      planModal.classList.remove('open');
-      planModal.setAttribute('aria-hidden','true');
+    function openPlanModal(){ planModal.classList.add('open'); planModal.setAttribute('aria-hidden','false') }
+    function closePlanModal(){ planModal.classList.remove('open'); planModal.setAttribute('aria-hidden','true') }
+    function lockInputs(state){ userInput.disabled = state; sendBtn.disabled = state; plusBtn.disabled = state; generatePlanBtn.disabled = state && !isDataComplete() }
+
+    function sectionBlock(title, html=''){
+      const s=document.createElement('section'); s.className='section-card';
+      const h=document.createElement('div'); h.className='section-head'; h.innerHTML=`<span>${title}</span><span aria-hidden="true">−</span>`;
+      const b=document.createElement('div'); b.className='section-body'; b.innerHTML=html||'<span class="skeleton" style="height:12px;width:90%"></span>';
+      h.addEventListener('click',()=>{ const hidden=b.style.display==='none'; b.style.display=hidden?'block':'none'; h.lastElementChild.textContent=hidden?'−':'＋' });
+      s.appendChild(h); s.appendChild(b); return {wrapper:s, body:b}
     }
 
-    function lockInputs(state){
-      userInput.disabled = state; sendBtn.disabled = state; plusBtn.disabled = state; generatePlanBtn.disabled = state && !isDataComplete();
-    }
+    const toMD = v => Array.isArray(v) ? v.map(x=>`- ${x}`).join('\n') : (typeof v==='string' ? v : JSON.stringify(v,null,2));
+    function buildNutritionMD(days){ if(!Array.isArray(days)) return toMD(days); return days.map((d,i)=>{ const meals=(d.meals||[]).map(m=>`- **${m.name||'وجبة'}**: ${(m.items||[]).join(', ')}${m.kcal?` — ${m.kcal} ك.س`:''}${m.protein_g?` | بروتين: ${m.protein_g}غ`:''}`).join('\n'); return `### اليوم ${d.day||i+1}\n${meals}` }).join('\n\n') }
+    function buildTrainingMD(days){ if(!Array.isArray(days)) return toMD(days); return days.map((d,i)=>{ const exs=(d.session||[]).map(ex=>`- **${ex.exercise||'تمرين'}** — ${ex.sets||''}×${ex.reps||''}${ex.notes?` (${ex.notes})`:''}`).join('\n'); const meta=[]; if(d.duration_min) meta.push(`المدة: ${d.duration_min} د`); if(d.location) meta.push(`المكان: ${d.location}`); return `### اليوم ${d.day||i+1}${meta.length?` — ${meta.join(' | ')}`:''}\n${exs}` }).join('\n\n') }
+    function buildSuppsMD(s){ if(Array.isArray(s)) return s.map(x=>`- **${x.name}** — ${x.dose}${x.timing?` (${x.timing})`:''}${x.notes?` — ${x.notes}`:''}`).join('\n'); return toMD(s) }
 
-    function sectionBlock(title, contentHTML = '', collapsed = false){
-      const wrapper = document.createElement('section');
-      wrapper.className = 'mb-4 border border-gray-200 rounded-lg overflow-hidden dark:border-slate-700';
-      const hdr = document.createElement('button');
-      hdr.className = 'w-full text-right font-bold px-3 py-2 bg-gray-50 dark:bg-slate-800 flex items-center justify-between';
-      hdr.innerHTML = `<span>${title}</span><span aria-hidden="true">${collapsed ? '＋' : '−'}</span>`;
-      const body = document.createElement('div');
-      body.className = 'p-3';
-      body.innerHTML = contentHTML || '<span class="skeleton" style="height:12px;width:90%"></span><span class="skeleton mt-2" style="height:12px;width:80%"></span>';
-      if(collapsed) body.style.display = 'none';
-      hdr.addEventListener('click', ()=>{
-        const hidden = body.style.display === 'none';
-        body.style.display = hidden ? 'block' : 'none';
-        hdr.lastElementChild.textContent = hidden ? '−' : '＋';
-      });
-      wrapper.appendChild(hdr); wrapper.appendChild(body);
-      return { wrapper, body };
+    async function fetchJSONPlan(){
+      let raw = await callAI(buildPlanJSONPrompt()); if(!raw) return null; let txt = raw.trim();
+      // strip code fences if present
+      if(txt.startsWith('```')){ txt = txt.replace(/^```json/i,'').replace(/^```/i,''); if(txt.endsWith('```')) txt = txt.slice(0,-3); txt = txt.trim(); }
+      try{ return JSON.parse(txt) }catch(_){ const s=txt.indexOf('{'); const e=txt.lastIndexOf('}'); if(s>-1 && e>-1 && e>s){ try{ return JSON.parse(txt.slice(s,e+1)) }catch(__){} } }
+      return null;
     }
 
     async function generatePlanProgressive(){
-      openPlanModal();
-      planOutput.innerHTML = '';
+      openPlanModal(); planOutput.innerHTML='';
 
       const sections = [
         { key:'analysis', title:'التحليل' },
@@ -454,218 +307,71 @@ ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
         { key:'training', title:'التدريب (7 أيام)' },
         { key:'supps', title:'المكملات' },
         { key:'safety', title:'السلامة' },
-        { key:'closing', title:'الختام' },
+        { key:'closing', title:'الختام' }
       ];
+      const blocks = sections.map(s=>sectionBlock(s.title)); blocks.forEach(b=>planOutput.appendChild(b.wrapper));
+      const delay = ms => new Promise(r=>setTimeout(r,ms));
 
-      const blocks = sections.map(s => sectionBlock(s.title));
-      blocks.forEach(b => planOutput.appendChild(b.wrapper));
-
-      const delay = ms => new Promise(r => setTimeout(r, ms));
-
-      // ===== JSON First (structured plan) =====
-      async function fetchJSONPlan(retry=0){
-        let raw = await callAI(buildPlanJSONPrompt());
-        if(typeof raw !== 'string') return null;
-        let clean = raw.trim();
-        // إزالة أسوار الكود إن وُجدت
-        if (clean.startsWith('```')){
-          clean = clean.replace(/^```json/i,'').replace(/^```/i,'');
-          if (clean.endsWith('```')) clean = clean.slice(0, -3);
-          clean = clean.trim();
-        }
-        try { return JSON.parse(clean); } catch(e){}
-        const start = clean.indexOf('{');
-        const end = clean.lastIndexOf('}');
-        if(start !== -1 && end !== -1 && end > start){
-          try { return JSON.parse(clean.slice(start, end+1)); } catch(e){}
-        }
-        if(retry < 1) return await fetchJSONPlan(retry+1);
-        return null;
-      }
-
+      // 1) Try JSON plan for reliability
       const plan = await fetchJSONPlan();
-      if(!plan){
-        for (let i=0;i<sections.length;i++){ await delay(i===0?250:150); blocks[i].body.innerHTML = '<p>—</p>'; }
-        blocks[0].body.innerHTML = '<p class="text-red-600">تعذر توليد الخطة. حاول مرة أخرى.</p>';
-        return;
+      if(plan){
+        const allowedMD = (()=>{ if(typeof plan.allowed==='string') return plan.allowed; if(plan.allowed&&(plan.allowed.allowed||plan.allowed.forbidden)){ const a=toMD(plan.allowed.allowed||[]); const f=toMD(plan.allowed.forbidden||[]); return `**مسموح:**\n${a}\n\n**ممنوع:**\n${f}` } return toMD(plan.allowed||'') })();
+        const mdMap = {
+          analysis: toMD(plan.analysis||''),
+          allowed: allowedMD,
+          nutrition: buildNutritionMD(plan.nutrition||[]),
+          training: buildTrainingMD(plan.training||[]),
+          supps: buildSuppsMD(plan.supplements||''),
+          safety: toMD(plan.safety||''),
+          closing: toMD(plan.closing||'')
+        };
+        for(let i=0;i<sections.length;i++){ await delay(i===0?250:180); const k=sections[i].key; const b=blocks[i].body; const content=(mdMap[k]||'').trim()||'—'; b.innerHTML = marked.parse(content) }
+        return; // done
       }
 
-      const toMD = v => Array.isArray(v) ? v.map(x=>`- ${x}`).join('
-') : (typeof v==='string'? v : JSON.stringify(v, null, 2));
-
-      const buildNutritionMD = (arr)=>{
-        if(!Array.isArray(arr)) return toMD(arr);
-        return arr.map((d,i)=>{
-          const meals = Array.isArray(d.meals)? d.meals : [];
-          const lines = meals.map(m=>{
-            const items = Array.isArray(m.items)? m.items.join(', ') : (m.items||'');
-            const kcal = m.kcal? ` — ${m.kcal} ك.س` : '';
-            const pr = m.protein_g? ` | بروتين: ${m.protein_g}غ` : '';
-            return `- **${m.name||'وجبة'}**: ${items}${kcal}${pr}`;
-          }).join('
-');
-          return `### اليوم ${d.day||i+1}
-${lines}`;
-        }).join('
-
-');
-      };
-
-      const buildTrainingMD = (arr)=>{
-        if(!Array.isArray(arr)) return toMD(arr);
-        return arr.map((d,i)=>{
-          const sess = Array.isArray(d.session)? d.session : [];
-          const lines = sess.map(ex=>`- **${ex.exercise||'تمرين'}** — ${ex.sets||''}×${ex.reps||''}${ex.notes?` (${ex.notes})`:''}`).join('
-');
-          return `### اليوم ${d.day||i+1}
-${lines}`;
-        }).join('
-
-');
-      };
-
-      const allowedMD = (()=>{
-        if(typeof plan.allowed === 'string') return plan.allowed;
-        if(plan.allowed && (plan.allowed.allowed || plan.allowed.forbidden)){
-          const a = toMD(plan.allowed.allowed||[]);
-          const f = toMD(plan.allowed.forbidden||[]);
-          return `**مسموح:**
-${a}
-
-**ممنوع:**
-${f}`;
-        }
-        return toMD(plan.allowed||'');
-      })();
-
-      const mdMap = {
-        analysis: toMD(plan.analysis||''),
-        allowed: allowedMD,
-        nutrition: buildNutritionMD(plan.nutrition||[]),
-        training: buildTrainingMD(plan.training||[]),
-        supps: toMD(plan.supplements||''),
-        safety: toMD(plan.safety||''),
-        closing: toMD(plan.closing||'')
-      };
-
-      for (let i=0;i<sections.length;i++){
-        await delay(i===0?250:200);
-        const k = sections[i].key; const b = blocks[i].body;
-        const content = mdMap[k] && String(mdMap[k]).trim().length ? mdMap[k] : '—';
-        b.innerHTML = marked.parse(content);
-      }
-    },
-        { key:'allowed', title:'المسموح والممنوع' },
-        { key:'nutrition', title:'التغذية (7 أيام)' },
-        { key:'training', title:'التدريب (7 أيام)' },
-        { key:'supps', title:'المكملات' },
-        { key:'safety', title:'السلامة' },
-        { key:'closing', title:'الختام' },
-      ];
-
-      const blocks = sections.map(s => sectionBlock(s.title));
-      blocks.forEach(b => planOutput.appendChild(b.wrapper));
-
-      // Single full prompt for accuracy; then split into sections client-side
-      const full = await callAI(buildPlanPrompt());
-      if(!full || typeof full !== 'string'){ planOutput.innerHTML += '<p class="text-red-600">تعذر توليد الخطة. حاول مرة أخرى.</p>'; return; }
-
-      // Render progressively (simulate stream by slicing headings)
-      const md = full;
+      // 2) Fallback: Markdown split with tolerant regex
+      const mdFull = await callAI(buildPlanMDPrompt());
+      if(!mdFull){ for(let i=0;i<blocks.length;i++){ blocks[i].body.innerHTML = i===0 ? '<p class="text-red-600">تعذر توليد الخطة الآن.</p>' : '<p>—</p>'; } return }
 
       const map = {
-        analysis: /##\s*التحليل([\s\S]*?)(?=##\s*المسموح والممنوع|$)/,
-        allowed: /##\s*المسموح والممنوع([\s\S]*?)(?=##\s*التغذية|$)/,
-        nutrition: /##\s*التغذية\s*\(7\s*أيام\)([\s\S]*?)(?=##\s*التدريب|$)/,
-        training: /##\s*التدريب\s*\(7\s*أيام\)([\s\S]*?)(?=##\s*المكملات|$)/,
-        supps: /##\s*المكملات([\s\S]*?)(?=##\s*السلامة|$)/,
-        safety: /##\s*السلامة([\s\S]*?)(?=##\s*الختام|$)/,
-        closing: /##\s*الختام([\s\S]*$)/,
+        analysis: /##\s*التحليل\b([\s\S]*?)(?=##\s*(?:المسموح\s*و?\s*الممنوع)|$)/,
+        allowed: /##\s*المسموح\s*و?\s*الممنوع\b([\s\S]*?)(?=##\s*(?:التغذية|التدريب|المكملات|السلامة|الختام)|$)/,
+        nutrition: /##\s*التغذية\s*(?:[-–]\s*)?(?:\(\s*7\s*أيام\s*\)|7\s*أيام)?\b([\s\S]*?)(?=##\s*(?:التدريب|المكملات|السلامة|الختام)|$)/,
+        training: /##\s*التدريب\s*(?:[-–]\s*)?(?:\(\s*7\s*أيام\s*\)|7\s*أيام)?\b([\s\S]*?)(?=##\s*(?:المكملات|السلامة|الختام)|$)/,
+        supps: /##\s*المكملات\b([\s\S]*?)(?=##\s*(?:السلامة|الختام)|$)/,
+        safety: /##\s*السلامة\b([\s\S]*?)(?=##\s*الختام|$)/,
+        closing: /##\s*الختام\b([\s\S]*$)/
       };
 
-      const delay = ms => new Promise(r => setTimeout(r, ms));
-
-      for (let i=0; i<sections.length; i++){
-        const k = sections[i].key; const b = blocks[i].body; const match = md.match(map[k]);
-        await delay(i===0?300:250); // snappy staged reveal
-        b.innerHTML = match ? marked.parse(match[1].trim()) : '<p>—</p>';
+      let matched = 0;
+      for(let i=0;i<sections.length;i++){
+        const k = sections[i].key; const b = blocks[i].body; const m = mdFull.match(map[k]); await delay(i===0?250:180);
+        if(m && m[1] && m[1].trim()){ matched++; b.innerHTML = marked.parse(m[1].trim()) } else { b.innerHTML = '<p>—</p>' }
       }
+      if(!matched){ blocks[0].body.innerHTML = marked.parse(mdFull) }
     }
 
     /* ==========================
        Events
     ===========================*/
-    document.addEventListener('DOMContentLoaded', ()=>{
-      startBtn.addEventListener('click', ()=>{ welcomeScreen.classList.add('hidden'); userDataScreen.classList.remove('hidden'); setLang(LANG); });
+    document.addEventListener('DOMContentLoaded',()=>{
+      startBtn.addEventListener('click',()=>{ welcomeScreen.classList.add('hidden'); userDataScreen.classList.remove('hidden'); setLang(LANG) })
+      nextBtn.addEventListener('click',()=>{ const name=(userNameInput.value||'').trim(); const age=(userAgeInput.value||'').trim(); const country=(userCountryInput.value||'').trim(); if(!name||!age||!country){ toast(i18n[LANG].emptyFields); return } userState.data = { ...userState.data, name, age, country }; userDataScreen.classList.add('hidden'); chatContainer.classList.remove('hidden'); const welcomeMsg = i18n[LANG].initialPrompt.replace('{name}',name); chatHistory.push({role:'assistant',parts:[{text:welcomeMsg}]}); displayMessage(welcomeMsg,'ai'); togglePlanCTA() })
 
-      nextBtn.addEventListener('click', ()=>{
-        const name = (userNameInput.value||'').trim();
-        const age = (userAgeInput.value||'').trim();
-        const country = (userCountryInput.value||'').trim();
-        if(!name || !age || !country){ toast(i18n[LANG].emptyFields); return; }
-        userState.data = { ...userState.data, name, age, country };
-        userDataScreen.classList.add('hidden'); chatContainer.classList.remove('hidden');
-        const welcomeMsg = i18n[LANG].initialPrompt.replace('{name}', name);
-        chatHistory.push({ role:'assistant', parts:[{text: welcomeMsg}] });
-        displayMessage(welcomeMsg, 'ai');
-        togglePlanCTA();
-      });
+      btnTheme.addEventListener('click', setTheme); btnLang.addEventListener('click', ()=> setLang(LANG==='ar' ? 'en' : 'ar'))
+      plusBtn.addEventListener('click', ()=> imageInput.click()); imageInput.addEventListener('change', e=>{ const f=e.target.files[0]; if(!f) return; const r=new FileReader(); r.onload = ev => { displayMessage(`<img src="${ev.target.result}" class="max-w-[180px] rounded-lg my-2" alt="uploaded"/>`,'user'); toast(i18n[LANG].imageUpload) }; r.readAsDataURL(f) })
 
-      btnTheme.addEventListener('click', setTheme);
-      btnLang.addEventListener('click', ()=> setLang(LANG==='ar' ? 'en' : 'ar'));
+      async function processAIResponse(message){ lockInputs(true); const coachPrompt = `${buildCoachSystemPrompt()}\n\nسجل المحادثة:\n${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}\n\nرسالة المستخدم الأخيرة: ${message}`; const response = await callAI(coachPrompt); chatHistory.push({role:'assistant',parts:[{text:response}]}); displayMessage(response||'…','ai'); lockInputs(false); togglePlanCTA() }
 
-      plusBtn.addEventListener('click', ()=> imageInput.click());
-      imageInput.addEventListener('change', (e)=>{
-        const file = e.target.files[0]; if(!file) return;
-        const reader = new FileReader();
-        reader.onload = ev => {
-          const img = `<img src="${ev.target.result}" class="max-w-[180px] rounded-lg my-2" alt="uploaded"/>`;
-          displayMessage(img, 'user');
-          toast(i18n[LANG].imageUpload);
-        };
-        reader.readAsDataURL(file);
-      });
+      function sendMessage(){ const message=(userInput.value||'').trim(); if(!message) return; displayMessage(message,'user'); chatHistory.push({role:'user',parts:[{text:message}]}); analyzeUserMessage(message); if(isPlanRequest(message)){ displayMessage(i18n[LANG].planPreparingInModal,'ai'); generatePlanProgressive(); userInput.value=''; return } processAIResponse(message); userInput.value='' }
+      sendBtn.addEventListener('click', sendMessage); userInput.addEventListener('keypress', e=>{ if(e.key==='Enter') sendMessage() })
 
-      function sendMessage(){
-        const message = (userInput.value||'').trim(); if(!message) return;
-        displayMessage(message, 'user'); chatHistory.push({ role:'user', parts:[{text: message}] });
-        analyzeUserMessage(message);
-        if (/(الخطة|خطة|خطه|اعمل\s*خطة|جهز\s*الخطة|عايز\s*الخطة|generate\s*plan|my\s*plan)/i.test(message)){
-          displayMessage(i18n[LANG].planPreparingInModal, 'ai');
-          generatePlanProgressive();
-          userInput.value = '';
-          return;
-        }
-        processAIResponse(message);
-        userInput.value = '';
-      }] });
-        analyzeUserMessage(message);
-        processAIResponse(message);
-        userInput.value = '';
-      }
-      sendBtn.addEventListener('click', sendMessage);
-      userInput.addEventListener('keypress', e => { if(e.key==='Enter'){ sendMessage(); }});
+      generatePlanBtn.addEventListener('click', async()=>{ displayMessage(i18n[LANG].generationStart,'ai'); await generatePlanProgressive(); displayMessage(i18n[LANG].generationDone,'ai') })
+      closePlanBtn.addEventListener('click', ()=> closePlanModal()); planModal.addEventListener('click', e=>{ if(e.target===planModal) closePlanModal() })
+      printBtn.addEventListener('click', ()=> window.print()); expandAllBtn.addEventListener('click', ()=>{ planOutput.querySelectorAll('.section-body').forEach(d=>d.style.display='block'); planOutput.querySelectorAll('.section-head span:last-child').forEach(ic=>ic.textContent='−') })
 
-      generatePlanBtn.addEventListener('click', async ()=>{
-        // Confirm user has validated data via a brief summary request first
-        displayMessage(i18n[LANG].generationStart, 'ai');
-        await generatePlanProgressive();
-        displayMessage(i18n[LANG].generationDone, 'ai');
-      });
-
-      closePlanBtn.addEventListener('click', ()=> closePlanModal());
-      planModal.addEventListener('click', (e)=>{ if(e.target === planModal) closePlanModal(); });
-      printBtn.addEventListener('click', ()=> window.print());
-      expandAllBtn.addEventListener('click', ()=>{
-        planOutput.querySelectorAll('section > button + div').forEach(d => d.style.display='block');
-        planOutput.querySelectorAll('section > button span:last-child').forEach(ic => ic.textContent='−');
-      });
-
-      // Theme restore
-      const savedTheme = localStorage.getItem('theme');
-      if(savedTheme === 'dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent = '🌙'; }
-      setLang('ar');
-    });
+      const savedTheme = localStorage.getItem('theme'); if(savedTheme==='dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent='🌙' } setLang('ar')
+    })
   </script>
 </body>
 </html>
