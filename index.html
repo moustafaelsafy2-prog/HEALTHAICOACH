@@ -127,7 +127,7 @@
     </div>
 
     <div class="input-area" id="inputArea">
-      <input type="text" id="userInput" placeholder="اكتب رسالتك..." dir="rtl"
+      <input type="text" id="userInput" placeholder="اكتب رسالتك..." dir="rtl" 
              autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
       <input type="file" id="imageInput" accept="image/*" class="hidden" />
       <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة">➕</button>
@@ -194,8 +194,7 @@
 
     let userState = { step: 0, data: {} };
     let LANG = 'ar';
-    let chatHistory = []; // {role:'user'|'assistant', parts:[{text}]}
-    let busy = false; // prevent double sends
+    let chatHistory = [];
 
     /* ===== i18n ===== */
     const i18n = {
@@ -235,41 +234,40 @@
     function displayMessage(message, sender){ const b=document.createElement('div'); b.classList.add('message-bubble', sender); b.innerHTML = marked.parse(message); chatMessages.appendChild(b); chatMessages.scrollTop = chatMessages.scrollHeight; return b }
     function isDataComplete(){ return ['name','age','country'].every(k => !!userState.data[k]) }
     function togglePlanCTA(){ const ready = isDataComplete(); planButtonArea.classList.toggle('hidden', !ready); generatePlanBtn.disabled = !ready }
-
     function showTyping(sender='ai'){ const b=document.createElement('div'); b.classList.add('message-bubble', sender); b.innerHTML = `<span class="typing"><span>${i18n[LANG].typing}</span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>`; chatMessages.appendChild(b); chatMessages.scrollTop=chatMessages.scrollHeight; return b }
     function removeNode(n){ if(n && n.parentNode) n.parentNode.removeChild(n) }
 
-    /* ===== AI helpers ===== */
+    /* ===== AI Prompts ===== */
     function buildCoachSystemPrompt(){ return `
 اكتب ردود محادثة قصيرة، دقيقة، ومحترفة.
 لا ثناء زائد، ولا ذكر لتقنيات أو روبوتات.
 الدور: خبير عالمي في التدريب والتغذية.
 - اجمع البيانات بسؤالين كحد أقصى في كل مرة.
 - لخص ما جُمِع واطلب تأكيدًا قبل أي توصية كبيرة.
-- عند وجود أمراض/أدوية/إصابات، قدّم احتياطات عملية.
+- عند وجود أمراض/أدوية/إصابات، قدم احتياطات عملية.
 - تحدث ببساطة وبأسلوب إنساني.
 ` }
-    function buildImagePrompt(){ return `حلّل الصورة في 2-4 أسطر: 1) ما الذي تراه؟ 2) أي نص/مكونات ظاهرة إن وجدت. 3) الدلالة الصحية/الرياضية. كن محددًا وعمليًا واعتمد فقط على الصورة المرسلة. لا تعطِ أمثلة تخيّلية.` }
+    function buildImagePrompt(){ return `حلّل الصورة في 2-4 أسطر: 1) ما الذي تراه؟ 2) أي نص/مكونات ظاهرة إن وجدت. 3) الدلالة الصحية/الرياضية. كن محددًا وعمليًا واعتمد فقط على الصورة المرسلة.` }
 
-    // Unified proxy caller (handles multimodal + errors)
-    async function callAI({ prompt, images, audio, system, response_mime_type, require_images=false, model }){
+    async function callAI(prompt, {images, audio} = {}){
       try{
         const payload = { prompt };
-        if(system) payload.system = system;
-        if(model) payload.model = model;
-        if(response_mime_type) payload.response_mime_type = response_mime_type;
-        if(require_images) payload.require_images = true;
-        if (images && images.length) payload.images = images; // data URLs are OK (proxy parses)
+        // robust multimodal payload
+        if (images && images.length){
+          payload.images = images.map(x => {
+            if(typeof x === 'string' && x.startsWith('data:')){
+              const [meta, b64] = x.split(',');
+              const mime = meta.substring(5, meta.indexOf(';'));
+              return { mime, data: b64, dataUrl: x };
+            }
+            return x; // expect {mime,data} or compatible
+          });
+        }
         if (audio) payload.audio = audio; // { mime, data }
         const res = await fetch('/.netlify/functions/gemini-proxy',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-        const text = await res.text();
-        let json; try{ json = JSON.parse(text); }catch{ json = null; }
-        if(!res.ok){
-          const code = json?.error || 'HTTP_'+res.status;
-          return { ok:false, code, details: json?.details || json?.message || text.slice(0,280) };
-        }
-        return { ok:true, text: (json?.text||'').trim() };
-      }catch(e){ console.error(e); return { ok:false, code:'NETWORK', details:String(e && e.message || e) } }
+        const data = await res.json();
+        return data.text || ''
+      }catch(e){ console.error(e); return '' }
     }
 
     /* ===== Health flags ===== */
@@ -277,35 +275,42 @@
     function analyzeUserMessage(msg){ if(MED_FLAGS.test(msg)){ displayMessage('تم رصد حالة صحية — سنضيف احتياطات مناسبة. اذكر تفاصيل الدواء/الجرعة أو التشخيص إن وُجد.', 'ai') } }
 
     /* ===== Voice to text (press & hold) ===== */
-    let recording=false; let sr=null; let srSession=0; let mediaStream=null; let mediaRecorder=null; let audioChunks=[]; let recStartTime=0;
-    const hasWebSpeech = ()=> ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+    let recording=false; let sttSession=0; let recognition=null; let mediaStream=null; let mediaRecorder=null; let audioChunks=[]; let recStartTime=0;
 
-    function startLocalSR(){
+    const supportSpeechRecognition = ()=> ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
+
+    function startLocalRecognition(){
       const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if(!SR) return null;
-      const session = ++srSession;
-      const r = new SR();
-      r.lang = (LANG==='ar' ? 'ar-EG' : 'en-US');
-      r.interimResults = true; r.continuous = false; // single-utterance for stability
-      let finalText = '';
-      r.onresult = (e)=>{
-        if(session !== srSession) return; // ignore stale
+      const sessionId = ++sttSession; // new session
+      const rec = new SR();
+      rec.lang = (LANG==='ar' ? 'ar-EG' : 'en-US');
+      rec.interimResults = true; rec.continuous = true;
+      rec.onresult = (e)=>{
+        if(sessionId !== sttSession) return; // stale session, ignore
+        let final=''; let interim='';
         for(let i=e.resultIndex;i<e.results.length;i++){
-          const rr=e.results[i];
-          if(rr.isFinal){ finalText += rr[0].transcript; }
+          const r=e.results[i];
+          if(r.isFinal){ final += r[0].transcript } else { interim = r[0].transcript }
         }
+        const text = (final || interim).trim();
+        if(text){ userInput.value = text; userInput.focus(); }
       };
-      r.onerror = ()=>{};
-      r.onend = ()=>{ if(session!==srSession) return; if(finalText.trim()){ userInput.value = finalText.trim(); toast(i18n[LANG].recSaved) } };
-      r.start();
-      return r;
+      rec.onerror = ()=>{};
+      rec.onend = ()=>{ /* stop writing when ended */ };
+      rec.start();
+      return { rec, sessionId };
     }
 
     async function startRecording(){
       if(recording) return; recording=true;
-      if(hasWebSpeech()){
-        sr = startLocalSR();
-        micBtn.classList.add('mic-live'); recHintWrap.classList.remove('hidden'); $('recHint').textContent = i18n[LANG].recStart; return;
+      // Prefer on-device speech recognition when available (no audio capture needed)
+      if(supportSpeechRecognition()){
+        const h = startLocalRecognition();
+        recognition = h?.rec || null;
+        micBtn.classList.add('mic-live'); recHintWrap.classList.remove('hidden'); $('recHint').textContent = i18n[LANG].recStart;
+        return;
       }
+      // Fallback: capture audio and use server STT
       try{
         mediaStream = await navigator.mediaDevices.getUserMedia({audio:true});
         const mime = MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/ogg');
@@ -319,11 +324,15 @@
     }
 
     function stopRecording(){
-      if(!recording) return; recording=false; srSession++; // invalidate stale events
-      try{ sr && sr.stop && sr.stop(); }catch(_){}
-      try{ mediaRecorder && mediaRecorder.state!=='inactive' && mediaRecorder.stop(); }catch(_){ }
-      try{ mediaStream && mediaStream.getTracks().forEach(t=>t.stop()); }catch(_){ }
+      if(!recording) return; recording=false;
+      // Stop SR if used
+      if(recognition && recognition.stop){ try{ recognition.stop(); }catch(_){}; recognition=null; }
+      // Stop fallback recorder if used
+      try{ mediaRecorder && mediaRecorder.state!=='inactive' && mediaRecorder.stop(); }catch(_){}
+      try{ mediaStream && mediaStream.getTracks().forEach(t=>t.stop()); }catch(_){}
       micBtn.classList.remove('mic-live'); recHintWrap.classList.add('hidden');
+      // Freeze current session so late events are ignored
+      sttSession++;
     }
 
     async function handleRecordingStopFallback(){
@@ -331,46 +340,12 @@
       const blob = new Blob(audioChunks, {type: mediaRecorder.mimeType});
       const reader = new FileReader(); reader.onload = async () => {
         const base64 = reader.result.split(',')[1];
-        const sttPrompt = `أعد فقط JSON صالح بهذا الشكل بدون أي كلام آخر:\n{\n  "transcript": string\n}\nحوّل الصوت إلى نص ${(LANG==='ar'?'عربي':'English')} واضح ودقيق دون تغييره.`;
-        const { ok, text, code } = await callAI({ prompt: sttPrompt, audio: { mime: blob.type, data: base64 }, response_mime_type: 'application/json' });
-        if(!ok){ toast('تعذّر تحويل الصوت للنص.'); return }
-        let transcript=''; try{ const s=text.indexOf('{'); const e=text.lastIndexOf('}'); const j = JSON.parse(text.slice(s,e+1)); transcript = (j.transcript||'').trim(); }catch{ transcript='' }
+        const sttPrompt = `أعد فقط JSON صالح بهذا الشكل بدون أي كلام آخر:\n{\n  "transcript": string\n}\nحوّل الصوت إلى نص ${(LANG==='ar'?'عربي':'English')} واضح.`;
+        const raw = await callAI(sttPrompt, { audio: { mime: blob.type, data: base64 } });
+        let transcript=''; try{ const s=raw.indexOf('{'); const e=raw.lastIndexOf('}'); const j = JSON.parse(raw.slice(s,e+1)); transcript = (j.transcript||'').trim(); }catch(_){ transcript='' }
         if(transcript){ userInput.value = transcript; userInput.focus(); toast(i18n[LANG].recSaved) }
-      }; reader.readAsDataURL(blob);
-    }
-
-    /* ===== Chat & Image flows ===== */
-    async function processAIResponse(message){
-      if(busy) return; busy=true; sendBtn.disabled = true;
-      const typingEl = showTyping('ai');
-      const { ok, text, code, details } = await callAI({ prompt: buildChatPrompt(message), system: buildCoachSystemPrompt() });
-      removeNode(typingEl);
-      let reply = (ok && text) ? text : '';
-      if(!reply || reply.replace(/[\.\s]/g,'').length===0){
-        reply = 'حصل تأخير في الرد. كرر رسالتك باختصار لو سمحت.';
-      }
-      chatHistory.push({role:'assistant',parts:[{text:reply}]});
-      displayMessage(reply,'ai');
-      busy=false; sendBtn.disabled=false; togglePlanCTA();
-    }
-
-    function buildChatPrompt(message){
-      const historyText = chatHistory.slice(-12).map(m=>`${m.role}: ${m.parts[0].text}`).join('\n');
-      return `سجل المحادثة:\n${historyText}\n\nرسالة المستخدم الأخيرة: ${message}`;
-    }
-
-    async function analyzeImageDataURL(dataUrl){
-      const typingEl = showTyping('ai');
-      const r = await callAI({ prompt: buildImagePrompt(), images: [dataUrl], require_images:true });
-      removeNode(typingEl);
-      if(!r.ok){
-        if(r.code==='IMAGE_REQUIRED'){ displayMessage('لم تصل الصورة للخادم. جرّب إعادة الرفع بصيغة أخرى.', 'ai'); return }
-        displayMessage('تعذّر تحليل الصورة الآن. حاول مرة أخرى.', 'ai'); return;
-      }
-      const bad = /يرجى تقديم|provide|example|كمثال|as an example/i.test(r.text||'');
-      const reply = bad || !r.text ? 'الصورة وصلت وتم تحليلها. لو حابب تفاصيل إضافية (سعرات/اقتراح تمرين) حمّل صورة أوضح وسأفصّل لك.' : r.text;
-      displayMessage(reply,'ai');
-      chatHistory.push({role:'assistant',parts:[{text:reply}]});
+      };
+      reader.readAsDataURL(blob);
     }
 
     /* ===== Events ===== */
@@ -382,9 +357,38 @@
       plusBtn.addEventListener('click',()=> imageInput.click());
 
       // Image -> AI analysis (robust)
-      imageInput.addEventListener('change', async (e)=>{ const file=e.target.files[0]; if(!file) return; const reader=new FileReader(); reader.onload= async (ev)=>{ const dataUrl = ev.target.result; const imgHTML=`<img src="${dataUrl}" class="max-w-[220px] rounded-lg my-2" alt="uploaded"/>`; displayMessage(imgHTML,'user'); toast(i18n[LANG].imageUpload); chatHistory.push({role:'user',parts:[{text:'[صورة]'}]}); await analyzeImageDataURL(dataUrl); }; reader.readAsDataURL(file) })
+      imageInput.addEventListener('change', async (e)=>{
+        const file=e.target.files[0]; if(!file) return;
+        const reader=new FileReader(); reader.onload= async (ev)=>{
+          const dataUrl = ev.target.result;
+          const imgHTML=`<img src="${dataUrl}" class="max-w-[220px] rounded-lg my-2" alt="uploaded"/>`;
+          displayMessage(imgHTML,'user');
+          toast(i18n[LANG].imageUpload);
+          const typingEl = showTyping('ai');
+          let aiResp = await callAI(buildImagePrompt(), { images: [dataUrl] });
+          removeNode(typingEl);
+          // Guard against generic fallback responses
+          const bad = /قدّم|provide|يرجى تقديم|please provide|لا أستطيع رؤية الصورة/i.test(aiResp||'');
+          const reply = bad || !aiResp ? (LANG==='ar'? 'تم استلام الصورة ومعالجتها. لو حابب تحليل أدق (سعرات/عناصر/اقتراحات تدريب)، التقط صورة أوضح وسأحلّلها بالتفصيل.' : 'Image received and processed. For a deeper analysis, please upload a clearer photo.') : aiResp;
+          displayMessage(reply, 'ai');
+          chatHistory.push({role:'user',parts:[{text:'[صورة مرفوعة]'}]});
+          chatHistory.push({role:'assistant',parts:[{text:reply}]});
+          togglePlanCTA();
+        };
+        reader.readAsDataURL(file)
+      })
 
-      function sendMessage(){ if(busy) return; const message=(userInput.value||'').trim(); if(!message) return; displayMessage(message,'user'); chatHistory.push({role:'user',parts:[{text:message}]}); analyzeUserMessage(message); processAIResponse(message); userInput.value='' }
+      async function processAIResponse(message){
+        const typingEl = showTyping('ai');
+        const coachPrompt = `${buildCoachSystemPrompt()}\n\nسجل المحادثة:\n${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}\n\nرسالة المستخدم الأخيرة: ${message}`;
+        const response = await callAI(coachPrompt);
+        removeNode(typingEl);
+        chatHistory.push({role:'assistant',parts:[{text:response}]});
+        displayMessage(response||'…','ai');
+        togglePlanCTA()
+      }
+
+      function sendMessage(){ const message=(userInput.value||'').trim(); if(!message) return; displayMessage(message,'user'); chatHistory.push({role:'user',parts:[{text:message}]}); analyzeUserMessage(message); processAIResponse(message); userInput.value='' }
       sendBtn.addEventListener('click', sendMessage); userInput.addEventListener('keypress', e=>{ if(e.key==='Enter') sendMessage() })
 
       // Mic interactions (press & hold)
@@ -393,7 +397,7 @@
       startEvents.forEach(ev => micBtn.addEventListener(ev, (e)=>{ e.preventDefault(); startRecording() }, {passive:false}));
       endEvents.forEach(ev => micBtn.addEventListener(ev, (e)=>{ e.preventDefault(); stopRecording() }, {passive:false}));
 
-      // Contact modal on CTA
+      // CTA -> contact options only (no plan generation code at all)
       generatePlanBtn.addEventListener('click', ()=>{ contactModal.classList.add('open'); contactModal.setAttribute('aria-hidden','false') })
       closeContactBtn.addEventListener('click',()=>{ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') })
       contactModal.addEventListener('click', e=>{ if(e.target===contactModal){ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') } })
