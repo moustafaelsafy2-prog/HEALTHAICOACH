@@ -675,7 +675,22 @@ ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
         const aiResponse = await callAI(planPrompt);
 
         if (aiResponse) {
-          const planHTML = `<div class="container plan-content">${marked.parse(aiResponse)}</div>`;
+          const planHTML = `
+            <div class="plan-header">
+                <div class="flex items-center space-x-2 space-x-reverse">
+                    <img src="https://placehold.co/40x40/ffffff/0D47A1?text=AI" alt="Coach AI Avatar" class="rounded-full"/>
+                    <span class="text-xl font-bold">Coach AI</span>
+                </div>
+                <div class="theme-toggle">
+                    <button id="btnThemePlan">☀️</button>
+                </div>
+            </div>
+            <div class="container plan-content">${marked.parse(aiResponse)}</div>
+            <div class="plan-actions">
+                <button onclick="window.print()" class="plan-button">طباعة الخطة</button>
+                <button id="backToChatBtn" class="plan-button back-button">استكمال المحادثة</button>
+            </div>
+          `;
           document.body.innerHTML = planHTML;
         } else {
             const errorHTML = `<div class="container plan-content"><p>عذراً، حدث خطأ أثناء توليد الخطة. الرجاء المحاولة مرة أخرى.</p></div>`;
