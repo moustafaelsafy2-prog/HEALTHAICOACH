@@ -84,13 +84,13 @@
   <div class="welcome-screen" id="welcomeScreen">
     <img id="welcomeAvatar" src="https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=200&q=60" alt="Coach Avatar" class="rounded-full mb-6 shadow-xl object-cover"/>
     <h1 class="text-4xl font-bold mb-2" id="welcomeTitle">مدربك الشخصي الذكي</h1>
-    <p class="text-xl font-light text-white/90 mb-6" id="welcomeSubtitle">مرحبا بك — هنا نعمل بخطة دقيقة ومناسبة لك، خطوة بخطوة.</p>
+    <p class="text-xl font-light text-white/90 mb-6" id="welcomeSubtitle">جاهز للتغيير؟ خطتك مصممة خصيصاً لك—تنفيذ محكم، متابعة دقيقة، ونتيجة ملموسة تستحق الاستثمار.</p>
     <button id="startBtn" class="cta-btn">ابدأ الآن</button>
   </div>
 
   <!-- Basic user data -->
   <div class="user-data-screen hidden" id="userDataScreen">
-    <h2 class="text-3xl font-extrabold mb-4" id="userDataTitle">أهلاً — لنبني ملفك السريع</h2>
+    <h2 class="text-3xl font-extrabold mb-4" id="userDataTitle">لنبني ملفك السريع</h2>
     <p class="text-white/90 mb-6" id="userDataSubtitle">اسمك وعُمرك ودولتك كبداية</p>
     <div class="w-full max-w-sm">
       <input type="text" id="userName" class="block w-full mb-3 rounded-md px-4 py-3 text-right bg-white/10 border border-white/30 text-white placeholder-white/60 focus:bg-white/20" placeholder="اسمك" dir="rtl">
@@ -117,7 +117,7 @@
 
     <div id="planButtonArea" class="px-4 py-3 hidden">
       <div class="rounded-xl bg-white shadow dark:bg-slate-800 p-3 flex items-center justify-between">
-        <div class="typewriter-text" id="prepStatus">جاهز نبني خطتك؟</div>
+        <div class="typewriter-text" id="prepStatus">.جاهز تبدأ بخطتك معنا؟ تواصل فورًا بخطوة بسيطة</div>
         <button id="generatePlanBtn" class="btn btn-primary" disabled>احصل على خطتك الآن</button>
       </div>
       <p id="planButtonNote" class="text-gray-500 text-sm mt-2">يمكنك الاستمرار في الحديث إذا كانت لديك أي استفسارات أخرى.</p>
@@ -197,7 +197,7 @@
         inputPlaceholder:'اكتب رسالتك...', emptyFields:'أدخل الاسم والعمر والدولة للمتابعة.', imageUpload:'تم استلام الصورة — يتم التحليل الآن.',
         generationStart:'جاري تجهيز الخطة… قسمًا قسمًا.', generationDone:'الخطة جاهزة. لو محتاج تعديل، بلغني.',
         initialPrompt:'مرحبًا {name}. سنبدء خطوة خطوة لتجميع بياناتك وبناء خطة دقيقة قابلة للتنفيذ أكتب جاهز للبدء.',
-        planButtonText:'احصل على خطتك الآن', planButtonNote:'يمكنك الاستمرار في الحديث إذا كانت لديك أسئلة.',
+        planButtonText:'احصل على خطتك الآن', planButtonNote:'أي استفسار؟ تواصل فورًا ونرد عليك مباشرة.',
         planPreparingInModal:'جاري تحضير الخطة في نافذة أعلى المحادثة.',
         typing:'… يتم الرد الآن'
       },
@@ -343,4 +343,5 @@ ${chatHistory.map(m=>`${m.role}: ${m.parts[0].text}`).join('\n')}` }
   </script>
 </body>
 </html>
+
 
