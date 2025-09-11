@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>مدربك الصحي الذكي | Your Smart Health Coach</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -15,6 +15,7 @@
       --chat-bg: #F8F9FA;
       --bubble-user: #DCF8C6;
       --bubble-ai: #fff;
+      --backdrop: rgba(2, 6, 23, 0.55);
     }
     html.dark {
       --primary: #1F2937;
@@ -23,395 +24,168 @@
       --chat-bg: #111827;
       --bubble-user: #4B5563;
       --bubble-ai: #374151;
+      --backdrop: rgba(0,0,0,0.7);
     }
+    * { box-sizing: border-box; }
     body {
       font-family: 'Tajawal', sans-serif;
       background-color: var(--chat-bg);
       color: #333;
       transition: background-color 0.3s, color 0.3s;
     }
-    .dark body {
-      color: #E5E7EB;
-    }
+    .dark body { color: #E5E7EB; }
+
+    /* Chat shell */
     .chat-container {
-      max-width: 600px;
+      max-width: 720px;
       margin: 0 auto;
       height: 100vh;
       display: flex;
       flex-direction: column;
       background-color: var(--chat-bg);
-      box-shadow: 0 0 25px rgba(0,0,0,0.1);
+      box-shadow: 0 0 25px rgba(0,0,0,0.08);
       border-radius: 1rem;
       overflow: hidden;
       position: relative;
     }
-    .dark .chat-container {
-      box-shadow: 0 0 25px rgba(255,255,255,0.05);
-    }
     .chat-header {
       background: linear-gradient(135deg, var(--primary), var(--secondary));
       color: white;
-      padding: 1rem;
-      text-align: center;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+      padding: 0.875rem 1rem;
+      position: sticky; top: 0; z-index: 10;
+      display: flex; justify-content: space-between; align-items: center;
     }
     .chat-messages {
-      flex-grow: 1;
-      padding: 1rem;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      padding-bottom: 5rem;
+      flex: 1; padding: 1rem; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 6rem;
     }
     .message-bubble {
-      padding: 0.8rem 1.2rem;
-      border-radius: 1.5rem;
-      max-width: 80%;
-      margin-bottom: 0.75rem;
-      position: relative;
-      animation: fadeIn 0.3s ease-in-out;
+      padding: 0.85rem 1.15rem; border-radius: 1.25rem; max-width: 82%; margin-bottom: 0.75rem; position: relative; animation: fadeIn 0.25s ease-in-out;
     }
-    .message-bubble.user {
-      background-color: var(--bubble-user);
-      margin-left: auto;
-      border-bottom-right-radius: 0.2rem;
-    }
-    .message-bubble.ai {
-      background-color: var(--bubble-ai);
-      margin-right: auto;
-      border-bottom-left-radius: 0.2rem;
-    }
-    .dark .message-bubble.ai {
-      color: #E5E7EB;
-    }
-    .input-area {
-      display: flex;
-      padding: 0.75rem;
-      background-color: #F8F9FA;
-      border-top: 1px solid #E0E0E0;
-      position: sticky;
-      bottom: 0;
-      z-index: 10;
-      align-items: center;
-    }
-    .dark .input-area {
-      background-color: #1F2937;
-      border-top-color: #374151;
-    }
-    .input-area input {
-      flex-grow: 1;
-      border-radius: 2rem;
-      padding: 0.75rem 1.5rem;
-      border: 1px solid #CCC;
-      outline: none;
-      background-color: white;
-      transition: all 0.3s;
-    }
-    .dark .input-area input {
-      background-color: #374151;
-      border-color: #4B5563;
-      color: #E5E7EB;
-    }
-    .input-area input:focus {
-      border-color: var(--accent);
-    }
-    .input-area button {
-      background-color: transparent;
-      color: var(--secondary);
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-shrink: 0;
-      transition: all 0.3s;
-    }
-    .input-area button.send-btn {
-      background-color: var(--accent);
-      color: white;
-      margin-right: 0.5rem;
-    }
-    .input-area button:hover {
-      background-color: rgba(0,0,0,0.05);
-    }
-    .dark .input-area button {
-      color: #9CA3AF;
-    }
-    .dark .input-area button.send-btn {
-      background-color: var(--accent);
-    }
-    .welcome-screen {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      transition: all 0.5s;
-    }
-    .cta-btn {
-      background-color: var(--accent);
-      transition: all 0.3s ease;
-      font-weight: 700;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-    }
-    .cta-btn:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-    }
-    .theme-toggle button {
-        background-color: transparent;
-        border: 1px solid white;
-        color: white;
-        padding: 0.5rem;
-        border-radius: 0.5rem;
-        font-weight: bold;
-        transition: all 0.3s;
-    }
-    .theme-toggle button:hover {
-        background-color: rgba(255,255,255,0.2);
-    }
-    .toast {
-      position: fixed;
-      bottom: 2rem;
-      left: 50%;
-      transform: translateX(-50%);
-      background-color: #333;
-      color: white;
-      padding: 1rem;
-      border-radius: 0.5rem;
-      z-index: 999;
-      opacity: 0;
-      transition: opacity 0.5s ease-in-out;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .user-data-screen {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      text-align: center;
-      background: linear-gradient(135deg, var(--primary), var(--secondary));
-      color: white;
-      transition: all 0.5s;
-    }
-    .user-data-input {
-      background: rgba(255, 255, 255, 0.15);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      color: white;
-      padding: 0.75rem 1rem;
-      border-radius: 0.5rem;
-      width: 100%;
-      margin-bottom: 1rem;
-      transition: all 0.3s;
-    }
-    .user-data-input::placeholder {
-      color: rgba(255, 255, 255, 0.7);
-    }
-    .user-data-input:focus {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: white;
-    }
-    .user-data-title {
-      font-weight: 700;
-      font-size: 2.25rem;
-    }
-    .user-data-subtitle {
-      font-weight: 300;
-      font-size: 1.125rem;
-      color: rgba(255,255,255,0.9);
-    }
-    .plan-button-container {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        margin-top: 1rem;
-        animation: fadeIn 0.5s ease-in-out;
-    }
-    .plan-button {
-        background-color: var(--accent);
-        color: white;
-        font-weight: 700;
-        padding: 1rem 2rem;
-        border-radius: 2rem;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        transition: all 0.3s;
-        cursor: pointer;
-    }
-    .plan-button:hover:not(:disabled) {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-    }
-    .plan-button:disabled {
-        background-color: #9CA3AF;
-        cursor: not-allowed;
-    }
-    .plan-button-note {
-        font-size: 0.875rem;
-        color: #6B7280;
-        margin-top: 0.5rem;
-    }
-    .plan-page {
-      padding: 2rem;
-      display: none;
-      height: 100vh;
-      width: 100%;
-      overflow-y: auto;
-    }
-    .plan-page h1, .plan-page h2, .plan-page h3 {
-        font-weight: 700;
-        color: var(--primary);
-        margin-top: 2rem;
-        margin-bottom: 1rem;
-    }
-    .dark .plan-page h1, .dark .plan-page h2, .dark .plan-page h3 {
-        color: var(--accent);
-    }
-    .plan-page h1 { font-size: 2.5rem; text-align: center; }
-    .plan-page h2 { font-size: 2rem; border-bottom: 2px solid var(--secondary); padding-bottom: 0.5rem; }
-    .plan-page h3 { font-size: 1.5rem; }
-    .plan-page p { margin-bottom: 1rem; line-height: 1.6; }
-    .plan-page ul, .plan-page ol { margin-bottom: 1rem; padding-right: 1.5rem; }
-    .plan-page li { margin-bottom: 0.5rem; }
-    .plan-page table {
-        width: 100%;
-        border-collapse: collapse;
-        margin-top: 1rem;
-        margin-bottom: 2rem;
-    }
-    .plan-page th, .plan-page td {
-        border: 1px solid #E0E0E0;
-        padding: 0.75rem;
-        text-align: right;
-    }
-    .dark .plan-page th, .dark .plan-page td {
-        border-color: #374151;
-    }
-    .plan-page th {
-        background-color: #F0F4F8;
-        font-weight: 700;
-        color: var(--primary);
-    }
-    .dark .plan-page th {
-        background-color: #374151;
-        color: #E5E7EB;
-    }
-    .plan-actions {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-top: 2rem;
-      padding: 1rem;
-    }
-    .plan-button {
-      background-color: var(--accent);
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 0.5rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: block;
-      width: fit-content;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    .back-button {
-      background-color: #6B7280;
-    }
-    .typewriter-text {
-      font-size: 1.25rem;
-      font-weight: 500;
-      color: var(--primary);
-      text-align: center;
-    }
-    .dark .typewriter-text {
-      color: var(--accent);
-    }
-    .typing-cursor {
-      display: inline-block;
-      width: 2px;
-      height: 1.5em;
-      background-color: currentColor;
-      animation: blink-caret .75s step-end infinite;
-    }
-    @keyframes blink-caret {
-      from, to { background-color: transparent }
-      50% { background-color: currentColor }
-    }
+    .message-bubble.user { background-color: var(--bubble-user); margin-left: auto; border-bottom-right-radius: 0.25rem; }
+    .message-bubble.ai { background-color: var(--bubble-ai); margin-right: auto; border-bottom-left-radius: 0.25rem; }
+    .dark .message-bubble.ai { color: #E5E7EB; }
+
+    .input-area { display: flex; gap: 0.5rem; padding: 0.75rem; background-color: #F8F9FA; border-top: 1px solid #E0E0E0; position: sticky; bottom: 0; z-index: 10; align-items: center; }
+    .dark .input-area { background-color: #1F2937; border-top-color: #374151; }
+    .input-area input[type="text"] { flex: 1; border-radius: 2rem; padding: 0.75rem 1.2rem; border: 1px solid #CCC; outline: none; background-color: white; transition: all 0.3s; }
+    .dark .input-area input[type="text"] { background-color: #374151; border-color: #4B5563; color: #E5E7EB; }
+    .input-area input[type="text"]:focus { border-color: var(--accent); }
+    .icon-btn { background: transparent; color: var(--secondary); border-radius: 999px; width: 44px; height: 44px; display: grid; place-items: center; transition: 0.25s; }
+    .icon-btn:hover { background-color: rgba(0,0,0,0.06); }
+    .send-btn { background-color: var(--accent); color: white; }
+
+    .welcome-screen,.user-data-screen{ display:flex; flex-direction:column; justify-content:center; align-items:center; height:100vh; text-align:center; background:linear-gradient(135deg,var(--primary),var(--secondary)); color:white; }
+    .cta-btn{ background-color: var(--accent); font-weight:700; box-shadow:0 6px 16px rgba(0,0,0,0.25); padding:1rem 2rem; border-radius:999px; }
+
+    .toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background-color: #333; color: white; padding: 0.85rem 1rem; border-radius: 0.5rem; z-index: 60; opacity: 0; transition: opacity 0.4s; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0);} }
+
+    /* Plan Modal */
+    .plan-modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: var(--backdrop); z-index: 50; }
+    .plan-modal.open { display: flex; }
+    .plan-modal-content { width: min(920px, 96vw); max-height: 86vh; overflow: hidden; background: white; border-radius: 1rem; box-shadow: 0 20px 60px rgba(0,0,0,0.25); display: flex; flex-direction: column; }
+    .dark .plan-modal-content{ background:#0f172a; color:#E5E7EB; }
+    .plan-modal-header{ display:flex; justify-content:space-between; align-items:center; padding: 0.85rem 1rem; border-bottom: 1px solid #e5e7eb; background: linear-gradient(135deg, var(--primary), var(--secondary)); color:#fff; }
+    .plan-modal-body{ padding: 1rem 1rem 0.5rem; overflow-y:auto; }
+    .close-button{ background: transparent; color: #fff; font-size: 1.75rem; line-height: 1; padding: 0 0.25rem; }
+    .skeleton{ display:block; height:1rem; width:100%; background: linear-gradient(90deg,#eee,#f5f5f5,#eee); background-size:200% 100%; animation: shimmer 1.2s infinite; border-radius:0.35rem; }
+    .dark .skeleton{ background: linear-gradient(90deg,#374151,#4b5563,#374151); }
+    @keyframes shimmer{ 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+    .plan-actions{ display:flex; justify-content:flex-start; gap:0.5rem; padding: 0.85rem 1rem 1rem; border-top: 1px solid #e5e7eb; }
+    .btn{ padding: 0.6rem 1rem; border-radius: 0.6rem; font-weight:700; cursor:pointer; }
+    .btn-primary{ background: var(--accent); color:white; }
+    .btn-secondary{ background:#6B7280; color:white; }
+
+    .typewriter-text { font-size: 1.05rem; font-weight: 600; color: var(--primary); }
+    .dark .typewriter-text { color: var(--accent); }
+
+    /* Footer */
+    .footer{ text-align:center; padding: 0.75rem; font-size: 0.9rem; color:#6b7280; }
   </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
+  <!-- Welcome -->
   <div class="welcome-screen" id="welcomeScreen">
     <img src="https://placehold.co/150x150/ffffff/0D47A1?text=AI+Coach" alt="AI Coach Avatar" class="rounded-full mb-6 shadow-xl"/>
     <h1 class="text-4xl font-bold mb-2" id="welcomeTitle">مدربك الصحي الشخصي</h1>
     <p class="text-xl font-light text-white/90 mb-8" id="welcomeSubtitle">ابدأ رحلتك نحو الأفضل الآن</p>
-    <button id="startBtn" class="cta-btn text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300" id="startButtonText">
-      ابدأ المحادثة
-    </button>
+    <button id="startBtn" class="cta-btn" id="startButtonText">ابدأ المحادثة</button>
   </div>
 
+  <!-- Basic user data -->
   <div class="user-data-screen hidden" id="userDataScreen">
-    <h2 class="user-data-title mb-4" id="userDataTitle">لنبدأ رحلتك</h2>
-    <p class="user-data-subtitle mb-6" id="userDataSubtitle">أخبرنا عن نفسك لتبدأ</p>
-    <div class="w-full max-w-xs">
-      <input type="text" id="userName" class="user-data-input" placeholder="اسمك" dir="rtl">
-      <input type="number" id="userAge" class="user-data-input" placeholder="عمرك" dir="ltr">
-      <input type="text" id="userCountry" class="user-data-input" placeholder="دولتك" dir="rtl">
-      <button id="nextBtn" class="cta-btn w-full text-white font-bold py-3 px-6 rounded-full shadow-lg hover:shadow-2xl transition-all duration-300 mt-4">
-        التالي
-      </button>
+    <h2 class="text-3xl font-extrabold mb-4" id="userDataTitle">لنبدأ رحلتك</h2>
+    <p class="text-white/90 mb-6" id="userDataSubtitle">أخبرنا عن نفسك لتبدأ</p>
+    <div class="w-full max-w-sm">
+      <input type="text" id="userName" class="block w-full mb-3 rounded-md px-4 py-3 text-right bg-white/10 border border-white/30 text-white placeholder-white/60 focus:bg-white/20" placeholder="اسمك" dir="rtl">
+      <input type="number" id="userAge" class="block w-full mb-3 rounded-md px-4 py-3 text-left bg-white/10 border border-white/30 text-white placeholder-white/60 focus:bg-white/20" placeholder="عمرك" dir="ltr">
+      <input type="text" id="userCountry" class="block w-full mb-3 rounded-md px-4 py-3 text-right bg-white/10 border border-white/30 text-white placeholder-white/60 focus:bg-white/20" placeholder="دولتك" dir="rtl">
+      <button id="nextBtn" class="cta-btn w-full mt-2">التالي</button>
     </div>
   </div>
 
+  <!-- Chat -->
   <div class="chat-container hidden" id="chatContainer">
     <div class="chat-header">
-      <div class="flex items-center space-x-2 space-x-reverse">
+      <div class="flex items-center gap-2">
         <img src="https://placehold.co/40x40/ffffff/0D47A1?text=AI" alt="Coach AI Avatar" class="rounded-full"/>
         <span class="text-xl font-bold" id="chatTitle">Coach AI</span>
       </div>
-      <div class="theme-toggle">
-        <button id="btnTheme">☀️</button>
+      <div class="flex items-center gap-2">
+        <button id="btnLang" class="icon-btn text-white border border-white/30 px-3 w-auto h-9 rounded-md">AR</button>
+        <button id="btnTheme" class="icon-btn text-white border border-white/30 w-9 h-9 rounded-md">☀️</button>
       </div>
     </div>
+
     <div class="chat-messages" id="chatMessages" role="region" aria-label="Chat messages"></div>
+
+    <!-- Smart CTA appears when data complete -->
+    <div id="planButtonArea" class="px-4 py-3 hidden">
+      <div class="rounded-xl bg-white shadow dark:bg-slate-800 p-3 flex items-center justify-between">
+        <div class="typewriter-text"><span id="prepStatus">جاهز نبني خطتك المخصصة؟</span></div>
+        <button id="generatePlanBtn" class="btn btn-primary" disabled>احصل على خطتك الآن</button>
+      </div>
+      <p id="planButtonNote" class="text-gray-500 text-sm mt-2">يمكنك الاستمرار في الحديث إذا كانت لديك أي استفسارات أخرى.</p>
+    </div>
+
     <div class="input-area" id="inputArea">
-      <input type="text" id="userInput" placeholder="اكتب رسالتك..." dir="rtl"/>
-      <input type="file" id="imageInput" accept="image/*" class="hidden"/>
-      <button id="sendBtn" class="send-btn" aria-label="أرسل">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-send"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-      </button>
-      <button id="plusBtn" class="plus-btn" aria-label="أرسل ملف">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-      </button>
-    </div>
-    <div id="planButtonArea" class="plan-button-container hidden">
-      <button id="generatePlanBtn" class="plan-button" disabled>احصل على خطتك الآن</button>
-      <p id="planButtonNote" class="plan-button-note">يمكنك الاستمرار في الحديث إذا كانت لديك أي استفسارات أخرى.</p>
+      <input type="text" id="userInput" placeholder="اكتب رسالتك..." dir="rtl" />
+      <input type="file" id="imageInput" accept="image/*" class="hidden" />
+      <button id="plusBtn" class="icon-btn" aria-label="أرسل ملف">➕</button>
+      <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل">📤</button>
     </div>
   </div>
 
-  <div id="planPage" class="plan-page hidden">
-    <div id="planOutput"></div>
+  <!-- Plan Modal (overlay above chat) -->
+  <div id="planModal" class="plan-modal" aria-modal="true" aria-hidden="true" role="dialog" aria-labelledby="planModalTitle">
+    <div class="plan-modal-content">
+      <div class="plan-modal-header">
+        <h3 id="planModalTitle" class="text-lg font-extrabold">خطتك المخصصة</h3>
+        <button id="closePlanBtn" class="close-button" title="إغلاق" aria-label="إغلاق">×</button>
+      </div>
+      <div id="planOutput" class="plan-modal-body">
+        <!-- Progressive sections will stream here -->
+        <div class="mb-4">
+          <p class="typewriter-text">جارٍ تحضير الخطة قسمًا قسمًا…</p>
+          <span class="skeleton" style="height:12px;width:85%"></span>
+          <span class="skeleton mt-2" style="height:12px;width:92%"></span>
+          <span class="skeleton mt-2" style="height:12px;width:75%"></span>
+        </div>
+      </div>
+      <div class="plan-actions">
+        <button id="printBtn" class="btn btn-primary">طباعة الخطة</button>
+        <button id="expandAllBtn" class="btn btn-secondary">عرض كل الأقسام</button>
+      </div>
+    </div>
   </div>
 
-  <footer class="footer">
-    © 2024 مصطفى الصافي
-  </footer>
+  <footer class="footer">© 2025 مصطفى الصافي</footer>
 
   <script type="module">
+    /* ==========================
+       State & i18n
+    ===========================*/
     const chatMessages = document.getElementById('chatMessages');
     const userInput = document.getElementById('userInput');
     const sendBtn = document.getElementById('sendBtn');
@@ -424,17 +198,21 @@
     const userAgeInput = document.getElementById('userAge');
     const userCountryInput = document.getElementById('userCountry');
     const btnTheme = document.getElementById('btnTheme');
+    const btnLang = document.getElementById('btnLang');
     const plusBtn = document.getElementById('plusBtn');
     const imageInput = document.getElementById('imageInput');
     const planButtonArea = document.getElementById('planButtonArea');
     const generatePlanBtn = document.getElementById('generatePlanBtn');
-    const planPage = document.getElementById('planPage');
+    const planModal = document.getElementById('planModal');
+    const closePlanBtn = document.getElementById('closePlanBtn');
     const planOutput = document.getElementById('planOutput');
+    const printBtn = document.getElementById('printBtn');
+    const expandAllBtn = document.getElementById('expandAllBtn');
 
     let userState = { step: 0, data: {} };
     let LANG = 'ar';
     let chatHistory = [];
-    
+
     const i18n = {
       ar: {
         welcomeTitle: 'مدربك الصحي الشخصي',
@@ -448,13 +226,13 @@
         nextButtonText: 'التالي',
         chatTitle: 'Coach AI',
         inputPlaceholder: 'اكتب رسالتك...',
-        emptyFields: "الرجاء إدخال اسمك وعمرك ودولتك للبدء.",
+        emptyFields: 'الرجاء إدخال اسمك وعمرك ودولتك للبدء.',
         imageUpload: 'تم إرسال الصورة. المدرب بيحللها الآن...',
         generationStart: 'تمام يا بطل، لحظات وهتكون خطتك جاهزة. أنا بجهزها قسم بقسم دلوقتي.',
         generationDone: 'تم يا بطل! الخطة كاملة عندك. لو فيه أي تعديل أو سؤال، أنا موجود.',
-        initialPrompt: "أهلاً بك يا {name}! أنا هنا لمساعدتك. كن مستعداً لرحلة تحويلية، فنحن نعدك بخطة دقيقة 100%، مصممة خصيصاً لك. كل ما عليك هو التحدث مع مدربك مصطفى الصافي هنا.",
-        planButtonText: "احصل على خطتك الآن",
-        planButtonNote: "يمكنك الاستمرار في الحديث إذا كانت لديك أي استفسارات أخرى."
+        initialPrompt: 'أهلاً يا {name}! معاك مصطفى الصافي – مدربك الصحي الذكي. هنتكلم ببساطة وبطريقة بشرية 100% علشان نصمملك خطة دقيقة ومخصصة ليك.',
+        planButtonText: 'احصل على خطتك الآن',
+        planButtonNote: 'يمكنك الاستمرار في الحديث إذا كانت لديك أي استفسارات أخرى.'
       },
       en: {
         welcomeTitle: 'Your Personal Health Coach',
@@ -468,73 +246,49 @@
         nextButtonText: 'Next',
         chatTitle: 'Coach AI',
         inputPlaceholder: 'Type your message...',
-        emptyFields: "Please enter your name, age, and country to get started.",
+        emptyFields: 'Please enter your name, age, and country to get started.',
         imageUpload: 'Image sent. The coach is analyzing it now...',
-        generationStart: 'Okay, champ! Your plan will be ready in a few moments. I\'m preparing it section by section now.',
-        generationDone: 'Done, champ! Your complete plan is ready. If you have any questions or need to make changes, I\'m here for you.',
-        initialPrompt: "Hello, my friend! I'm here to help you. Get ready for a transformative journey; we promise you a 100% accurate plan, tailored specifically for you. All you have to do is talk to your coach Mustafa Elsafy here.",
-        planButtonText: "Get Your Plan Now",
-        planButtonNote: "You can continue talking if you have any further questions."
-      },
+        generationStart: "Okay! Your plan will be ready in moments. I'm preparing it section by section.",
+        generationDone: "Done! Your complete plan is ready. If you need changes, I'm here.",
+        initialPrompt: 'Hello {name}, this is your friendly coach Mustafa Elsafy. We will build a precise, human, fully-personalized plan for you.',
+        planButtonText: 'Get Your Plan Now',
+        planButtonNote: 'You can keep chatting if you have questions.'
+      }
     };
 
     function setLang(lang) {
       LANG = lang;
       document.documentElement.lang = lang;
       document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
-
       const L = i18n[LANG];
-
-      const welcomeTitle = document.getElementById('welcomeTitle');
-      if (welcomeTitle) welcomeTitle.textContent = L.welcomeTitle;
-      const welcomeSubtitle = document.getElementById('welcomeSubtitle');
-      if (welcomeSubtitle) welcomeSubtitle.textContent = L.welcomeSubtitle;
-      const startButtonText = document.getElementById('startButtonText');
-      if (startButtonText) startButtonText.textContent = L.startButtonText;
-
-      const userDataTitle = document.getElementById('userDataTitle');
-      if (userDataTitle) userDataTitle.textContent = L.userDataTitle;
-      const userDataSubtitle = document.getElementById('userDataSubtitle');
-      if (userDataSubtitle) userDataSubtitle.textContent = L.userDataSubtitle;
-      const userName = document.getElementById('userName');
-      if (userName) userName.placeholder = L.namePlaceholder;
-      const userAge = document.getElementById('userAge');
-      if (userAge) userAge.placeholder = L.agePlaceholder;
-      const userCountry = document.getElementById('userCountry');
-      if (userCountry) userCountry.placeholder = L.countryPlaceholder;
-      const nextBtn = document.getElementById('nextBtn');
-      if (nextBtn) nextBtn.textContent = L.nextButtonText;
-
-      const chatTitle = document.getElementById('chatTitle');
-      if (chatTitle) chatTitle.textContent = L.chatTitle;
-      const userInput = document.getElementById('userInput');
-      if (userInput) userInput.placeholder = L.inputPlaceholder;
-      
-      const planButtonText = document.getElementById('generatePlanBtn');
-      if(planButtonText) planButtonText.textContent = L.planButtonText;
-      const planButtonNote = document.getElementById('planButtonNote');
-      if(planButtonNote) planButtonNote.textContent = L.planButtonNote;
+      (document.getElementById('welcomeTitle')||{}).textContent = L.welcomeTitle;
+      (document.getElementById('welcomeSubtitle')||{}).textContent = L.welcomeSubtitle;
+      (document.getElementById('startButtonText')||{}).textContent = L.startButtonText;
+      (document.getElementById('userDataTitle')||{}).textContent = L.userDataTitle;
+      (document.getElementById('userDataSubtitle')||{}).textContent = L.userDataSubtitle;
+      (document.getElementById('userName')||{}).placeholder = L.namePlaceholder;
+      (document.getElementById('userAge')||{}).placeholder = L.agePlaceholder;
+      (document.getElementById('userCountry')||{}).placeholder = L.countryPlaceholder;
+      (document.getElementById('nextBtn')||{}).textContent = L.nextButtonText;
+      (document.getElementById('chatTitle')||{}).textContent = L.chatTitle;
+      (document.getElementById('userInput')||{}).placeholder = L.inputPlaceholder;
+      (document.getElementById('generatePlanBtn')||{}).textContent = L.planButtonText;
+      (document.getElementById('planButtonNote')||{}).textContent = L.planButtonNote;
+      btnLang.textContent = lang === 'ar' ? 'AR' : 'EN';
     }
 
     function setTheme() {
       document.documentElement.classList.toggle('dark');
       const isDarkMode = document.documentElement.classList.contains('dark');
-      if (btnTheme) btnTheme.textContent = isDarkMode ? '🌙' : '☀️';
+      btnTheme.textContent = isDarkMode ? '🌙' : '☀️';
       localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
     }
 
-    function showToast(msg) {
-        const t = document.createElement('div');
-        t.className = 'toast';
-        t.textContent = msg;
-        document.body.appendChild(t);
-        setTimeout(() => {
-          t.style.opacity = 1;
-        }, 10);
-        setTimeout(() => {
-          t.style.opacity = 0;
-          setTimeout(() => t.remove(), 500);
-        }, 3000);
+    function toast(msg) {
+      const t = document.createElement('div');
+      t.className = 'toast'; t.textContent = msg; document.body.appendChild(t);
+      setTimeout(()=> t.style.opacity = 1, 10);
+      setTimeout(()=> { t.style.opacity = 0; setTimeout(()=> t.remove(), 400); }, 2600);
     }
 
     function displayMessage(message, sender) {
@@ -545,192 +299,248 @@
       chatMessages.scrollTop = chatMessages.scrollHeight;
     }
 
-    function sendMessage() {
-      const message = userInput.value.trim();
-      if (message === '') return;
-      displayMessage(message, 'user');
-      chatHistory.push({role: "user", parts: [{text: message}]});
-      processAIResponse(message);
-      userInput.value = '';
-    }
-
     function isDataComplete() {
-      const requiredData = ['name', 'age', 'country'];
-      return requiredData.every(field => userState.data[field]);
+      const required = ['name','age','country'];
+      return required.every(k => !!userState.data[k]);
     }
 
-    function togglePlanButton() {
-      const isComplete = isDataComplete();
-      if (isComplete) {
-        planButtonArea.classList.remove('hidden');
-        generatePlanBtn.disabled = false;
-        generatePlanBtn.classList.remove('bg-gray-400');
-      } else {
-        planButtonArea.classList.add('hidden');
-        generatePlanBtn.disabled = true;
-        generatePlanBtn.classList.add('bg-gray-400');
-      }
+    function togglePlanCTA() {
+      const isReady = isDataComplete();
+      planButtonArea.classList.toggle('hidden', !isReady);
+      generatePlanBtn.disabled = !isReady;
     }
 
-    async function processAIResponse(message) {
-      userInput.disabled = true;
-      sendBtn.disabled = true;
-      plusBtn.disabled = true;
+    /* ==========================
+       AI Orchestration
+    ===========================*/
+    function buildCoachSystemPrompt(){
+      return `
+أنت "مصطفى الصافي" – مدرب صحي وأخصائي تغذية مصري، أسلوبك بشري، ذكي، حيوي، غير ممل.
+الأهداف:
+1) جمع البيانات تدريجيًا بدون إزعاج.
+2) تقديم تعليقات مخصصة عند ظهور أمراض/إصابات/أدوية (قدّم احتياطات واضحة).
+3) دعم المستخدم حتى تأكيد البيانات نهائيًا.
 
-      const L = i18n[LANG];
-      
-      const aiPrompt = `
-You are "Mustafa Elsafy", a friendly, empathetic, and highly knowledgeable health coach, nutritionist, and doctor from Egypt.
-Your persona is a friendly human coach on a WhatsApp-style chat app, speaking in a conversational Egyptian Arabic dialect.
-Your goal is to guide the user to provide all the necessary information to generate a comprehensive health plan.
-The user's name is ${userState.data.name || 'العميل'}.
-Your communication should be a natural, step-by-step conversation. Ask one or two simple, non-intrusive questions at a time.
-Do not ask for all the data at once.
-You must be able to understand greetings like "السلام عليكم" or "هلا" and respond appropriately and then gently guide the conversation towards the required data.
-The required data points are:
-- The user's main goal (e.g., fat loss, muscle building, strength, general health).
-- Age, gender, height, and weight.
-- Body fat percentage or waist circumference (optional).
-- Number of workout days per week and session duration.
-- Workout location (home/gym) and available equipment.
-- Preferred diet type, number of meals, preferred cuisine, prep time, and monthly budget.
-- Allergies or foods to avoid.
-- Past challenges with diet or workout plans.
-- Lifestyle details (work activity, daily steps, sleep, stress, caffeine).
-- Injuries or medical constraints, current medical conditions, and current medications/supplements.
-- Specific muscles needing focus.
+اجمع هذه البيانات على مراحل:
+- الهدف الأساسي (خسارة دهون/بناء عضل/صحة عامة/قوة).
+- العمر، الجنس، الطول، الوزن.
+- قياسات اختيارية (محيط خصر أو نسبة دهون).
+- أيام التمرين بالأسبوع، مدة الحصة، المكان والمعدات.
+- تفضيلات التغذية: عدد الوجبات، المطبخ المفضل، وقت التحضير، الميزانية.
+- حساسيات/أطعمة ممنوعة، تحديات سابقة.
+- نمط حياة: العمل/الخطوات/النوم/الضغط/الكافيين.
+- الإصابات/الأمراض/الأدوية/المكملات.
+- مجموعات عضلية تريد التركيز عليها.
 
-When you have gathered all the data, summarize it for the user in a clear, bulleted list and ask for confirmation before generating the plan.
+بعد اكتمال البيانات: لخّصها بنقاط واطلب تأكيدًا قبل توليد الخطة.
+اللغة: عامية مصرية مهذبة.
+لا تقدم نصائح طبية طارئة؛ وجّه للطبيب عند وجود علامات خطورة واضحة.
+`;
+    }
 
-If the user's input is unclear or a greeting, respond naturally and politely, and re-guide the conversation. Do not respond with fixed prompts.
-Your response must be in conversational Egyptian Arabic.
+    function buildPlanPrompt(){
+      return `
+أنت "مصطفى الصافي" – مدرب صحي دولي معتمد.
+بناءً على المحادثة التالية، أنشئ خطة مخصصة 100% بصيغة Markdown، واقعية، مرنة التنفيذ، مع بدائل اقتصادية عند اللزوم.
 
-Chat History:
+المخرجات:
+## التحليل
+- نقاط القوة/الفجوات.
+- المخاطر/التحفظات بناءً على الأمراض/الإصابات/الأدوية.
+
+## المسموح والممنوع
+- قوائم مختصرة وعملية.
+
+## التغذية (7 أيام)
+- 3 وجبات يوميًّا، كميات دقيقة وتوزيع سعرات تقريبي، بدائل سريعة.
+
+## التدريب (7 أيام)
+- تمارين جيم أو منزل حسب بيانات المستخدم، مجموعات/تكرارات، تقدم أسبوعي مبسط.
+
+## المكملات
+- إن لزم وبحدود الأمان، الجرعات، موانع الاستخدام، تداخلات.
+
+## السلامة
+- تنبيهات حسب الحالة (ضغط/سكري/غدة/إصابات...).
+
+## الختام
+- طريقة المتابعة، مؤشرات نجاح أسبوعية، وكيف نعدِّل الخطة.
+
+المحادثة:
 ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
 `;
-      
-      const response = await callAI(aiPrompt);
-
-      chatHistory.push({role: "assistant", parts: [{text: response}]});
-      displayMessage(response, 'ai');
-
-      userInput.disabled = false;
-      sendBtn.disabled = false;
-      plusBtn.disabled = false;
-      togglePlanButton();
     }
 
-    async function callAI(prompt) {
-      try {
-        const response = await fetch('/.netlify/functions/gemini-proxy', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ prompt }),
-        });
-        const data = await response.json();
-        return data.text;
-      } catch (error) {
-        console.error('API call failed:', error);
-        return "عذراً، حدث خطأ أثناء التواصل. الرجاء المحاولة مرة أخرى.";
+    async function callAI(prompt){
+      try{
+        const res = await fetch('/.netlify/functions/gemini-proxy', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ prompt }) });
+        const data = await res.json();
+        return data.text || 'تعذّر الحصول على رد.';
+      }catch(e){ console.error(e); return 'عذراً، حدث خطأ أثناء التواصل. حاول مرة أخرى.'; }
+    }
+
+    async function processAIResponse(message){
+      lockInputs(true);
+      const coachPrompt = `${buildCoachSystemPrompt()}\n\nسجل المحادثة:\n${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}\n\nرسالة المستخدم الأخيرة: ${message}`;
+      const response = await callAI(coachPrompt);
+      chatHistory.push({ role:'assistant', parts:[{text: response}] });
+      displayMessage(response, 'ai');
+      lockInputs(false);
+      togglePlanCTA();
+    }
+
+    /* ==========================
+       Input enrichment & safety notes
+    ===========================*/
+    const MED_FLAGS = /(سكري|ضغط|قلب|كورونا|سرطان|حامل|حمل|رضاعة|غدة|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|مضاد|كورتيزون|مضادات|ضغط الدم|سكر الدم)/i;
+
+    function analyzeUserMessage(msg){
+      const flags = MED_FLAGS.test(msg);
+      if(flags){
+        displayMessage('👀 لاحظت إنك ذكرت حالة صحية/دواء. هنراعي ده في الخطة ونضيف احتياطات خاصة. لو في تفاصيل دقيقة (اسم الدواء/الجرعة/التشخيص) اكتبها ليا.', 'ai');
       }
     }
-    
-    document.addEventListener('DOMContentLoaded', () => {
-      startBtn.addEventListener('click', () => {
-        welcomeScreen.classList.add('hidden');
-        userDataScreen.classList.remove('hidden');
-        setLang(LANG);
+
+    /* ==========================
+       Modal plan generation (progressive)
+    ===========================*/
+    function openPlanModal(){
+      planModal.classList.add('open');
+      planModal.setAttribute('aria-hidden','false');
+    }
+    function closePlanModal(){
+      planModal.classList.remove('open');
+      planModal.setAttribute('aria-hidden','true');
+    }
+
+    function lockInputs(state){
+      userInput.disabled = state; sendBtn.disabled = state; plusBtn.disabled = state; generatePlanBtn.disabled = state && !isDataComplete();
+    }
+
+    function sectionBlock(title, contentHTML = '', collapsed = false){
+      const wrapper = document.createElement('section');
+      wrapper.className = 'mb-4 border border-gray-200 rounded-lg overflow-hidden dark:border-slate-700';
+      const hdr = document.createElement('button');
+      hdr.className = 'w-full text-right font-bold px-3 py-2 bg-gray-50 dark:bg-slate-800 flex items-center justify-between';
+      hdr.innerHTML = `<span>${title}</span><span aria-hidden="true">${collapsed ? '＋' : '−'}</span>`;
+      const body = document.createElement('div');
+      body.className = 'p-3';
+      body.innerHTML = contentHTML || '<span class="skeleton" style="height:12px;width:90%"></span><span class="skeleton mt-2" style="height:12px;width:80%"></span>';
+      if(collapsed) body.style.display = 'none';
+      hdr.addEventListener('click', ()=>{
+        const hidden = body.style.display === 'none';
+        body.style.display = hidden ? 'block' : 'none';
+        hdr.lastElementChild.textContent = hidden ? '−' : '＋';
       });
+      wrapper.appendChild(hdr); wrapper.appendChild(body);
+      return { wrapper, body };
+    }
 
-      nextBtn.addEventListener('click', () => {
-        const name = userNameInput.value.trim();
-        const age = userAgeInput.value.trim();
-        const country = userCountryInput.value.trim();
-        
-        if (!name || !age || !country) {
-          showToast(i18n[LANG].emptyFields);
-          return;
-        }
+    async function generatePlanProgressive(){
+      openPlanModal();
+      planOutput.innerHTML = '';
 
-        userState.data.name = name;
-        userState.data.age = age;
-        userState.data.country = country;
-        
-        userDataScreen.classList.add('hidden');
-        chatContainer.classList.remove('hidden');
-        
-        const welcomeMessage = i18n[LANG].initialPrompt.replace('{name}', name);
-        chatHistory.push({role: "assistant", parts: [{text: welcomeMessage}]});
-        displayMessage(welcomeMessage, 'ai');
-        togglePlanButton();
+      const sections = [
+        { key:'analysis', title:'التحليل' },
+        { key:'allowed', title:'المسموح والممنوع' },
+        { key:'nutrition', title:'التغذية (7 أيام)' },
+        { key:'training', title:'التدريب (7 أيام)' },
+        { key:'supps', title:'المكملات' },
+        { key:'safety', title:'السلامة' },
+        { key:'closing', title:'الختام' },
+      ];
+
+      const blocks = sections.map(s => sectionBlock(s.title));
+      blocks.forEach(b => planOutput.appendChild(b.wrapper));
+
+      // Single full prompt for accuracy; then split into sections client-side
+      const full = await callAI(buildPlanPrompt());
+      if(!full || typeof full !== 'string'){ planOutput.innerHTML += '<p class="text-red-600">تعذر توليد الخطة. حاول مرة أخرى.</p>'; return; }
+
+      // Render progressively (simulate stream by slicing headings)
+      const md = full;
+
+      const map = {
+        analysis: /##\s*التحليل([\s\S]*?)(?=##\s*المسموح والممنوع|$)/,
+        allowed: /##\s*المسموح والممنوع([\s\S]*?)(?=##\s*التغذية|$)/,
+        nutrition: /##\s*التغذية\s*\(7\s*أيام\)([\s\S]*?)(?=##\s*التدريب|$)/,
+        training: /##\s*التدريب\s*\(7\s*أيام\)([\s\S]*?)(?=##\s*المكملات|$)/,
+        supps: /##\s*المكملات([\s\S]*?)(?=##\s*السلامة|$)/,
+        safety: /##\s*السلامة([\s\S]*?)(?=##\s*الختام|$)/,
+        closing: /##\s*الختام([\s\S]*$)/,
+      };
+
+      const delay = ms => new Promise(r => setTimeout(r, ms));
+
+      for (let i=0; i<sections.length; i++){
+        const k = sections[i].key; const b = blocks[i].body; const match = md.match(map[k]);
+        await delay(i===0?300:250); // snappy staged reveal
+        b.innerHTML = match ? marked.parse(match[1].trim()) : '<p>—</p>';
+      }
+    }
+
+    /* ==========================
+       Events
+    ===========================*/
+    document.addEventListener('DOMContentLoaded', ()=>{
+      startBtn.addEventListener('click', ()=>{ welcomeScreen.classList.add('hidden'); userDataScreen.classList.remove('hidden'); setLang(LANG); });
+
+      nextBtn.addEventListener('click', ()=>{
+        const name = (userNameInput.value||'').trim();
+        const age = (userAgeInput.value||'').trim();
+        const country = (userCountryInput.value||'').trim();
+        if(!name || !age || !country){ toast(i18n[LANG].emptyFields); return; }
+        userState.data = { ...userState.data, name, age, country };
+        userDataScreen.classList.add('hidden'); chatContainer.classList.remove('hidden');
+        const welcomeMsg = i18n[LANG].initialPrompt.replace('{name}', name);
+        chatHistory.push({ role:'assistant', parts:[{text: welcomeMsg}] });
+        displayMessage(welcomeMsg, 'ai');
+        togglePlanCTA();
       });
 
       btnTheme.addEventListener('click', setTheme);
+      btnLang.addEventListener('click', ()=> setLang(LANG==='ar' ? 'en' : 'ar'));
 
-      plusBtn.addEventListener('click', () => {
-        imageInput.click();
+      plusBtn.addEventListener('click', ()=> imageInput.click());
+      imageInput.addEventListener('change', (e)=>{
+        const file = e.target.files[0]; if(!file) return;
+        const reader = new FileReader();
+        reader.onload = ev => {
+          const img = `<img src="${ev.target.result}" class="max-w-[180px] rounded-lg my-2" alt="uploaded"/>`;
+          displayMessage(img, 'user');
+          toast(i18n[LANG].imageUpload);
+        };
+        reader.readAsDataURL(file);
       });
 
-      imageInput.addEventListener('change', (e) => {
-          const file = e.target.files[0];
-          if (file) {
-              const reader = new FileReader();
-              reader.onload = (event) => {
-                  const img = document.createElement('img');
-                  img.src = event.target.result;
-                  img.classList.add('max-w-xs', 'rounded-lg', 'my-2');
-                  displayMessage(img.outerHTML, 'user');
-                  showToast(i18n[LANG].imageUpload);
-              };
-              reader.readAsDataURL(file);
-          }
-      });
-
-      sendBtn.addEventListener('click', sendMessage);
-      userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-          sendMessage();
-        }
-      });
-
-      generatePlanBtn.addEventListener('click', async () => {
-        const L = i18n[LANG];
-        userInput.disabled = true;
-        sendBtn.disabled = true;
-        plusBtn.disabled = true;
-        planButtonArea.classList.add('hidden');
-        
-        const planPrompt = `
-        You are "Mustafa Elsafy", a certified international health coach, nutritionist, and doctor from Egypt.
-        Based on the following chat history with the user, please generate a comprehensive health plan.
-        Chat History:
-        ${chatHistory.map(m => `${m.role}: ${m.parts[0].text}`).join('\n')}
-        
-        Please structure your response with the following sections in Markdown:
-        ## التحليل
-        ## المسموح والممنوع
-        ## التغذية (7 أيام)
-        ## التدريب (7 أيام)
-        ## المكملات
-        ## السلامة
-        ## الختام
-        `;
-        const aiResponse = await callAI(planPrompt);
-
-        if (aiResponse) {
-            chatContainer.classList.add('hidden');
-            planPage.classList.remove('hidden');
-            planOutput.innerHTML = marked.parse(aiResponse);
-        } else {
-            planOutput.innerHTML = `<p>عذراً، حدث خطأ أثناء توليد الخطة. الرجاء المحاولة مرة أخرى.</p>`;
-        }
-      });
-
-      const savedTheme = localStorage.getItem('theme');
-      if (savedTheme === 'dark') {
-        document.body.classList.add('dark');
-        if (btnTheme) btnTheme.textContent = '🌙';
+      function sendMessage(){
+        const message = (userInput.value||'').trim(); if(!message) return;
+        displayMessage(message, 'user'); chatHistory.push({ role:'user', parts:[{text: message}] });
+        analyzeUserMessage(message);
+        processAIResponse(message);
+        userInput.value = '';
       }
+      sendBtn.addEventListener('click', sendMessage);
+      userInput.addEventListener('keypress', e => { if(e.key==='Enter'){ sendMessage(); }});
+
+      generatePlanBtn.addEventListener('click', async ()=>{
+        // Confirm user has validated data via a brief summary request first
+        displayMessage(i18n[LANG].generationStart, 'ai');
+        await generatePlanProgressive();
+        displayMessage(i18n[LANG].generationDone, 'ai');
+      });
+
+      closePlanBtn.addEventListener('click', ()=> closePlanModal());
+      planModal.addEventListener('click', (e)=>{ if(e.target === planModal) closePlanModal(); });
+      printBtn.addEventListener('click', ()=> window.print());
+      expandAllBtn.addEventListener('click', ()=>{
+        planOutput.querySelectorAll('section > button + div').forEach(d => d.style.display='block');
+        planOutput.querySelectorAll('section > button span:last-child').forEach(ic => ic.textContent='−');
+      });
+
+      // Theme restore
+      const savedTheme = localStorage.getItem('theme');
+      if(savedTheme === 'dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent = '🌙'; }
       setLang('ar');
     });
   </script>
