@@ -1,29 +1,25 @@
-# netlify.toml
-
-[build]
-  publish   = "."
-  functions = "netlify/functions"
-
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = []
-  included_files = []
-  # رفع السقف للدوال الثقيلة (اختياري حسب خطتك في نتlify)
-  timeout = 30   # أقصى وقت تنفيذ بالثواني
-  memory  = 1024 # MB
-
-# إعادة التوجيه للـ API
-[[redirects]]
-  from = "/api/generate"
-  to   = "/.netlify/functions/gemini-proxy"
-  status = 200
-  force  = true
-
-# تأمين الرؤوس
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+{
+  "name": "netlify-functions",
+  "version": "1.0.1",
+  "private": true,
+  "description": "Serverless functions for Smart Personal Coach (Gemini proxy with fallback/stream/vision/audio).",
+  "main": "gemini-proxy.js",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18.18.0"
+  },
+  "scripts": {
+    "dev": "netlify dev --port=8888",
+    "dev:functions": "netlify dev --functions=netlify/functions --port=8888",
+    "serve": "netlify dev --port=8888",
+    "start": "netlify dev --port=8888",
+    "build:functions": "netlify functions:build",
+    "test": "node -e \"console.log('OK')\""
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.34.1"
+  }
+}
