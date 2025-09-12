@@ -1,25 +1,45 @@
-{
-  "name": "netlify-functions",
-  "version": "1.0.1",
-  "private": true,
-  "description": "Serverless functions for Smart Personal Coach (Gemini proxy with fallback/stream/vision/audio).",
-  "main": "gemini-proxy.js",
-  "type": "commonjs",
-  "engines": {
-    "node": ">=18.18.0"
-  },
-  "scripts": {
-    "dev": "netlify dev --port=8888",
-    "dev:functions": "netlify dev --functions=netlify/functions --port=8888",
-    "serve": "netlify dev --port=8888",
-    "start": "netlify dev --port=8888",
-    "build:functions": "netlify functions:build",
-    "test": "node -e \"console.log('OK')\""
-  },
-  "dependencies": {
-    "dotenv": "^16.4.5"
-  },
-  "devDependencies": {
-    "netlify-cli": "^17.34.1"
-  }
-}
+# netlify.toml — unified config
+
+[build]
+  publish   = "."
+  functions = "netlify/functions"
+
+# بيئة البناء (تضمن Node >= 18 مثل package.json)
+[build.environment]
+  NODE_VERSION = "18.18.0"
+
+[functions]
+  node_bundler = "esbuild"
+  external_node_modules = []
+  included_files = []
+  timeout = 30     # seconds
+  memory  = 1024   # MB
+
+# إعدادات خاصة بدالة واحدة (اختياري، تبقي العامة كافيه)
+[functions."gemini-proxy"]
+  timeout = 30
+  memory  = 1024
+
+# توجيه الواجهة إلى الدالة
+[[redirects]]
+  from = "/api/generate"
+  to   = "/.netlify/functions/gemini-proxy"
+  status = 200
+  force  = true
+
+# رؤوس أمان عامة
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+
+# بيئة التطوير (netlify dev) — ضع مفتاحك محليًا هنا إن رغبت
+[context.development.environment]
+  GEMINI_API_KEY = ""  # اختياري: يقرأ أيضًا من .env
+
+# بيئة الإنتاج — عيّن المفتاح من لوحة Netlify أو هنا (إن لزم)
+[context.production.environment]
+  GEMINI_API_KEY = ""  # يفضّل ضبطه من Dashboard > Site settings > Environment
