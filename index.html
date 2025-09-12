@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+ <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
@@ -136,6 +136,17 @@
       backdrop-filter: blur(15px);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
+    
+    /* Animation for the "Get Plan" button */
+    @keyframes pulse-animation {
+      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+      70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
+      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+    }
+    .cta-btn-animated {
+        animation: pulse-animation 2.5s infinite cubic-bezier(0.66, 0, 0, 1);
+    }
+
 
     /* =================================================================
        -- 5. CHAT UI COMPONENTS --
@@ -363,6 +374,17 @@
     
     <!-- Input Area Wrapper -->
     <div class="input-area-wrapper">
+        <!-- FIXED "GET PLAN" BAR -->
+        <div id="planButtonArea" class="px-2 pb-2">
+            <div class="dynamic-card !m-0 rounded-xl p-3 flex justify-between items-center flex-wrap sm:flex-nowrap gap-3 bg-white dark:bg-slate-800">
+                <div class="min-w-0">
+                <div id="ctaTitle" class="font-bold text-gray-800 dark:text-gray-100">جاهز لنتيجة ملموسة؟</div>
+                <div id="ctaSubtitle" class="text-sm text-gray-600 dark:text-gray-300 mt-1">خطة مُحكمة + متابعة أسبوعية.</div>
+                </div>
+                <button id="generatePlanBtn" class="cta-btn cta-btn-animated !text-sm !px-5 !py-2.5 w-full sm:w-auto" disabled>احصل على خطتك الآن</button>
+            </div>
+        </div>
+
         <div class="input-area" id="inputArea">
             <div class="input-field-container">
                 <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة/ملف" title="صورة/ملف">
@@ -383,36 +405,10 @@
   </div>
 
   <!-- =======================
-       HIDDEN TEMPLATES FOR DYNAMIC CARDS
-       These will be cloned by JS and inserted into the chat.
+       HIDDEN TEMPLATES
   ======================== -->
   <div id="templates" class="hidden">
-    <div id="planButtonArea" class="px-2">
-      <div class="dynamic-card rounded-xl p-3 flex justify-between items-center flex-wrap sm:flex-nowrap gap-3 bg-white dark:bg-slate-800">
-        <div class="min-w-0">
-          <div id="ctaTitle" class="font-bold text-gray-800 dark:text-gray-100">جاهز لنتيجة ملموسة؟</div>
-          <div id="ctaSubtitle" class="text-sm text-gray-600 dark:text-gray-300 mt-1">خطة مُحكمة + متابعة أسبوعية.</div>
-        </div>
-        <button id="generatePlanBtn" class="cta-btn !text-sm !px-5 !py-2.5 w-full sm:w-auto" disabled>احصل على خطتك</button>
-      </div>
-    </div>
-    <div id="iherb-card-template" class="px-2">
-        <div id="iherb-card" class="dynamic-card mt-3 flex flex-col sm:flex-row items-center gap-4 p-4">
-            <div class="flex-shrink-0 grid place-items-center w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-900 text-[var(--color-accent)]">
-                <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.38 3.3.5 6.22-2.39 6.84-5.64.45-2.3-1.05-4.42-3.23-5.32-.6-.25-1.25-.37-1.92-.37-.85 0-1.67.2-2.43.56l-1.89-.66C7.9 3.83 17 8 17 8Z" /></svg>
-            </div>
-            <div class="flex-1 min-w-0 text-center sm:text-right">
-                <p id="iherbTitle" class="font-extrabold text-emerald-800 dark:text-emerald-200">احصل على مكملاتك من iHerb</p>
-                <p id="iherbSubtitle" class="text-sm text-emerald-700 dark:text-emerald-300 mt-1">خصم 10% إضافي هدية من مدربك!</p>
-            </div>
-            <div class="flex items-center gap-2 mt-2 sm:mt-0">
-                <div id="iherb-code" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-dashed border-[var(--color-accent)] font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">AYT3413</div>
-                <a id="copy-and-go-iherb-btn" href="https://iherb.co/fL9KCv1i?rcode=AYT3413" target="_blank" class="flex-shrink-0 px-4 py-2.5 rounded-lg bg-[var(--color-accent)] text-white font-bold hover:bg-[var(--color-accent-hover)] transition-colors text-sm shadow-md">
-                    <span id="copy-and-go-iherb-btn-text">اذهب للمتجر</span>
-                </a>
-            </div>
-        </div>
-    </div>
+    <!-- Templates can be added here in the future if needed -->
   </div>
 
   <!-- =======================
@@ -436,6 +432,24 @@
             <span id="phoneBtnText">اتصال</span>
           </a>
         </div>
+        
+        <!-- IHERB CARD MOVED HERE -->
+        <div id="iherb-card" class="dynamic-card mt-6 pt-5 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-center gap-4 p-4 !m-0 !border-0 !shadow-none">
+            <div class="flex-shrink-0 grid place-items-center w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-900 text-[var(--color-accent)]">
+                <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.38 3.3.5 6.22-2.39 6.84-5.64.45-2.3-1.05-4.42-3.23-5.32-.6-.25-1.25-.37-1.92-.37-.85 0-1.67.2-2.43.56l-1.89-.66C7.9 3.83 17 8 17 8Z" /></svg>
+            </div>
+            <div class="flex-1 min-w-0 text-center sm:text-right">
+                <p id="iherbTitle" class="font-extrabold text-emerald-800 dark:text-emerald-200">احصل على مكملاتك من iHerb</p>
+                <p id="iherbSubtitle" class="text-sm text-emerald-700 dark:text-emerald-300 mt-1">خصم 10% إضافي هدية من مدربك!</p>
+            </div>
+            <div class="flex items-center gap-2 mt-2 sm:mt-0">
+                <div id="iherb-code" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-dashed border-[var(--color-accent)] font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">AYT3413</div>
+                <a id="copy-and-go-iherb-btn" href="https://iherb.co/fL9KCv1i?rcode=AYT3413" target="_blank" class="flex-shrink-0 px-4 py-2.5 rounded-lg bg-[var(--color-accent)] text-white font-bold hover:bg-[var(--color-accent-hover)] transition-colors text-sm shadow-md">
+                    <span id="copy-and-go-iherb-btn-text">اذهب للمتجر</span>
+                </a>
+            </div>
+        </div>
+
         <div class="text-center mt-6 pt-5 border-t border-[var(--color-border)]">
             <p id="coffeeText" class="text-sm text-secondary mb-3">هل أعجبتك الأداة؟ دعمك يساعدنا على الاستمرار.</p>
             <a href="https://buymeacoffee.com/aipersonaltrainer" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 font-bold text-gray-800 bg-amber-400 rounded-lg shadow-md hover:bg-amber-500 transition-colors">
@@ -460,48 +474,12 @@
         };
         userInput.addEventListener('input', adjustTextareaHeight);
         
-        // 2. Observer to move dynamic cards into the chat log once
-        const chatContainer = document.getElementById('chatContainer');
-        const chatMessages = document.getElementById('chatMessages');
-        const templates = document.getElementById('templates');
-        
-        const cardInsertionObserver = new MutationObserver(mutations => {
-            for (const mutation of mutations) {
-                if (mutation.attributeName === 'class' && !chatContainer.classList.contains('hidden')) {
-                    const planCardTemplate = templates.querySelector('#planButtonArea');
-                    const iherbCardTemplate = templates.querySelector('#iherb-card-template');
-                    
-                    if (planCardTemplate) chatMessages.appendChild(planCardTemplate.cloneNode(true));
-                    if (iherbCardTemplate) chatMessages.appendChild(iherbCardTemplate.cloneNode(true));
-
-                    // Re-bind events to the new cloned elements
-                    const newGenerateBtn = chatMessages.querySelector('#generatePlanBtn');
-                    if (newGenerateBtn) newGenerateBtn.addEventListener('click', App.handlers.openContactModal);
-                    
-                    const newCopyBtn = chatMessages.querySelector('#copy-and-go-iherb-btn');
-                    if (newCopyBtn) {
-                        newCopyBtn.addEventListener('click', (e) => {
-                            e.preventDefault();
-                            const code = chatMessages.querySelector('#iherb-code').textContent.trim();
-                            navigator.clipboard.writeText(code).then(() => {
-                                App.utils.toast(App.i18n.strings[App.state.lang].iherbCopiedAndRedirecting);
-                                setTimeout(() => { window.open(newCopyBtn.href, '_blank'); }, 800);
-                            });
-                        });
-                    }
-
-                    cardInsertionObserver.disconnect(); // We only need to do this once
-                    break;
-                }
-            }
-        });
-        cardInsertionObserver.observe(chatContainer, { attributes: true });
-
-        // 3. Reset textarea height after sending a message
+        // 2. Reset textarea height after sending a message
+        // This patches the original sendMessage function to include our new behavior
         const originalSendMessage = App.core.sendMessage;
         App.core.sendMessage = function(...args) {
-            originalSendMessage.apply(this, args);
-            setTimeout(adjustTextareaHeight, 0);
+            originalSendMessage.apply(this, args); // Call the original function
+            setTimeout(adjustTextareaHeight, 0); // Reset height after sending
         };
     }
     // END OF NEW UI SCRIPTS
@@ -538,7 +516,7 @@
             inputPlaceholder:'اكتب رسالتك...', emptyFields:'أدخل الاسم والعمر والدولة للمتابعة.', imageUpload:'تم استلام الصورة — يتم التحليل الآن.',
             typing:'…', recStart:'● جاري التسجيل… ارفع إصبعك للإرسال', recDenied:'تعذّر الوصول للميكروفوون.', recTooShort:'التسجيل قصير جدًا.', recSaved:'تم نسخ الكلام إلى خانة الكتابة.',
             ctaTitle: 'جاهز لنتيجة ملموسة؟', ctaSubtitle: 'تسليم خطة مُحكمة + متابعة أسبوعية.', ctaBadge: 'خصم اليوم',
-            getPlanButton: 'احصل على خطتك', planButtonNote: 'بالضغط، ستفتح طرق التواصل. باقة البدء تشمل: تقييم دقيق، خطة وجبات وتمرين، متابعة أول أسبوع.',
+            getPlanButton: 'احصل على خطتك الآن', planButtonNote: 'بالضغط، ستفتح طرق التواصل. باقة البدء تشمل: تقييم دقيق، خطة وجبات وتمرين، متابعة أول أسبوع.',
             contactModalTitle: 'احصل على خطتك الآن', contactModalText1: 'اختر الطريقة المناسبة للتواصل المباشر مع المدرب.',
             whatsappBtnText: 'واتساب', phoneBtnText: 'اتصال', copied: 'تم النسخ!',
             iherbTitle: 'احصل على مكملاتك من iHerb', iherbSubtitle: 'خصم إضافي 10% هدية من مدربك لدعم رحلتك!',
@@ -552,7 +530,7 @@
             inputPlaceholder:'Type your message…', emptyFields:'Please enter your name, age, and country to continue.', imageUpload:'Image received — analyzing now.',
             typing:'…', recStart:'● Recording… release to send', recDenied:'Microphone access denied.', recTooShort:'Recording is too short.', recSaved:'Text copied to input.',
             ctaTitle: 'Ready for tangible results?', ctaSubtitle: 'Precise plan delivery + weekly follow-up.',
-            getPlanButton: 'Get Your Plan', planButtonNote: 'By clicking, contact methods will open. The starter package includes: a detailed assessment, meal and workout plan, and follow-up for the first week.',
+            getPlanButton: 'Get Your Plan Now', planButtonNote: 'By clicking, contact methods will open. The starter package includes: a detailed assessment, meal and workout plan, and follow-up for the first week.',
             contactModalTitle: 'Get your plan now', contactModalText1: 'Choose the best way to contact the coach directly.',
             whatsappBtnText: 'WhatsApp', phoneBtnText: 'Call', copied: 'Copied!',
             iherbTitle: 'Get your supplements from iHerb', iherbSubtitle: 'An extra 10% discount, a gift from your coach to support your journey!',
@@ -590,14 +568,13 @@
           });
           document.title = `${L.appName} | Smart Personal Coach`;
           
-          // Update dynamic cards text
-          const templates = document.getElementById('templates');
-          templates.querySelector('#ctaTitle').textContent = L.ctaTitle;
-          templates.querySelector('#ctaSubtitle').textContent = L.ctaSubtitle;
-          templates.querySelector('#generatePlanBtn').textContent = L.getPlanButton;
-          templates.querySelector('#iherbTitle').textContent = L.iherbTitle;
-          templates.querySelector('#iherbSubtitle').textContent = L.iherbSubtitle;
-          templates.querySelector('#copy-and-go-iherb-btn-text').textContent = L.copyAndGoButton;
+          // Update dynamic cards text (now in permanent locations)
+          $('ctaTitle').textContent = L.ctaTitle;
+          $('ctaSubtitle').textContent = L.ctaSubtitle;
+          $('generatePlanBtn').textContent = L.getPlanButton;
+          $('iherbTitle').textContent = L.iherbTitle;
+          $('iherbSubtitle').textContent = L.iherbSubtitle;
+          $('copy-and-go-iherb-btn-text').textContent = L.copyAndGoButton;
         },
         autoSetByText(s) {
           if (!s) return;
@@ -648,9 +625,9 @@
         },
         togglePlanCTA() {
             const isDataComplete = ['name', 'age', 'country'].every(k => !!App.state.userState.data[k]);
-            document.querySelectorAll('#generatePlanBtn').forEach(btn => {
-                btn.disabled = !isDataComplete;
-            });
+            if(App.elements.generatePlanBtn) {
+                App.elements.generatePlanBtn.disabled = !isDataComplete;
+            }
         }
       },
       services: {
@@ -808,7 +785,17 @@
         handleMicStop(e) { e.preventDefault(); App.services.speech.stopRecording(); },
         openContactModal() { App.elements.contactModal.classList.add('open'); App.elements.contactModal.setAttribute('aria-hidden', 'false'); },
         closeContactModal() { App.elements.contactModal.classList.remove('open'); App.elements.contactModal.setAttribute('aria-hidden', 'true'); },
-        handleModalClick(e) { if (e.target === App.elements.contactModal) { this.closeContactModal(); } }
+        handleModalClick(e) { if (e.target === App.elements.contactModal) { this.closeContactModal(); } },
+        handleIherbCopy(e) {
+            e.preventDefault();
+            const { copyAndGoIherbBtn, iherbCode } = App.elements;
+            if (!copyAndGoIherbBtn || !iherbCode) return;
+            const code = iherbCode.textContent.trim();
+            navigator.clipboard.writeText(code).then(() => {
+                App.utils.toast(App.i18n.strings[App.state.lang].iherbCopiedAndRedirecting);
+                setTimeout(() => { window.open(copyAndGoIherbBtn.href, '_blank'); }, 800);
+            });
+        }
       },
       init() {
         document.addEventListener('DOMContentLoaded', () => {
@@ -830,6 +817,9 @@
           E.fileInput.addEventListener('change', H.handleFileChange);
           E.closeContactBtn.addEventListener('click', H.closeContactModal);
           E.contactModal.addEventListener('click', (e) => H.handleModalClick(e));
+          E.generatePlanBtn.addEventListener('click', H.openContactModal);
+          E.copyAndGoIherbBtn.addEventListener('click', H.handleIherbCopy);
+          
           document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
             btn.addEventListener('click', () => this.i18n.setLang(this.state.lang === 'ar' ? 'en' : 'ar'));
           });
@@ -846,6 +836,5 @@
   </script>
 </body>
 </html>
-
 
 
