@@ -47,6 +47,7 @@
       background: var(--chat-bg);
       color: var(--text);
       transition: background-color .3s, color .3s;
+      line-height: 1.7; /* Added for better spacing */
     }
 
     /* -- App Shell -- */
@@ -99,7 +100,7 @@
       padding: .85rem 1.2rem;
       border-radius: 1.25rem; max-width: 85%;
       margin-bottom: .85rem; animation: fadeIn .3s ease-out;
-      position: relative; line-height: 1.6;
+      position: relative; line-height: 1.75; /* Increased for better readability */
       box-shadow: 0 2px 5px rgba(0,0,0,0.05);
     }
     .message-bubble.user {
@@ -187,6 +188,7 @@
     .welcome-screen > *, .user-data-screen > * {
       position: relative; z-index: 2;
     }
+    .welcome-screen p { line-height: 1.8; }
     .cta-btn {
       background: var(--accent); font-weight: 800;
       box-shadow: 0 8px 20px rgba(0,0,0,.25);
@@ -269,6 +271,7 @@
       background: var(--secondary); color: #fff;
     }
     .modal-body { padding: 1.5rem; }
+     .modal-body p { line-height: 1.8; }
     .close-button {
       background: transparent; color: #fff;
       font-size: 1.75rem; line-height: 1; padding: 0 .25rem;
@@ -423,8 +426,9 @@
     <div class="input-area" id="inputArea">
       <input type="text" id="userInput" placeholder="اكتب رسالتك..." dir="rtl"
              autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
-      <input type="file" id="imageInput" accept="image/*" class="hidden" />
-      <input type="file" id="fileInput" accept=".txt,.csv,application/pdf" class="hidden" />
+      <!-- CHANGE START: Consolidated file input -->
+      <input type="file" id="fileInput" accept="image/*,.txt,.csv,application/pdf" class="hidden" />
+      <!-- CHANGE END -->
       <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة/ملف" title="صورة/ملف">
         <svg class="w-6 h-6 -rotate-45" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
       </button>
@@ -484,8 +488,9 @@
     const btnTheme = $('btnTheme');
     const btnLang = $('btnLang');
     const plusBtn = $('plusBtn');
-    const imageInput = $('imageInput');
+    // CHANGE START: Consolidated file input reference
     const fileInput = $('fileInput');
+    // CHANGE END
     const micBtn = $('micBtn');
     const recHintWrap = $('recHintWrap');
     const planButtonArea = $('planButtonArea');
@@ -540,7 +545,8 @@
         attachFileTitle: 'صورة/ملف',
         recordAudioTitle: 'اضغط مطولاً للتسجيل',
         sendTitle: 'إرسال',
-        closeModalTitle: 'إغلاق'
+        closeModalTitle: 'إغلاق',
+        copied: 'تم النسخ!' // Added for toast feedback
       },
       en: {
         appName:'Smart Personal Coach',
@@ -573,7 +579,8 @@
         attachFileTitle: 'Image/File',
         recordAudioTitle: 'Press and hold to record',
         sendTitle: 'Send',
-        closeModalTitle: 'Close'
+        closeModalTitle: 'Close',
+        copied: 'Copied!' // Added for toast feedback
       }
     };
 
@@ -1044,6 +1051,8 @@
             s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.min.js';
             s.onload=res; s.onerror=rej; document.head.appendChild(s);
           });
+          // Worker is needed for pdf.js v2.3+
+          pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.worker.min.js`;
         }
         const buf = await file.arrayBuffer();
         const pdf = await pdfjsLib.getDocument({data:buf}).promise;
@@ -1137,8 +1146,8 @@ ${convo}
         userState.data={...userState.data,name,age,country};
         userDataScreen.classList.add('hidden'); chatContainer.classList.remove('hidden');
         const welcomeMsg = (LANG==='ar')
-          ? `مرحبًا ${name}. `
-          : `Welcome ${name}. We’ll collect key data and build a precise, doable plan.`;
+          ? `مرحبًا، معك مساعد المدرب الدولي مصطفى الصافي للتدريب والتغذية. كيف أقدر أساعدك النهاردة؟`
+          : `Hi, I'm the assistant to international coach Mustafa Elsafy. How can I help you today?`;
         chatHistory.push({role:'assistant',parts:[{text:welcomeMsg}]}); displayMessage(welcomeMsg,'ai'); togglePlanCTA();
       });
 
@@ -1149,43 +1158,45 @@ ${convo}
       setLang('ar');
 
       // Inputs
-      function keyHandler(e){ if(e.key==='Enter') sendMessage() }
+      function keyHandler(e){ if(e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
       sendBtn.addEventListener('click', sendMessage);
       userInput.addEventListener('keypress', keyHandler);
 
-      // Plus: short press = image, long press = file
-      let pressTimer;
-      plusBtn.addEventListener('mousedown', ()=>{ pressTimer = setTimeout(()=> fileInput.click(), 400) });
-      plusBtn.addEventListener('mouseup', ()=>{ clearTimeout(pressTimer); imageInput.click(); });
-      plusBtn.addEventListener('mouseleave', ()=> clearTimeout(pressTimer));
-      plusBtn.addEventListener('touchstart', ()=>{ pressTimer = setTimeout(()=> fileInput.click(), 400) }, {passive:true});
-      plusBtn.addEventListener('touchend', ()=>{ clearTimeout(pressTimer); imageInput.click(); }, {passive:true});
+      // CHANGE START: Simplified file/image attachment logic
+      plusBtn.addEventListener('click', () => fileInput.click());
 
-      // Image upload -> analyze
-      imageInput.addEventListener('change', async (e)=>{
-        const file=e.target.files[0]; if(!file) return;
-        const reader=new FileReader(); reader.onload= async (ev)=>{
-          const dataUrl = ev.target.result;
-          const imgHTML=`<img src="${dataUrl}" class="max-w-[220px] rounded-lg my-2" alt="uploaded image"/>`;
-          displayMessage(imgHTML,'user'); toast(i18n[LANG].imageUpload);
-          const typingEl = showTyping('ai');
-          let aiResp = await callAI(buildImagePrompt(), { images: [dataUrl] });
-          removeNode(typingEl);
-          const bad = /قدّم|provide|يرجى تقديم|please provide|لا أستطيع رؤية الصورة/i.test(aiResp||'');
-          const reply = bad || !aiResp ? (LANG==='ar'? 'تم استلام الصورة ومعالجتها. لنتيجة أوضح، أرسل صورة أوضح وسأحلّلها بدقة.' : 'Image received and processed. For clearer results, upload a sharper image.') : aiResp;
-          displayMessage(reply, 'ai');
-          chatHistory.push({role:'user',parts:[{text:'[صورة مرفوعة]'}]});
-          chatHistory.push({role:'assistant',parts:[{text:reply}]});
-          togglePlanCTA();
-        };
-        reader.readAsDataURL(file)
-      });
+      fileInput.addEventListener('change', async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-      // File upload -> parse/read
-      fileInput.addEventListener('change', async (e)=>{
-        const f=e.target.files[0]; if(!f) return;
-        await Files.handleFile(f);
+        // Check file type to route to correct handler
+        if (file.type.startsWith('image/')) {
+            const reader = new FileReader();
+            reader.onload = async (ev) => {
+                const dataUrl = ev.target.result;
+                const imgHTML = `<img src="${dataUrl}" class="max-w-[220px] rounded-lg my-2" alt="uploaded image"/>`;
+                displayMessage(imgHTML, 'user');
+                toast(i18n[LANG].imageUpload);
+                const typingEl = showTyping('ai');
+                let aiResp = await callAI(buildImagePrompt(), { images: [dataUrl] });
+                removeNode(typingEl);
+                const bad = /قدّم|provide|يرجى تقديم|please provide|لا أستطيع رؤية الصورة/i.test(aiResp || '');
+                const reply = bad || !aiResp ? (LANG === 'ar' ? 'تم استلام الصورة ومعالجتها. لنتيجة أوضح، أرسل صورة أوضح وسأحلّلها بدقة.' : 'Image received and processed. For clearer results, upload a sharper image.') : aiResp;
+                displayMessage(reply, 'ai');
+                chatHistory.push({ role: 'user', parts: [{ text: '[صورة مرفوعة]' }] });
+                chatHistory.push({ role: 'assistant', parts: [{ text: reply }] });
+                togglePlanCTA();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            // Handle other file types (PDF, TXT, CSV)
+            await Files.handleFile(file);
+        }
+        
+        // Reset file input to allow selecting the same file again
+        e.target.value = '';
       });
+      // CHANGE END
 
       // Mic interactions
       const startEvents = ['pointerdown','touchstart','mousedown'];
@@ -1195,11 +1206,6 @@ ${convo}
 
       // CTA -> contact
       generatePlanBtn.addEventListener('click', ()=>{
-        const body = contactModal.querySelector('.modal-body');
-        const pitch = document.createElement('div');
-        pitch.className='mb-3 text-[.95rem] font-semibold';
-        pitch.textContent = 'نبدأ اليوم: خطة دقيقة + متابعة أسبوعية + دعم مباشر — اشترك الآن.';
-        body.prepend(pitch);
         contactModal.classList.add('open'); contactModal.setAttribute('aria-hidden','false');
       });
       closeContactBtn.addEventListener('click',()=>{ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') });
