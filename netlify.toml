@@ -1,45 +1,30 @@
-# netlify.toml — unified config
+‏# netlify.toml
 
-[build]
-  publish   = "."
-  functions = "netlify/functions"
+‏[build]
+‏  publish   = "."
+‏  functions = "netlify/functions"
 
-# بيئة البناء (تضمن Node >= 18 مثل package.json)
-[build.environment]
-  NODE_VERSION = "18.18.0"
+‏# Use esbuild to bundle Node functions (fast, compatible with CJS/ESM)
+‏[functions]
+‏  node_bundler = "esbuild"
+‏  # optional: increase function timeout/memory if تحتاج تحميل أثقل
+‏  # node_bundler = "esbuild"
+‏  # included_files = []
+‏  # external_node_modules = []
+‏  # directory = "netlify/functions"
 
-[functions]
-  node_bundler = "esbuild"
-  external_node_modules = []
-  included_files = []
-  timeout = 30     # seconds
-  memory  = 1024   # MB
+‏# Route frontend calls to your function
+‏[[redirects]]
+‏  from = "/api/generate"
+‏  to   = "/.netlify/functions/gemini-proxy"
+‏  status = 200
+‏  force  = true
 
-# إعدادات خاصة بدالة واحدة (اختياري، تبقي العامة كافيه)
-[functions."gemini-proxy"]
-  timeout = 30
-  memory  = 1024
+# (اختياري) تأمين رؤوس الاستجابة العامة
+‏[[headers]]
+‏  for = "/*"
+‏  [headers.values]
+‏    X-Frame-Options = "SAMEORIGIN"
+‏    X-Content-Type-Options = "nosniff"
+‏    Referrer-Policy = "strict-origin-when-cross-origin"
 
-# توجيه الواجهة إلى الدالة
-[[redirects]]
-  from = "/api/generate"
-  to   = "/.netlify/functions/gemini-proxy"
-  status = 200
-  force  = true
-
-# رؤوس أمان عامة
-[[headers]]
-  for = "/*"
-  [headers.values]
-    X-Frame-Options = "SAMEORIGIN"
-    X-Content-Type-Options = "nosniff"
-    Referrer-Policy = "strict-origin-when-cross-origin"
-    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
-
-# بيئة التطوير (netlify dev) — ضع مفتاحك محليًا هنا إن رغبت
-[context.development.environment]
-  GEMINI_API_KEY = ""  # اختياري: يقرأ أيضًا من .env
-
-# بيئة الإنتاج — عيّن المفتاح من لوحة Netlify أو هنا (إن لزم)
-[context.production.environment]
-  GEMINI_API_KEY = ""  # يفضّل ضبطه من Dashboard > Site settings > Environment
