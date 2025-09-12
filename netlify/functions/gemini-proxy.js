@@ -16,7 +16,6 @@ const ALLOWED_AUDIO = /^audio\/(webm|ogg|mp3|mpeg|wav|m4a|aac|3gpp|3gpp2|mp4)$/i
 
 // ترتيب نماذج جيميني المرشحة
 const MODEL_POOL = [
-  "gemini-2.5-flash-preview-05-20",
   "gemini-2.0-flash-exp",
   "gemini-2.0-flash",
   "gemini-1.5-flash",
@@ -439,3 +438,4 @@ async function tryJSONOnce(url, body, timeout_ms, include_raw) {
 }
 
 function safeParseJSON(s) { try { return JSON.parse(s); } catch { return null; } }
+
