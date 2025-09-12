@@ -4,26 +4,26 @@
   publish   = "."
   functions = "netlify/functions"
 
-# Use esbuild to bundle Node functions (fast, compatible with CJS/ESM)
 [functions]
   node_bundler = "esbuild"
-  # optional: increase function timeout/memory if تحتاج تحميل أثقل
-  # node_bundler = "esbuild"
-  # included_files = []
-  # external_node_modules = []
-  # directory = "netlify/functions"
+  external_node_modules = []
+  included_files = []
+  # رفع السقف للدوال الثقيلة (اختياري حسب خطتك في نتlify)
+  timeout = 30   # أقصى وقت تنفيذ بالثواني
+  memory  = 1024 # MB
 
-# Route frontend calls to your function
+# إعادة التوجيه للـ API
 [[redirects]]
   from = "/api/generate"
   to   = "/.netlify/functions/gemini-proxy"
   status = 200
   force  = true
 
-# (اختياري) تأمين رؤوس الاستجابة العامة
+# تأمين الرؤوس
 [[headers]]
   for = "/*"
   [headers.values]
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
