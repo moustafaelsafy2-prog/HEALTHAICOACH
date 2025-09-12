@@ -1,4 +1,4 @@
- <!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
@@ -214,7 +214,6 @@
     /* =================================================================
        -- 6. DYNAMIC CARDS (CTA & iHerb) --
        تم إعادة تصميم الكروت لتتناسب مع الهوية الجديدة.
-       سيتم نقلها داخل المحادثة عبر جافاسكريبت لتجربة أفضل.
     ================================================================= */
     .dynamic-card {
         border-radius: 1rem;
@@ -385,12 +384,20 @@
             </div>
         </div>
 
+        <!-- IMAGE PREVIEW AREA -->
+        <div id="imagePreviewWrapper" class="hidden p-2">
+            <div id="imagePreviewContainer" class="relative inline-block">
+                <img id="imagePreview" class="h-20 w-20 rounded-lg object-cover border-2 border-gray-300" src="" alt="Image preview">
+                <button id="removeImageBtn" class="absolute top-0 right-0 -mt-2 -mr-2 flex h-6 w-6 items-center justify-center rounded-full bg-gray-700 text-white text-lg font-bold leading-none hover:bg-red-500 transition-colors" aria-label="Remove image">×</button>
+            </div>
+        </div>
+
         <div class="input-area" id="inputArea">
             <div class="input-field-container">
                 <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة/ملف" title="صورة/ملف">
                     <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
                 </button>
-                <input type="file" id="fileInput" accept="image/*,.txt,.csv,application/pdf" class="hidden" />
+                <input type="file" id="fileInput" accept="image/*" class="hidden" />
                 <textarea id="userInput" placeholder="اكتب رسالتك..." dir="rtl" rows="1"></textarea>
                 <button id="micBtn" class="icon-btn mic-btn" aria-label="تسجيل صوتي" title="اضغط مطولاً للتسجيل">
                     <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
@@ -491,8 +498,8 @@
      * The script remains fully functional with its original logic.
      */
     const App = {
-      config: { MAX_TURNS: 12, MAX_PROMPT_CHARS: 14000, STORAGE_KEY: 'smart-coach-history-v1' },
-      state: { userState: { step: 0, data: {}, persona:'neutral' }, lang: 'ar', chatHistory: [], isRecording: false, sttSessionId: 0, recognition: null, mediaStream: null, mediaRecorder: null, audioChunks: [], recStartTime: 0 },
+      config: { MAX_TURNS: 20, MAX_PROMPT_CHARS: 28000, STORAGE_KEY: 'smart-coach-history-v1' },
+      state: { userState: { step: 0, data: {}, persona:'neutral' }, lang: 'ar', chatHistory: [], isRecording: false, sttSessionId: 0, recognition: null, mediaStream: null, mediaRecorder: null, audioChunks: [], recStartTime: 0, pendingImage: null },
       elements: {},
       cacheElements() {
         const $ = id => document.getElementById(id);
@@ -505,6 +512,7 @@
           recHintWrap: $('recHintWrap'), recHint: $('recHint'), planButtonArea: $('planButtonArea'),
           generatePlanBtn: $('generatePlanBtn'), contactModal: $('contactModal'), closeContactBtn: $('closeContactBtn'),
           copyAndGoIherbBtn: $('copy-and-go-iherb-btn'), iherbCode: $('iherb-code'),
+          imagePreviewWrapper: $('imagePreviewWrapper'), imagePreview: $('imagePreview'), removeImageBtn: $('removeImageBtn'),
         };
       },
       i18n: {
@@ -522,6 +530,7 @@
             iherbTitle: 'احصل على مكملاتك من iHerb', iherbSubtitle: 'خصم إضافي 10% هدية من مدربك لدعم رحلتك!',
             copyAndGoButton: 'اذهب للمتجر', iherbCopiedAndRedirecting: 'تم نسخ الكود! يتم الآن تحويلك...',
             coffeeText: 'هل أعجبتك هذه الأداة المجانية؟ دعمك يساعدنا على التطوير والاستمرار.', coffeeBtnText: 'ادعمني بقهوة',
+            imageAttached: '[صورة مرفقة]'
           },
           en: {
             appName:'Smart Personal Coach', welcomeSubtitle:'Ready for a change? Your plan is tailored for you—precise execution, close follow-up, and tangible results.',
@@ -536,6 +545,7 @@
             iherbTitle: 'Get your supplements from iHerb', iherbSubtitle: 'An extra 10% discount, a gift from your coach to support your journey!',
             copyAndGoButton: 'Go to Store', iherbCopiedAndRedirecting: 'Code copied! Redirecting...',
             coffeeText: 'Did you like this free tool? Your support helps us to develop and continue.', coffeeBtnText: 'Support me with a coffee',
+            imageAttached: '[Image Attached]'
           }
         },
         setLang(lang) {
@@ -604,12 +614,12 @@
         }
       },
       ui: {
-        displayMessage(message, sender) {
+        displayMessage(content, sender) {
           const { chatMessages } = App.elements;
           const bubble = document.createElement('div');
           bubble.className = `message-bubble ${sender}`;
-          const safeMessage = (message && typeof message === 'string') ? message : '…';
-          bubble.innerHTML = `<div class="msg-content">${marked.parse(safeMessage)}</div>`;
+          const safeContent = (content && typeof content === 'string') ? content : '…';
+          bubble.innerHTML = safeContent.includes('<img') ? safeContent : `<div class="msg-content">${marked.parse(safeContent)}</div>`;
           chatMessages.appendChild(bubble);
           chatMessages.scrollTop = chatMessages.scrollHeight;
           return bubble;
@@ -730,6 +740,7 @@
 【٤) إدارة السياق والذاكرة الداخلية】
 - خزّن داخليًا: الهدف، الأساسيات (العمر، الجنس، الطول، الوزن...)، شخصية المستخدم، آخر إجابات، تحذيرات صحية.  
 - **مراجعة صامتة قبل كل رد**: لا تكرار لأسئلة مُجاب عنها، توافق مع الهدف، أسلوب مناسب للشخصية، ونبرة بشرية.
+- **مراجعة كاملة للمحادثة**: قبل كل رد، راجع **كامل سجل المحادثة** المقدّم لك لضمان استمرارية السياق، وفهم كل تفاصيل المستخدم، وتجنب تكرار أي أسئلة تم طرحها مسبقًا.
 【٥) جمع البيانات عند طلب خطة (تدريجي بلا تبرير)】
 - الهدف: جمع **الحد الأدنى الكافي** لبناء خطة دقيقة.
 - المطلوب: الهدف، الجنس/العمر، الطول/الوزن، النشاط، مكان التمرين/الأيام، تفضيلات الأكل، أمراض/إصابات.  
@@ -768,19 +779,81 @@
           return `حلّل الصورة بنقاط تنفيذية مختصرة فقط (3-5 نقاط) بدون أي مقدمات:\n- ماذا ترى (مختصر محدد).\n- أي نص/قيم ظاهرة إن وُجدت.\n- التفسير الصحي/الرياضي العملي.\n- خطوة واحدة مقترحة الآن.\nلا تكتب جُمل عامة.`;
         }
       },
-      core: { /* All functions (compactHistory, compactAndSnippet, buildInternalStateSummary, analyzeUserMessage, processAIResponse, sendMessage) are UNCHANGED */ 
+      core: {
         compactHistory() { if (App.state.chatHistory.length > App.config.MAX_TURNS) { App.state.chatHistory = App.state.chatHistory.slice(-App.config.MAX_TURNS); } },
-        compactAndSnippet() { this.compactHistory(); return App.state.chatHistory.map(m => `${m.role === 'assistant' ? 'المدرب' : 'المستخدم'}: ${(m.parts?.[0]?.text || '').replace(/\s+/g, ' ').slice(0, 1200)}`).join('\n').slice(0, App.config.MAX_PROMPT_CHARS); },
+        buildConversationContext() {
+          this.compactHistory();
+          let context = '';
+          const history = [...App.state.chatHistory];
+          for (let i = history.length - 1; i >= 0; i--) {
+            const message = history[i];
+            const role = message.role === 'assistant' ? 'المدرب' : 'المستخدم';
+            const text = message.parts?.[0]?.text || '';
+            const formattedMessage = `\n${role}: ${text}`;
+            if ((context.length + formattedMessage.length) > App.config.MAX_PROMPT_CHARS) { break; }
+            context = formattedMessage + context;
+          }
+          return context;
+        },
         buildInternalStateSummary() { const d=App.state.userState.data||{}; const f=[]; if(d.name)f.push(`الاسم: ${d.name}`); if(d.age)f.push(`العمر: ${d.age}`); if(d.country)f.push(`الدولة: ${d.country}`); if(d.goal)f.push(`الهدف: ${d.goal}`); if(d.health)f.push(`حالة صحية: ${d.health}`); if(d.gym)f.push(`مكان التمرين: ${d.gym}`); if(d.meals)f.push(`وجبات/اليوم: ${d.meals}`); return f.length ? `🗒️ ملخص الحالة: ${f.join(' | ')}` : ''; },
         analyzeUserMessage(msg) { const MED_FLAGS=/(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i; if (MED_FLAGS.test(msg)) { App.state.userState.data.health = (App.state.userState.data.health || 'قيود صحية'); App.ui.displayMessage('تم رصد حالة صحية — سنضيف احتياطات مناسبة. اذكر تفاصيل الدواء/الجرعة أو التشخيص إن وُجد.', 'ai'); } if (/خطة|أخس|تخسيس|تضخيم|عضل/i.test(msg)) App.state.userState.data.goal = App.state.userState.data.goal || 'خطة مخصصة'; if (/جيم|بيت|منزل/i.test(msg)) App.state.userState.data.gym = App.state.userState.data.gym || 'غير محدد'; },
-        async processAIResponse(message) { const typingEl = App.ui.showTyping('ai'); const prompt = `${App.prompts.buildCoachSystemPrompt()}\n${this.buildInternalStateSummary() ? this.buildInternalStateSummary() + '\n' : ''}سجل مختصر (آخر الرسائل):\n${this.compactAndSnippet()}\n\nرد كمدرّب محترف على رسالة المستخدم الأخيرة فقط، والتزم بسؤال واحد كحد أقصى لو لزم:\nرسالة المستخدم الأخيرة: ${message}`; let response = await App.services.callAI(prompt); App.utils.removeNode(typingEl); if (!response || !response.trim()) { response = (App.state.lang === 'ar') ? 'خلّينا نكمل بخطوة عملية سريعة: امشِ 15–20 دقيقة النهارده، ولو عندك هدف محدد سبّهولي نثبّته ونبني عليه.' : 'Let’s keep momentum: take a 15–20 min walk today. Share your main goal and we’ll lock it.'; } App.state.chatHistory.push({ role: 'assistant', parts: [{ text: response }] }); App.ui.displayMessage(response, 'ai'); App.ui.togglePlanCTA(); },
-        sendMessage() { const msg = (App.elements.userInput.value || '').trim(); if (!msg) return; App.i18n.autoSetByText(msg); App.ui.displayMessage(msg, 'user'); App.state.chatHistory.push({ role: 'user', parts: [{ text: msg }] }); this.analyzeUserMessage(msg); this.processAIResponse(msg); App.elements.userInput.value = ''; }
+        async processAIResponse(message, image = null) {
+            const typingEl = App.ui.showTyping('ai');
+            const L = App.i18n.strings[App.state.lang];
+            const basePrompt = image ? (message ? `${App.prompts.buildImagePrompt()}\n${message}` : App.prompts.buildImagePrompt()) : message;
+            const fullPrompt = `${App.prompts.buildCoachSystemPrompt()}\n${this.buildInternalStateSummary() ? this.buildInternalStateSummary() + '\n' : ''}سجل المحادثة الكامل (الأحدث في الأسفل):\n${this.buildConversationContext()}\n\nرد كمدرّب محترف على رسالة المستخدم الأخيرة فقط (${image ? L.imageAttached : ''} ${basePrompt})، والتزم بسؤال واحد كحد أقصى لو لزم.`;
+            let response = await App.services.callAI(fullPrompt, { images: image ? [image] : null });
+            App.utils.removeNode(typingEl);
+            if (!response || !response.trim()) { response = (App.state.lang === 'ar') ? 'خلّينا نكمل بخطوة عملية سريعة: امشِ 15–20 دقيقة النهارده، ولو عندك هدف محدد سبّهولي نثبّته ونبني عليه.' : 'Let’s keep momentum: take a 15–20 min walk today. Share your main goal and we’ll lock it.'; }
+            App.state.chatHistory.push({ role: 'assistant', parts: [{ text: response }] }); App.ui.displayMessage(response, 'ai'); App.ui.togglePlanCTA();
+        },
+        sendMessage() {
+            const msg = (App.elements.userInput.value || '').trim();
+            const image = App.state.pendingImage;
+            if (!msg && !image) return;
+
+            App.i18n.autoSetByText(msg);
+
+            let messageContentHTML = '';
+            if (image) {
+                messageContentHTML += `<img src="${image}" class="max-w-[220px] rounded-lg mb-2" alt="uploaded image"/>`;
+            }
+            if (msg) {
+                messageContentHTML += `<div class="msg-content">${marked.parse(msg)}</div>`;
+            }
+            App.ui.displayMessage(messageContentHTML, 'user');
+            
+            const historyText = msg || App.i18n.strings[App.state.lang].imageAttached;
+            App.state.chatHistory.push({ role: 'user', parts: [{ text: historyText }] });
+            
+            this.analyzeUserMessage(msg);
+            this.processAIResponse(msg, image);
+
+            App.elements.userInput.value = '';
+            App.handlers.removePendingImage();
+        }
       },
-      handlers: { /* All handler functions are UNCHANGED */
+      handlers: {
         handleStartClick() { App.elements.welcomeScreen.classList.add('hidden'); App.elements.userDataScreen.classList.remove('hidden'); App.i18n.setLang(App.state.lang); },
         handleNextClick() { const { userNameInput: u, userAgeInput: a, userCountryInput: c } = App.elements; const n=u.value.trim(),g=a.value.trim(),o=c.value.trim(); App.i18n.autoSetByText(n||o); if(!n||!g||!o){App.utils.toast(App.i18n.strings[App.state.lang].emptyFields);return;} App.state.userState.data={...App.state.userState.data,name:n,age:g,country:o}; App.elements.userDataScreen.classList.add('hidden'); App.elements.chatContainer.classList.remove('hidden'); const welcomeMsg = (App.state.lang==='ar') ? `مرحبًا، معك مساعد المدرب الدولي مصطفى الصافي للتدريب والتغذية. كيف أقدر أساعدك النهاردة؟` : `Hi, I'm the assistant to international coach Mustafa Elsafy. How can I help you today?`; App.state.chatHistory.push({role:'assistant',parts:[{text:welcomeMsg}]}); App.ui.displayMessage(welcomeMsg,'ai'); App.ui.togglePlanCTA(); },
         handleKeyPress(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); App.core.sendMessage(); } },
-        async handleFileChange(e) { const file=e.target.files[0]; if(!file)return; if(file.type.startsWith('image/')){const reader=new FileReader();reader.onload=async(ev)=>{const dataUrl=ev.target.result; App.ui.displayMessage(`<img src="${dataUrl}" class="max-w-[220px] rounded-lg my-2" alt="uploaded image"/>`,'user'); App.utils.toast(App.i18n.strings[App.state.lang].imageUpload); const typingEl=App.ui.showTyping('ai'); const aiResp=await App.services.callAI(App.prompts.buildImagePrompt(),{images:[dataUrl]}); App.utils.removeNode(typingEl); const reply = /قدّم|provide|يرجى|please|لا أستطيع رؤية/i.test(aiResp||'')||!aiResp ? (App.state.lang==='ar'?'تم استلام الصورة. لنتيجة أوضح، أرسل صورة أوضح.':'Image received. For clearer results, upload a sharper image.') : aiResp; App.ui.displayMessage(reply,'ai'); App.state.chatHistory.push({role:'user',parts:[{text:'[صورة مرفوعة]'}]},{role:'assistant',parts:[{text:reply}]}); App.ui.togglePlanCTA();}; reader.readAsDataURL(file);}else{await App.services.files.handleFile(file);} e.target.value=''; },
+        handleFileChange(e) {
+            const file = e.target.files[0];
+            if (!file || !file.type.startsWith('image/')) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                App.state.pendingImage = ev.target.result;
+                App.elements.imagePreview.src = ev.target.result;
+                App.elements.imagePreviewWrapper.classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+            e.target.value = '';
+        },
+        removePendingImage() {
+            App.state.pendingImage = null;
+            App.elements.imagePreview.src = '';
+            App.elements.imagePreviewWrapper.classList.add('hidden');
+        },
         handleMicRecord(e) { e.preventDefault(); App.services.speech.startRecording(); },
         handleMicStop(e) { e.preventDefault(); App.services.speech.stopRecording(); },
         openContactModal() { App.elements.contactModal.classList.add('open'); App.elements.contactModal.setAttribute('aria-hidden', 'false'); },
@@ -815,6 +888,7 @@
           E.btnTheme.addEventListener('click', this.utils.setTheme);
           E.plusBtn.addEventListener('click', () => E.fileInput.click());
           E.fileInput.addEventListener('change', H.handleFileChange);
+          E.removeImageBtn.addEventListener('click', H.removePendingImage);
           E.closeContactBtn.addEventListener('click', H.closeContactModal);
           E.contactModal.addEventListener('click', (e) => H.handleModalClick(e));
           E.generatePlanBtn.addEventListener('click', H.openContactModal);
@@ -836,5 +910,6 @@
   </script>
 </body>
 </html>
+
 
 
