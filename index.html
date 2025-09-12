@@ -812,7 +812,7 @@ ${convo}
         userState.data={...userState.data,name,age,country};
         userDataScreen.classList.add('hidden'); chatContainer.classList.remove('hidden');
         const welcomeMsg = (LANG==='ar')
-          ? `مرحبًا ${name}. نمشي خطوة خطوة لتجميع بياناتك وبناء خطة دقيقة قابلة للتنفيذ.`
+          ? `مرحبًا ${name}. `
           : `Welcome ${name}. We’ll collect key data and build a precise, doable plan.`;
         chatHistory.push({role:'assistant',parts:[{text:welcomeMsg}]}); displayMessage(welcomeMsg,'ai'); togglePlanCTA();
         Storage.save();
@@ -902,5 +902,6 @@ ${convo}
   </script>
 </body>
 </html>
+
 
 
