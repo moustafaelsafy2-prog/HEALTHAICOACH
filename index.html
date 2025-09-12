@@ -108,7 +108,7 @@
     <button id="startBtn" class="cta-btn">ابدأ الآن</button>
   </div>
 
-  <!-- Profile: MODIFIED SECTION -->
+  <!-- Profile -->
   <div class="user-data-screen hidden" id="userDataScreen">
     <div class="w-full max-w-sm p-8 space-y-6 bg-white/10 backdrop-blur-md rounded-2xl shadow-xl border border-white/20">
       <div class="text-center">
@@ -152,9 +152,6 @@
         <span class="text-xl font-bold" id="chatTitle">مدربك الشخصي الذكي</span>
       </div>
       <div class="flex items-center gap-2">
-        <button id="btnSave" class="icon-btn text-white border border-white/30 w-auto h-9 rounded-md px-3" title="حفظ وتصدير">💾 حفظ</button>
-        <button id="btnLoad" class="icon-btn text-white border border-white/30 w-auto h-9 rounded-md px-3" title="استرجاع/استيراد">⟲ استرجاع</button>
-        <button id="btnClear" class="icon-btn text-white border border-white/30 w-9 h-9 rounded-md" title="مسح">🗑️</button>
         <button id="btnLang" class="icon-btn text-white border border-white/30 px-3 w-auto h-9 rounded-md">AR</button>
         <button id="btnTheme" class="icon-btn text-white border border-white/30 w-9 h-9 rounded-md">☀️</button>
       </div>
@@ -187,9 +184,15 @@
              autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
       <input type="file" id="imageInput" accept="image/*" class="hidden" />
       <input type="file" id="fileInput" accept=".txt,.csv,application/pdf" class="hidden" />
-      <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة/ملف" title="صورة/ملف">➕</button>
-      <button id="micBtn" class="icon-btn mic-btn" aria-label="تسجيل صوتي" title="اضغط مطولاً للتسجيل">🎙️</button>
-      <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل" title="إرسال">↪</button>
+      <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة/ملف" title="صورة/ملف">
+        <svg class="w-6 h-6 -rotate-45" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+      </button>
+      <button id="micBtn" class="icon-btn mic-btn" aria-label="تسجيل صوتي" title="اضغط مطولاً للتسجيل">
+        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
+      </button>
+      <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل" title="إرسال">
+        <svg class="w-5 h-5 pl-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+      </button>
     </div>
     <div class="px-4 pb-2 -mt-2 hidden" id="recHintWrap"><span class="rec-hint" id="recHint">● جاري التسجيل… ارفع إصبعك للنسخ إلى خانة الكتابة</span></div>
   </div>
@@ -914,22 +917,24 @@ ${convo}
       contactModal.addEventListener('click', e=>{ if(e.target===contactModal){ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') } });
 
       // Save/Load/Clear + import
-      btnSave.addEventListener('click', ()=>{ Storage.save(); Storage.export(); });
-      btnLoad.addEventListener('click', ()=>{
-        const ok = Storage.load();
-        if(!ok){ toast(LANG==='ar'?'لا توجد محادثة محفوظة':'No saved chat'); return; }
-        chatMessages.innerHTML='';
-        chatHistory.forEach(m => displayMessage(m.parts?.[0]?.text || '', m.role==='assistant'?'ai':'user'));
-        togglePlanCTA();
-      });
-      btnClear.addEventListener('click', ()=>{ Storage.clear(); chatMessages.innerHTML=''; chatHistory=[]; });
+      // btnSave.addEventListener('click', ()=>{ Storage.save(); Storage.export(); }); // Removed
+      // btnLoad.addEventListener('click', ()=>{ // Removed
+      //   const ok = Storage.load();
+      //   if(!ok){ toast(LANG==='ar'?'لا توجد محادثة محفوظة':'No saved chat'); return; }
+      //   chatMessages.innerHTML='';
+      //   chatHistory.forEach(m => displayMessage(m.parts?.[0]?.text || '', m.role==='assistant'?'ai':'user'));
+      //   togglePlanCTA();
+      // });
+      // btnClear.addEventListener('click', ()=>{ Storage.clear(); chatMessages.innerHTML=''; chatHistory=[]; }); // Removed
 
       // Right-click on Load to import JSON
-      const importBtn = document.createElement('input');
-      importBtn.type='file'; importBtn.accept='application/json'; importBtn.style.display='none';
-      document.body.appendChild(importBtn);
-      btnLoad.addEventListener('contextmenu', (e)=>{ e.preventDefault(); importBtn.click(); });
-      importBtn.onchange = async (e)=>{ const f=e.target.files[0]; if(!f) return; await Storage.import(f); btnLoad.click(); };
+      // const importBtn = document.createElement('input'); // Removed
+      // importBtn.type='file';
+      // importBtn.accept='application/json';
+      // importBtn.style.display='none';
+      // document.body.appendChild(importBtn);
+      // btnLoad.addEventListener('contextmenu', (e)=>{ e.preventDefault(); importBtn.click(); });
+      // importBtn.onchange = async (e)=>{ const f=e.target.files[0]; if(!f) return; await Storage.import(f); btnLoad.click(); };
     });
   </script>
 </body>
