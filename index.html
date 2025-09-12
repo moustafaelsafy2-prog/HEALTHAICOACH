@@ -524,6 +524,16 @@
             <span id="phoneBtnText">اتصال هاتفي</span>
           </a>
         </div>
+        <!-- Buy Me a Coffee Section -->
+        <div class="text-center mt-6 pt-4 border-t border-border">
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+                هل أعجبتك هذه الأداة المجانية؟ دعمك يساعدنا على التطوير والاستمرار.
+            </p>
+            <a href="https://buymeacoffee.com/aipersonaltrainer" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 px-5 py-2 font-bold text-gray-800 bg-amber-400 rounded-lg shadow-md hover:bg-amber-500 transition-colors">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4v-2z"/></svg>
+                ادعمني بقهوة
+            </a>
+        </div>
       </div>
     </div>
   </div>
@@ -531,7 +541,13 @@
   <!-- =======================
        Page Footer
   ======================== -->
-  <footer class="footer" id="pageFooter">© Powered by Mustafa Elsafy | مصطفى الصافي</footer>
+  <footer class="footer" id="pageFooter">
+    © Powered by Mustafa Elsafy | مصطفى الصافي
+    <span class="mx-1">|</span>
+    <a href="https://buymeacoffee.com/aipersonaltrainer" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">
+      ادعم الأداة بقهوة
+    </a>
+  </footer>
 
   <script type="module">
     /**
@@ -681,7 +697,10 @@
           $('contactModalText2').textContent = L.contactModalText2;
           $('whatsappBtnText').textContent = L.whatsappBtnText;
           $('phoneBtnText').textContent = L.phoneBtnText;
-          $('pageFooter').textContent = L.footerText;
+          
+          const footer = $('pageFooter');
+          footer.childNodes[0].nodeValue = L.footerText + ' ';
+
           document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
             btn.textContent = lang === 'ar' ? 'EN' : 'AR';
           });
@@ -1258,5 +1277,6 @@ ${conversationSnippet}
   </script>
 </body>
 </html>
+
 
 
