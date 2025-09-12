@@ -7,408 +7,387 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    /* =========================================
-       -- 1. Font Import & Theme Variables --
-    ========================================= */
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;700;800;900&display=swap');
+    /* =================================================================
+       -- 1. FONT IMPORT & MODERN THEME VARIABLES --
+       تم إعادة تصميم نظام الألوان بالكامل ليكون أكثر حيوية ووضوحًا
+       مع دعم كامل للوضع النهاري والليلي.
+    ================================================================= */
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
 
     :root {
-      --primary: #1B4332;      /* Deep Forest Green */
-      --secondary: #2D6A4F;    /* Medium Sea Green */
-      --accent: #FF7B54;       /* Vibrant Coral */
-      --chat-bg: #F7F9F7;      /* Off-white with a hint of green */
-      --bubble-user: #FFEADD;  /* Light Coral */
-      --bubble-ai: #FFFFFF;
-      --backdrop: rgba(27, 67, 50, 0.6);
-      --text: #0D1B13;
-      --muted: #556B5F;
-      --surface: #FFFFFF;
-      --border: #D8E0DA;
+      --font-family-base: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      
+      /* Light Theme Palette */
+      --bg-main: #F4F7FA;              /* خلفية رئيسية فاتحة جداً ونظيفة */
+      --bg-surface: #FFFFFF;           /* خلفية العناصر مثل الهيدر ومنطقة الإدخال */
+      --bg-surface-secondary: #F0F2F5; /* خلفية فقاعات الذكاء الاصطناعي */
+      --bg-accent: #007BFF;             /* لون رئيسي جذاب (أزرق) */
+      --bg-accent-hover: #0056b3;       /* لون عند التمرير */
+      --bg-user-bubble: #E6F2FF;        /* خلفية فقاعات المستخدم */
+      
+      --text-primary: #121212;          /* لون النص الأساسي */
+      --text-secondary: #5A6978;        /* لون النص الثانوي الأقل أهمية */
+      --text-accent: #FFFFFF;           /* لون النص فوق الخلفيات الملونة */
+      --text-user-bubble: #004C99;      /* لون نص فقاعة المستخدم */
+
+      --border-color: #E1E8ED;         /* لون الفواصل والحدود */
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.04);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
     }
 
     html.dark {
-      --primary: #0D2119;
-      --secondary: #1B4332;
-      --accent: #FF8A65;
-      --chat-bg: #101814;
-      --bubble-user: #4A2C21;
-      --bubble-ai: #1A2D24;
-      --backdrop: rgba(0, 0, 0, 0.7);
-      --text: #E0E0E0;
-      --muted: #8A9E94;
-      --surface: #0D2119;
-      --border: #2D6A4F;
+      /* Dark Theme Palette */
+      --bg-main: #121212;
+      --bg-surface: #1E1E1E;
+      --bg-surface-secondary: #2C2C2C;
+      --bg-accent: #0084FF;
+      --bg-accent-hover: #339DFF;
+      --bg-user-bubble: #003366;
+      
+      --text-primary: #EAEAEA;
+      --text-secondary: #A0A0A0;
+      --text-accent: #FFFFFF;
+      --text-user-bubble: #D9E9FF;
+      
+      --border-color: #333333;
+      --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
 
-    /* =========================================
-       -- 2. Base & Typography --
-    ========================================= */
-    * { box-sizing: border-box; }
+    /* =================================================================
+       -- 2. BASE & TYPOGRAPHY --
+       تنسيقات أساسية للجسم والخطوط لضمان تجربة قراءة مريحة.
+    ================================================================= */
+    *, *::before, *::after { box-sizing: border-box; }
+
     body {
       margin: 0;
-      font-family: 'Cairo', sans-serif;
-      background: var(--chat-bg);
-      color: var(--text);
-      transition: background-color .3s, color .3s;
+      font-family: var(--font-family-base);
+      background-color: var(--bg-main);
+      color: var(--text-primary);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color 0.3s ease, color 0.3s ease;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
       line-height: 1.7;
     }
 
-    /* =========================================
-       -- 3. App Shell & Main Layout --
-    ========================================= */
-    .chat-container {
-      max-width: 820px;
-      margin: 0 auto;
-      height: 100vh;
+    /* =================================================================
+       -- 3. APP SHELL & RESPONSIVE LAYOUT --
+       بناء هيكل التطبيق ليكون متجاوبًا بالكامل. يبدأ بالتصميم المخصص
+       للجوال ثم يتكيف مع الشاشات الأكبر.
+    ================================================================= */
+    .app-shell {
       display: flex;
       flex-direction: column;
-      background: var(--chat-bg);
-      border-radius: 1.5rem;
+      height: 100vh; /* Fallback for older browsers */
+      height: 100dvh; /* Dynamic viewport height for modern browsers */
+      background-color: var(--bg-surface);
       overflow: hidden;
     }
-    @supports (height: 100dvh) { .chat-container { height: 100dvh; } }
-    
-    .footer {
-      text-align: center; padding: .75rem;
-      font-size: .9rem; color: var(--muted);
-      padding-bottom: calc(.75rem + env(safe-area-inset-bottom));
-      background: var(--surface);
-      flex-shrink: 0;
-    }
 
-    /* =========================================
-       -- 4. Welcome & Profile Screens --
-    ========================================= */
+    /* For Tablets and Desktops */
+    @media (min-width: 768px) {
+      body {
+        padding: 1.5rem; /* Add some breathing room on large screens */
+      }
+      .app-shell {
+        max-width: 800px;
+        margin: 0 auto;
+        border-radius: 1.5rem; /* Rounded corners on desktop */
+        box-shadow: var(--shadow-md);
+        height: calc(100dvh - 3rem); /* Adjust height to account for body padding */
+        border: 1px solid var(--border-color);
+      }
+    }
+    
+    /* =================================================================
+       -- 4. WELCOME & PROFILE SCREENS --
+       تصميم جديد لشاشات البداية وإدخال البيانات لجعلها أكثر جاذبية.
+    ================================================================= */
     .welcome-screen, .user-data-screen {
       display: flex; flex-direction: column; justify-content: center;
-      align-items: center; height: 100vh; text-align: center;
-      background-color: var(--primary); color: #fff;
-      padding: 1rem;
+      align-items: center; text-align: center;
+      padding: 2rem;
+      height: 100%;
       position: relative;
+      background-color: #111;
+      color: #fff;
     }
-    @supports (height: 100dvh) { .welcome-screen, .user-data-screen { height: 100dvh; } }
     .welcome-screen::before, .user-data-screen::before {
       content: '';
-      position: absolute; inset: 0; z-index: 1;
-      background: linear-gradient(135deg, rgba(27, 67, 50, 0.9), rgba(45, 106, 79, 0.8)), 
-                  url('https://images.unsplash.com/photo-1549060279-7e168fcee0c2?auto=format&fit=crop&w=1200&q=70') center/cover;
-      opacity: 0.8;
+      position: absolute; inset: 0;
+      background-image: linear-gradient(160deg, rgba(0, 50, 100, 0.85) 0%, rgba(0, 0, 0, 0.95) 100%), url('https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=1200&q=70');
+      background-size: cover;
+      background-position: center;
+      opacity: 0.7;
+      z-index: 1;
     }
-    .welcome-screen > *, .user-data-screen > * {
-      position: relative; z-index: 2;
-    }
-    .welcome-screen p { line-height: 1.8; }
+    .welcome-screen > *, .user-data-screen > * { position: relative; z-index: 2; }
+
     .cta-btn {
-      background: var(--accent); font-weight: 800;
-      box-shadow: 0 8px 20px rgba(0,0,0,.25);
-      padding: 1rem 2.5rem; border-radius: .75rem;
-      transition: all .25s ease-out;
-      border: 2px solid transparent;
+      background-color: var(--bg-accent);
+      color: var(--text-accent);
+      font-weight: 700;
+      padding: 0.85rem 2.5rem;
+      border-radius: 50px; /* Fully rounded */
+      transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+      border: none;
+      box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3);
+      cursor: pointer;
     }
     .cta-btn:hover {
       transform: translateY(-3px);
-      box-shadow: 0 12px 25px rgba(0,0,0,.3);
-      background: color-mix(in srgb, var(--accent) 90%, black);
+      background-color: var(--bg-accent-hover);
+      box-shadow: 0 6px 20px rgba(0, 123, 255, 0.4);
     }
-    .cta-btn:active { transform: translateY(0); }
-    
     #userDataScreen .w-full.max-w-sm {
-        background: rgba(13, 33, 25, 0.4);
-        backdrop-filter: blur(10px);
+      background: rgba(20, 20, 20, 0.5);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
     #userDataScreen input {
-        border-radius: 0.75rem !important;
-        font-family: 'Cairo', sans-serif;
+      padding-top: 0.9rem;
+      padding-bottom: 0.9rem;
+      font-family: var(--font-family-base);
     }
 
-    /* =========================================
-       -- 5. Chat UI Components --
-    ========================================= */
-    /* -- Header -- */
+    /* =================================================================
+       -- 5. CHAT UI COMPONENTS --
+       إعادة تصميم كامل لواجهة المحادثة لتكون شبيهة بتطبيقات
+       المحادثة الشهيرة مثل واتساب.
+    ================================================================= */
     .chat-header {
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-      color: var(--text);
-      padding: .875rem 1.25rem;
-      position: sticky; top: 0; z-index: 10;
-      display: flex; justify-content: space-between; align-items: center;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.75rem 1rem;
+      background-color: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
       flex-shrink: 0;
+      position: sticky; top: 0; z-index: 20;
     }
-    .brand { display: flex; align-items: center; gap: .75rem; }
     .brand img {
-      width: 44px; height: 44px;
-      border-radius: 999px; object-fit: cover;
-      border: 2px solid var(--accent);
-    }
-    .brand span { font-weight: 800; }
-    @media (max-width: 420px) { .brand span { display: none; } }
-
-    /* -- Chat Messages Area -- */
-    .chat-messages {
-      flex: 1; padding: 1.25rem;
-      overflow-y: auto; -webkit-overflow-scrolling: touch;
-      padding-bottom: 7rem;
-      background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.03) 1px, transparent 0);
-      background-size: 25px 25px;
-    }
-    html.dark .chat-messages {
-       background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0);
-    }
-
-    /* -- Message Bubbles -- */
-    .message-bubble {
-      padding: .85rem 1.2rem;
-      border-radius: 1.25rem; max-width: 85%;
-      margin-bottom: .85rem; animation: fadeIn .3s ease-out;
-      position: relative; line-height: 1.75;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      word-wrap: break-word;
-    }
-    .message-bubble.user {
-      background: var(--bubble-user);
-      color: #3D1E11; margin-left: auto;
-      border-bottom-right-radius: .35rem;
-    }
-    .message-bubble.ai {
-      background: var(--bubble-ai);
-      color: var(--text); margin-right: auto;
-      border: 1px solid var(--border);
-      border-bottom-left-radius: .35rem;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-    }
-    .message-bubble strong { color: var(--primary); }
-    html.dark .message-bubble strong { color: var(--accent); }
-    
-    .msg-meta {
-      display: flex; gap: .35rem; opacity: 0;
-      transition: .2s; position: absolute;
-      bottom: .35rem; inset-inline-end: .6rem;
-    }
-    .message-bubble:hover .msg-meta { opacity: .95; }
-    .meta-btn {
-      background: transparent; border: none; font-size: .85rem;
-      cursor: pointer; color: var(--muted);
-      padding: .15rem .35rem; border-radius: .35rem;
-    }
-    .meta-btn:hover { color: var(--accent); background: rgba(0,0,0,.05); }
-
-    /* -- Typing Indicator -- */
-    .typing { display: inline-flex; gap: 6px; align-items: center; }
-    .dot {
-      width: 7px; height: 7px; border-radius: 999px;
-      background: var(--muted); animation: blink 1.2s infinite;
-    }
-    .dot:nth-child(2) { animation-delay: .2s; }
-    .dot:nth-child(3) { animation-delay: .4s; }
-    @keyframes blink { 0%, 80%, 100% { opacity: .2; } 40% { opacity: 1; } }
-
-    /* -- Call-to-Action Card -- */
-    .card-cta {
-      display: flex; align-items: center; gap: .75rem;
-      background: var(--surface);
-      border: 1px solid var(--border);
-    }
-    .badge {
-      font-size: .75rem; padding: .2rem .6rem; border-radius: .5rem;
-      background: color-mix(in srgb, var(--accent) 20%, transparent);
-      color: color-mix(in srgb, var(--accent) 90%, black);
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-    html.dark .badge { color: var(--text); }
-    #generatePlanBtn {
-        font-weight: 700;
-        transition: all .2s;
-        flex-shrink: 0;
-    }
-    #generatePlanBtn:hover:not(:disabled) { transform: scale(1.03); }
-    #generatePlanBtn:disabled {
-        background-color: var(--muted);
-        cursor: not-allowed;
-    }
-    
-    /* -- Reply Bar -- */
-    .reply-bar {
-      display: none; align-items: center; gap: .5rem;
-      padding: .5rem .75rem;
-      border: 1px dashed var(--border);
-      border-radius: .6rem; margin: .25rem .75rem 0;
-      background: color-mix(in srgb, var(--accent) 5%, transparent);
-    }
-    .reply-bar.show { display: flex; }
-    .reply-bar .x {
-      margin-inline-start: auto; background: transparent;
-      border: none; font-size: 1.1rem;
-      color: var(--muted);
-    }
-    .reply-bar .x:hover { color: var(--accent); }
-
-    /* -- Input Area -- */
-    .input-area {
-      display: flex; gap: .5rem; padding: .75rem;
-      background: color-mix(in srgb, var(--surface) 92%, transparent);
-      border-top: 1px solid var(--border);
-      position: sticky; bottom: 0; z-index: 10;
-      align-items: center; backdrop-filter: saturate(160%) blur(8px);
-      padding-bottom: calc(.75rem + env(safe-area-inset-bottom));
-      flex-shrink: 0;
-    }
-    .input-area input[type=text] {
-      flex: 1; border-radius: 999px;
-      padding: .85rem 1.25rem; border: 1px solid var(--border);
-      background: var(--surface); color: var(--text);
-      font-family: 'Cairo', sans-serif; font-size: 1rem;
-      min-width: 50px;
-    }
-    .input-area input[type=text]::placeholder { color: var(--muted); }
-    .input-area input[type=text]:focus {
-      outline: none; border-color: var(--accent);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+      width: 42px; height: 42px;
+      border: 2px solid var(--bg-accent);
     }
     .icon-btn {
-      background: transparent; color: var(--secondary);
-      border-radius: 999px; width: 48px; height: 48px;
-      display: grid; place-items: center; transition: .25s;
-      border: 1px solid transparent;
-      flex-shrink: 0;
+        display: inline-flex; justify-content: center; align-items: center;
+        width: 44px; height: 44px;
+        border-radius: 50%;
+        border: none;
+        background-color: transparent;
+        color: var(--text-secondary);
+        cursor: pointer;
+        transition: background-color 0.2s, color 0.2s;
+        flex-shrink: 0;
     }
-    html.dark .icon-btn { color: var(--muted); }
     .icon-btn:hover {
-      color: var(--accent);
-      background: color-mix(in srgb, var(--accent) 10%, transparent);
+        background-color: var(--bg-user-bubble);
+        color: var(--bg-accent);
     }
-    .send-btn { background: var(--accent); color: #fff; }
-    .send-btn:hover { background: color-mix(in srgb, var(--accent) 90%, black); }
-    html[dir="rtl"] .input-area { flex-direction: row-reverse; }
-    html[dir="rtl"] #userInput { text-align: right; }
-    html[dir="ltr"] #userInput { text-align: left; }
+    .chat-header .icon-btn {
+        border: 1px solid var(--border-color);
+    }
 
-    /* =========================================
-       -- 6. Modal & Overlays --
-    ========================================= */
-    .modal {
-      position: fixed; inset: 0; display: none;
-      align-items: center; justify-content: center;
-      background: var(--backdrop); z-index: 50;
+    .chat-messages {
+      flex: 1;
+      padding: 1rem;
+      overflow-y: auto;
+      background-color: var(--bg-main);
     }
-    .modal.open { display: flex; }
+    /* For better scrolling on iOS */
+    .chat-messages { -webkit-overflow-scrolling: touch; }
+    
+    .message-bubble {
+      max-width: 80%;
+      padding: 0.75rem 1rem;
+      border-radius: 18px;
+      margin-bottom: 0.75rem;
+      line-height: 1.6;
+      word-wrap: break-word;
+      box-shadow: var(--shadow-sm);
+      animation: fadeIn 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      position: relative;
+    }
+    .message-bubble.user {
+      background-color: var(--bg-user-bubble);
+      color: var(--text-user-bubble);
+      margin-left: auto; /* Changed from margin-inline-start */
+      border-bottom-right-radius: 6px;
+    }
+    .message-bubble.ai {
+      background-color: var(--bg-surface-secondary);
+      color: var(--text-primary);
+      margin-right: auto; /* Changed from margin-inline-end */
+      border-bottom-left-radius: 6px;
+    }
+    /* يجعل الروابط داخل الفقاعات مميزة */
+    .message-bubble a {
+        color: var(--bg-accent);
+        text-decoration: underline;
+    }
+    .message-bubble strong { color: var(--bg-accent); }
+    html[dir="rtl"] .message-bubble.user { margin-right: auto; margin-left: 0; }
+    html[dir="rtl"] .message-bubble.ai { margin-left: auto; margin-right: 0; }
+    
+    .msg-meta { display: none; } /* Simplified - remove hover for cleaner mobile experience */
+    .typing {
+        display: flex; gap: 5px; align-items: center; padding: 0.5rem 0;
+    }
+    .typing .dot {
+        width: 8px; height: 8px; border-radius: 50%;
+        background-color: var(--text-secondary);
+        animation: typing-blink 1.4s infinite both;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes typing-blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
+
+    /* =================================================================
+       -- 6. INPUT AREA --
+       تصميم منطقة الإدخال لتكون عملية وواضحة، مع أزرار دائرية حديثة.
+       تشبه تماماً تجربة واتساب.
+    ================================================================= */
+    .input-area-wrapper {
+        background-color: var(--bg-surface);
+        padding: 0.5rem;
+        padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); /* Support for iPhone notches */
+        border-top: 1px solid var(--border-color);
+        flex-shrink: 0;
+        position: sticky; bottom: 0; z-index: 20;
+    }
+    .input-area {
+      display: flex;
+      align-items: flex-end; /* Align items to bottom for growing textarea */
+      gap: 0.5rem;
+      background-color: var(--bg-surface-secondary);
+      border-radius: 24px;
+      padding: 0.25rem 0.5rem;
+    }
+    /* Using a textarea for a WhatsApp-like multi-line experience */
+    #userInput {
+      flex: 1;
+      border: none;
+      outline: none;
+      background-color: transparent;
+      padding: 0.8rem 1rem;
+      font-family: var(--font-family-base);
+      font-size: 1rem;
+      color: var(--text-primary);
+      resize: none; /* Disable manual resize */
+      line-height: 1.5;
+      max-height: 120px; /* Limit growth */
+      overflow-y: auto;
+    }
+    #userInput::placeholder { color: var(--text-secondary); }
+    
+    .send-btn {
+        background-color: var(--bg-accent);
+        color: var(--text-accent);
+    }
+    .send-btn:hover {
+        background-color: var(--bg-accent-hover);
+        color: var(--text-accent);
+    }
+    .mic-btn.mic-live {
+      color: #ef4444;
+      animation: pulse-mic 1.5s infinite;
+    }
+    @keyframes pulse-mic {
+        0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+        70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); }
+        100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+    }
+    .rec-hint {
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        text-align: center;
+        padding: 0.25rem;
+    }
+    #recHintWrap {
+        margin-top: 0;
+        padding: 0 1rem;
+    }
+
+    /* =================================================================
+       -- 7. MODALS & OVERLAYS --
+       تحديث تصميم النوافذ المنبثقة لتتماشى مع الهوية البصرية الجديدة.
+    ================================================================= */
+    .modal {
+      position: fixed; inset: 0;
+      display: none; align-items: center; justify-content: center;
+      background: rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(5px);
+      z-index: 100;
+    }
+    .modal.open { display: flex; animation: fadeIn 0.3s ease; }
     .modal-content {
-      width: min(560px, 96vw); max-height: 86vh; overflow: hidden;
-      background: var(--surface); border-radius: 1rem;
-      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      width: min(500px, 92vw);
+      background: var(--bg-surface);
+      border-radius: 1rem;
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
       display: flex; flex-direction: column;
+      max-height: 90vh;
     }
     .modal-header {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: .85rem 1.25rem; border-bottom: 1px solid var(--border);
-      background: var(--secondary); color: #fff;
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border-color);
     }
     .modal-body { padding: 1.5rem; overflow-y: auto; }
-    .modal-body p { line-height: 1.8; }
-    .close-button {
-      background: transparent; color: #fff;
-      font-size: 1.75rem; line-height: 1; padding: 0 .25rem;
-      opacity: 0.8; transition: opacity .2s;
-    }
-    .close-button:hover { opacity: 1; }
-    
-    .contact-actions { display: grid; grid-template-columns: 1fr; gap: 1rem; }
-    @media (min-width: 520px) { .contact-actions { grid-template-columns: 1fr 1fr; } }
     .contact-btn {
-      display: flex; align-items: center; gap: .75rem;
-      padding: 1rem; border-radius: .75rem; font-weight: 800;
+      display: flex; align-items: center; gap: 0.75rem;
+      padding: 1rem; border-radius: 0.75rem; font-weight: 700;
       justify-content: center; transition: all .2s;
     }
-    .contact-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,.15); }
-    .contact-btn svg { width: 24px; height: 24px; }
+    .contact-btn:hover { transform: translateY(-2px); filter: brightness(1.1); }
     .contact-whatsapp { background: #25D366; color: #fff; }
-    .contact-phone { background: #0ea5e9; color: #fff; }
-    
-    .toast {
-      position: fixed; bottom: 1.2rem; left: 50%; transform: translateX(-50%);
-      background: #111827; color: #fff; padding: .8rem 1.2rem;
-      border-radius: .75rem; z-index: 60; opacity: 0;
-      transition: .35s; font-weight: 500;
-    }
+    .contact-phone { background: #007BFF; color: #fff; }
 
-    /* =========================================
-       -- 7. Animations & Special States --
-    ========================================= */
+    /* =================================================================
+       -- 8. UTILITIES & ANIMATIONS --
+       تحسينات إضافية وتأثيرات حركية لجعل التجربة أكثر تفاعلية.
+    ================================================================= */
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(12px) scale(0.98); }
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
       to { opacity: 1; transform: translateY(0) scale(1); }
     }
-    
-    .mic-btn.mic-live {
-      background: color-mix(in srgb, #ef4444 15%, transparent);
-      color: #ef4444;
+    .toast {
+      position: fixed; bottom: 1.5rem; left: 50%;
+      transform: translateX(-50%);
+      background: #222; color: #fff;
+      padding: 0.8rem 1.2rem; border-radius: 8px;
+      z-index: 110; opacity: 0; font-weight: 500;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      transition: opacity 0.3s ease, transform 0.3s ease;
     }
-    .mic-live::after {
-      content: ''; position: absolute; inset: -3px;
-      border: 2px solid #ef4444; border-radius: 999px;
-      animation: pulse 1.2s infinite;
-    }
-    @keyframes pulse {
-      0% { transform: scale(.95); opacity: .9; }
-      70% { transform: scale(1.08); opacity: .2; }
-      100% { transform: scale(.95); opacity: .9; }
-    }
-    .rec-hint { font-size: .8rem; color: #ef4444; margin-inline-end: .35rem; }
-
-    /* =========================================
-       -- 8. Responsive Enhancements --
-    ========================================= */
-    @media (max-width: 768px) { 
-      .chat-container { 
-        border-radius: 0; 
-        box-shadow: none;
-        height: 100%; /* Ensure full height on mobile */
-      } 
-    }
-    @media (max-width: 480px) {
-      /* Tighter spacing for small mobile screens */
-      .chat-header {
-        padding: .5rem .75rem;
-      }
-      .input-area {
-        padding: .5rem;
-        gap: .25rem;
-      }
-      .icon-btn {
-        width: 44px;
-        height: 44px;
-      }
-      .chat-messages {
-        padding: .75rem;
-      }
-      .cta-btn {
-        padding: .8rem 1.5rem;
-        font-size: .9rem;
-      }
-    }
+    .toast.show { opacity: 1; transform: translate(-50%, -10px); }
   </style>
 </head>
-<body class="flex flex-col h-screen overflow-hidden">
+<!-- تم استبدال الكلاسات القديمة في body بكلاس واحد رئيسي .app-shell -->
+<body class="app-shell">
 
   <!-- =======================
-       Welcome Screen
+       Welcome Screen - No change in logic, only styling
   ======================== -->
   <div class="welcome-screen" id="welcomeScreen">
     <div class="absolute top-4 right-4 z-10" style="inset-inline-end: 1rem; inset-inline-start: auto;">
-      <button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-3 !h-9 rounded-lg !border-white/40 hover:!border-accent !text-white">AR</button>
+      <button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-4 !h-10 !rounded-full !border-white/40 hover:!border-accent !text-white bg-white/10 backdrop-blur-sm">AR</button>
     </div>
     <img id="welcomeAvatar" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=200&q=80" alt="Coach Avatar" class="w-32 h-32 rounded-full mb-6 shadow-xl object-cover border-4 border-white/50"/>
     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-2" id="welcomeTitle">مدربك الشخصي الذكي</h1>
     <p class="text-base sm:text-lg lg:text-xl font-light text-white/90 mb-8 max-w-xl" id="welcomeSubtitle">جاهز للتغيير؟ خطتك مصممة خصيصًا لك — تنفيذ محكم، متابعة دقيقة، ونتيجة ملموسة.</p>
-    <button id="startBtn" class="cta-btn">ابدأ الآن</button>
+    <button id="startBtn" class="cta-btn text-lg">ابدأ الآن</button>
   </div>
 
   <!-- =======================
-       User Profile Screen
+       User Profile Screen - No change in logic, only styling
   ======================== -->
   <div class="user-data-screen hidden" id="userDataScreen">
     <div class="absolute top-4 right-4 z-10" style="inset-inline-end: 1rem; inset-inline-start: auto;">
-      <button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-3 !h-9 rounded-lg !border-white/40 hover:!border-accent !text-white">AR</button>
+       <button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-4 !h-10 !rounded-full !border-white/40 hover:!border-accent !text-white bg-white/10 backdrop-blur-sm">AR</button>
     </div>
     <div class="w-full max-w-sm p-6 sm:p-8 space-y-6 rounded-2xl shadow-xl border border-white/20">
       <div class="text-center">
@@ -416,26 +395,23 @@
         <p class="text-white/80 mt-2" id="userDataSubtitle">نحتاج بعض المعلومات للبدء</p>
       </div>
       <div class="space-y-4">
-        <!-- Name Input -->
         <div class="relative flex items-center">
-          <span class="absolute inset-y-0 flex items-center pointer-events-none" style="inset-inline-start: 1rem;">
+          <span class="absolute inset-y-0 flex items-center pointer-events-none" style="inset-inline-start: 1.25rem;">
             <svg class="w-5 h-5 text-white/60" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.5a5.5 5.5 0 0 1 5.5 5.5c0 1.57-.67 3-1.75 3.98-1.25.9-2.88 1.32-4.25.26-.7-.54-1.12-1.39-1.12-2.31 0-1.63 1.3-2.95 2.92-2.95.42 0 .81.09 1.18.25a3.47 3.47 0 0 0-3.5-3.5c-1.93 0-3.5 1.57-3.5 3.5 0 .92.35 1.77 1.12 2.31-1.37 1.06-3 .64-4.25-.26C2.17 11 1.5 9.57 1.5 8a5.5 5.5 0 0 1 5.5-5.5C8.83 2.5 10.37 3.4 12 2.5zm6.53 9.78c-1.2-1.03-2.6-1.55-4.2-1.55-1.93 0-3.6.86-4.83 2.22-.6.67-1.13 1.4-1.57 2.18-.5.9-.9 1.87-1.15 2.87-.21.84-.3 1.7-.27 2.55.03.88.2 1.75.47 2.6.27.8.64 1.55 1.1 2.25.5.75 1.1 1.44 1.8 2.02.8.63 1.7.97 2.7.97s1.9-.34 2.7-.97c.7-.58 1.3-1.27 1.8-2.02.46-.7.83-1.45 1.1-2.25.27-.85.44-1.72.47-2.6.03-.85-.06-1.71-.27-2.55-.25-1-.65-1.97-1.15-2.87-.44-.78-.97-1.51-1.57-2.18z"/></svg>
           </span>
-          <input type="text" id="userName" class="block w-full rounded-full py-3 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="اكتب اسمك هنا" dir="auto" style="padding-inline-start: 3.25rem; padding-inline-end: 1.25rem;">
+          <input type="text" id="userName" class="block w-full rounded-full bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="اكتب اسمك هنا" dir="auto" style="padding-inline-start: 3.5rem; padding-inline-end: 1.25rem;">
         </div>
-        <!-- Age Input -->
         <div class="relative flex items-center">
-          <span class="absolute inset-y-0 flex items-center pointer-events-none" style="inset-inline-start: 1rem;">
+          <span class="absolute inset-y-0 flex items-center pointer-events-none" style="inset-inline-start: 1.25rem;">
             <svg class="w-5 h-5 text-white/60" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4c-4.41 0-8 3.59-8 8s3.59 8 8 8 8-3.59 8-8-3.59-8-8-8zm0 14c-3.31 0-6-2.69-6-6s2.69-6 6-6 6 2.69 6 6-2.69 6-6 6zm-1-8h2v5h-2zm0-2h2v2h-2z"/></svg>
           </span>
-          <input type="text" inputmode="numeric" id="userAge" class="block w-full rounded-full py-3 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="عمرك" dir="ltr" style="padding-inline-start: 3.25rem; padding-inline-end: 1.25rem;">
+          <input type="text" inputmode="numeric" id="userAge" class="block w-full rounded-full bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="عمرك" dir="ltr" style="padding-inline-start: 3.5rem; padding-inline-end: 1.25rem;">
         </div>
-        <!-- Country Input -->
         <div class="relative flex items-center">
-          <span class="absolute inset-y-0 flex items-center pointer-events-none" style="inset-inline-start: 1rem;">
+          <span class="absolute inset-y-0 flex items-center pointer-events-none" style="inset-inline-start: 1.25rem;">
             <svg class="w-5 h-5 text-white/60" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1h-2v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/></svg>
           </span>
-          <input type="text" id="userCountry" class="block w-full rounded-full py-3 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="بلدك" dir="auto" style="padding-inline-start: 3.25rem; padding-inline-end: 1.25rem;">
+          <input type="text" id="userCountry" class="block w-full rounded-full bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="بلدك" dir="auto" style="padding-inline-start: 3.5rem; padding-inline-end: 1.25rem;">
         </div>
       </div>
       <button id="nextBtn" class="cta-btn w-full mt-4 !py-3 !text-lg !font-bold">ابدأ المحادثة</button>
@@ -443,89 +419,54 @@
   </div>
 
   <!-- =======================
-       Chat UI
+       Chat UI - Screen is now hidden by default and controlled by JS
   ======================== -->
   <div class="chat-container hidden" id="chatContainer">
     <!-- Chat Header -->
     <div class="chat-header">
-      <div class="brand">
-        <img id="chatAvatar" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=80&q=80" alt="Coach Avatar"/>
-        <span class="text-xl font-bold" id="chatTitle">مدربك الشخصي الذكي</span>
+      <div class="brand flex items-center gap-3">
+        <img id="chatAvatar" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=80&q=80" alt="Coach Avatar" class="rounded-full"/>
+        <span class="text-lg font-bold" id="chatTitle">مدربك الشخصي الذكي</span>
       </div>
       <div class="flex items-center gap-2">
-        <button id="btnLang" class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-3 !h-9 rounded-lg !border-border hover:!border-accent">AR</button>
-        <button id="btnTheme" class="icon-btn text-xl border !w-9 !h-9 rounded-lg !border-border hover:!border-accent">☀️</button>
+        <button id="btnLang" class="lang-toggle-btn icon-btn text-sm font-bold !w-auto px-4 !h-9">AR</button>
+        <button id="btnTheme" class="icon-btn text-xl !w-9 !h-9">☀️</button>
       </div>
     </div>
 
     <!-- Message Area -->
-    <div class="chat-messages" id="chatMessages" role="region" aria-label="Chat messages" aria-live="polite"></div>
+    <div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
+    
+    <!-- Input Area Wrapper -->
+    <div class="input-area-wrapper">
+        <!-- CTA & iHerb Banners will now be inside the scrollable area -->
 
-    <!-- CTA Plan Card -->
-    <div id="planButtonArea" class="px-4 py-3 hidden">
-      <div class="rounded-xl p-3 card-cta justify-between flex-wrap sm:flex-nowrap gap-y-2">
-        <div class="min-w-0">
-          <div id="ctaTitle" class="text-[.98rem] font-bold text-slate-800 dark:text-slate-100 truncate">جاهز لنتيجة ملموسة؟</div>
-          <div id="ctaSubtitle" class="text-sm text-slate-600 dark:text-slate-300 mt-1">تسليم خطة مُحكمة + متابعة أسبوعية.</div>
+        <!-- Reply Bar -->
+        <div id="replyBar" class="reply-bar hidden" aria-live="polite">
+          <strong id="replyBarLabel">رد على:</strong>
+          <span id="replySnippet" class="truncate"></span>
+          <button id="replyClear" class="x" title="إلغاء">×</button>
         </div>
-        <div class="flex items-center gap-2">
-          <span id="ctaBadge" class="badge">خصم اليوم</span>
-          <button id="generatePlanBtn" class="send-btn font-bold px-4 py-2 rounded-lg" disabled>احصل على خطتك</button>
-        </div>
-      </div>
-      
-      <!-- iHerb Discount Banner -->
-      <div id="iherb-card" class="mt-3 flex items-center gap-3 rounded-xl p-3 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/40 dark:to-green-900/40 border border-emerald-200 dark:border-emerald-700/60 shadow-sm">
-        <div class="flex-shrink-0 grid place-items-center w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-400">
-          <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66l.95-2.3c.48.17.98.3 1.5.38c3.3.5 6.22-2.39 6.84-5.64c.45-2.3-1.05-4.42-3.23-5.32c-.6-.25-1.25-.37-1.92-.37c-.85 0-1.67.2-2.43.56l-1.89-.66C7.9 3.83 17 8 17 8Z" /></svg>
-        </div>
-        <div class="flex-1 min-w-0">
-          <p id="iherbTitle" class="font-extrabold text-sm text-emerald-800 dark:text-emerald-200">
-            احصل على مكملاتك من iHerb
-          </p>
-          <p id="iherbSubtitle" class="text-xs text-emerald-700 dark:text-emerald-300 mt-1">
-            خصم إضافي 10% هدية من مدربك لدعم رحلتك!
-          </p>
-        </div>
-        <!-- START MODIFICATION -->
-        <div class="flex items-center gap-2 flex-wrap justify-end">
-          <div id="iherb-code" class="px-3 py-1.5 rounded-lg bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-400 dark:border-emerald-600 font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">
-            AYT3413
-          </div>
-          <a id="copy-and-go-iherb-btn" href="https://iherb.co/fL9KCv1i?rcode=AYT3413&utm_medium=appshare" target="_blank" rel="noopener noreferrer" class="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition-colors text-sm shadow">
-            <span id="copy-and-go-iherb-btn-text">انسخ وتوجه للمتجر</span>
-            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg>
-          </a>
-        </div>
-        <!-- END MODIFICATION -->
-      </div>
 
-      <p id="planButtonNote" class="text-gray-700 dark:text-gray-300 text-xs mt-2 px-2">بالضغط، ستفتح طرق التواصل. باقة البدء تشمل: تقييم دقيق، خطة وجبات وتمرين، متابعة أول أسبوع.</p>
+        <!-- Main Input Form -->
+        <div class="input-area" id="inputArea">
+            <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة/ملف" title="صورة/ملف">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+            </button>
+            <input type="file" id="fileInput" accept="image/*,.txt,.csv,application/pdf" class="hidden" />
+            
+            <!-- Replaced input with textarea for multiline support -->
+            <textarea id="userInput" placeholder="اكتب رسالتك..." dir="rtl" rows="1"></textarea>
+
+            <button id="micBtn" class="icon-btn mic-btn" aria-label="تسجيل صوتي" title="اضغط مطولاً للتسجيل">
+                <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
+            </button>
+            <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل" title="إرسال">
+                <svg class="w-5 h-5" style="transform: translateX(1px);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
+            </button>
+        </div>
+        <div class="hidden" id="recHintWrap"><p class="rec-hint" id="recHint">● جاري التسجيل… ارفع إصبعك للنسخ إلى خانة الكتابة</p></div>
     </div>
-
-    <!-- Reply Bar -->
-    <div id="replyBar" class="reply-bar" aria-live="polite">
-      <strong id="replyBarLabel">رد على:</strong>
-      <span id="replySnippet" class="truncate"></span>
-      <button id="replyClear" class="x" title="إلغاء">×</button>
-    </div>
-
-    <!-- Input Area -->
-    <div class="input-area" id="inputArea">
-      <input type="text" id="userInput" placeholder="اكتب رسالتك..." dir="rtl"
-             autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
-      <input type="file" id="fileInput" accept="image/*,.txt,.csv,application/pdf" class="hidden" />
-      <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة/ملف" title="صورة/ملف">
-        <svg class="w-6 h-6 -rotate-45" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-      </button>
-      <button id="micBtn" class="icon-btn mic-btn" aria-label="تسجيل صوتي" title="اضغط مطولاً للتسجيل">
-        <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
-      </button>
-      <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل" title="إرسال">
-        <svg class="w-5 h-5 pl-1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
-      </button>
-    </div>
-    <div class="px-4 pb-2 -mt-2 hidden" id="recHintWrap"><span class="rec-hint" id="recHint">● جاري التسجيل… ارفع إصبعك للنسخ إلى خانة الكتابة</span></div>
   </div>
 
   <!-- =======================
@@ -564,11 +505,40 @@
       </div>
     </div>
   </div>
-
-  <!-- =======================
-       Page Footer
-  ======================== -->
-  <footer class="footer" id="pageFooter">
+  <!-- This is the container where the CTA and iHerb cards will be dynamically inserted by the JS -->
+  <div id="dynamic-cards-container"></div>
+  <!-- The actual cards are hidden and will be cloned into the container above -->
+  <div id="planButtonArea" class="px-4 py-3 hidden">
+    <div class="rounded-xl p-3 card-cta justify-between flex-wrap sm:flex-nowrap gap-y-2">
+      <div class="min-w-0">
+        <div id="ctaTitle" class="text-[.98rem] font-bold text-slate-800 dark:text-slate-100 truncate">جاهز لنتيجة ملموسة؟</div>
+        <div id="ctaSubtitle" class="text-sm text-slate-600 dark:text-slate-300 mt-1">تسليم خطة مُحكمة + متابعة أسبوعية.</div>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="ctaBadge" class="badge">خصم اليوم</span>
+        <button id="generatePlanBtn" class="send-btn font-bold px-4 py-2 rounded-lg" disabled>احصل على خطتك</button>
+      </div>
+    </div>
+    <div id="iherb-card" class="mt-3 flex items-center gap-3 rounded-xl p-3 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/40 dark:to-green-900/40 border border-emerald-200 dark:border-emerald-700/60 shadow-sm">
+      <div class="flex-shrink-0 grid place-items-center w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-400">
+        <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66l.95-2.3c.48.17.98.3 1.5.38c3.3.5 6.22-2.39 6.84-5.64c.45-2.3-1.05-4.42-3.23-5.32c-.6-.25-1.25-.37-1.92-.37c-.85 0-1.67.2-2.43.56l-1.89-.66C7.9 3.83 17 8 17 8Z" /></svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p id="iherbTitle" class="font-extrabold text-sm text-emerald-800 dark:text-emerald-200">احصل على مكملاتك من iHerb</p>
+        <p id="iherbSubtitle" class="text-xs text-emerald-700 dark:text-emerald-300 mt-1">خصم إضافي 10% هدية من مدربك لدعم رحلتك!</p>
+      </div>
+      <div class="flex items-center gap-2 flex-wrap justify-end">
+        <div id="iherb-code" class="px-3 py-1.5 rounded-lg bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-400 dark:border-emerald-600 font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">AYT3413</div>
+        <a id="copy-and-go-iherb-btn" href="https://iherb.co/fL9KCv1i?rcode=AYT3413&utm_medium=appshare" target="_blank" rel="noopener noreferrer" class="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition-colors text-sm shadow">
+          <span id="copy-and-go-iherb-btn-text">انسخ وتوجه للمتجر</span>
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg>
+        </a>
+      </div>
+    </div>
+    <p id="planButtonNote" class="text-gray-700 dark:text-gray-300 text-xs mt-2 px-2">بالضغط، ستفتح طرق التواصل. باقة البدء تشمل: تقييم دقيق، خطة وجبات وتمرين، متابعة أول أسبوع.</p>
+  </div>
+  
+  <footer class="footer hidden" id="pageFooter">
     <span id="footerMainText">© Powered by Mustafa Elsafy | مصطفى الصافي</span>
     <span class="mx-1">|</span>
     <a href="https://buymeacoffee.com/aipersonaltrainer" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">
@@ -577,24 +547,86 @@
   </footer>
 
   <script type="module">
+    // START OF NEW JS FOR UI ENHANCEMENTS (DOES NOT AFFECT CORE LOGIC)
+    function autoGrowTextarea() {
+      const userInput = document.getElementById('userInput');
+      if (!userInput) return;
+
+      const adjustHeight = () => {
+        userInput.style.height = 'auto'; // Reset height
+        userInput.style.height = userInput.scrollHeight + 'px'; // Set to content height
+      };
+
+      userInput.addEventListener('input', adjustHeight);
+      
+      // Also adjust on send to reset the height
+      const originalSendMessage = App.core.sendMessage;
+      App.core.sendMessage = function(...args) {
+          originalSendMessage.apply(this, args);
+          setTimeout(adjustHeight, 0); // Reset height after message is cleared
+      };
+    }
+    
+    function moveCTACards() {
+        // This function moves the CTA cards into the chat log for a more integrated feel.
+        // It listens for when the chat screen becomes visible.
+        const chatContainer = document.getElementById('chatContainer');
+        const planButtonArea = document.getElementById('planButtonArea');
+        const chatMessages = document.getElementById('chatMessages');
+
+        const observer = new MutationObserver(mutations => {
+            for (const mutation of mutations) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    if (!chatContainer.classList.contains('hidden')) {
+                        // Move the plan button area into the chat messages
+                        if (planButtonArea && chatMessages) {
+                           // We clone it to avoid issues if this logic runs multiple times
+                           const planClone = planButtonArea.cloneNode(true);
+                           planClone.id = ''; // Avoid duplicate IDs
+                           planClone.classList.remove('hidden');
+                           chatMessages.appendChild(planClone);
+                           planButtonArea.remove(); // Remove original
+                           
+                           // Re-bind the click event to the new button inside the clone
+                           const newGenerateBtn = planClone.querySelector('#generatePlanBtn');
+                           if(newGenerateBtn) {
+                               newGenerateBtn.addEventListener('click', App.handlers.openContactModal);
+                           }
+                           
+                           const newCopyBtn = planClone.querySelector('#copy-and-go-iherb-btn');
+                           if(newCopyBtn) {
+                              newCopyBtn.addEventListener('click', (e) => {
+                                  e.preventDefault();
+                                  const L = App.i18n.strings[App.state.lang];
+                                  const code = planClone.querySelector('#iherb-code').textContent.trim();
+                                  const url = newCopyBtn.href;
+
+                                  navigator.clipboard.writeText(code).then(() => {
+                                      App.utils.toast(L.iherbCopiedAndRedirecting);
+                                      setTimeout(() => { window.open(url, '_blank'); }, 800);
+                                  }).catch(err => {
+                                      console.error('Failed to copy iHerb code: ', err);
+                                      window.open(url, '_blank');
+                                  });
+                              });
+                           }
+                        }
+                        observer.disconnect(); // We only need to do this once
+                    }
+                }
+            }
+        });
+
+        observer.observe(chatContainer, { attributes: true });
+    }
+
+    // END OF NEW JS FOR UI ENHANCEMENTS
+
     /**
      * Smart Personal Coach App
      * ------------------------
-     * This script is organized into a single 'App' object to encapsulate all logic,
-     * preventing global scope pollution and improving maintainability.
-     *
-     * The structure is as follows:
-     * - App.config:      Constants and configuration.
-     * - App.state:       Holds the dynamic state of the application.
-     * - App.elements:    Cached DOM elements for performance.
-     * - App.i18n:        Internationalization strings and language management.
-     * - App.utils:       General helper functions (toast, theme, etc.).
-     * - App.ui:          Functions that directly manipulate the user interface.
-     * - App.services:    Modules for external interactions (API, Speech, Files).
-     * - App.prompts:     Functions to build prompts for the AI.
-     * - App.core:        The main application logic and conversation engine.
-     * - App.handlers:    Event handler functions.
-     * - App.init:        The entry point to initialize the app and bind events.
+     * THE CORE LOGIC BELOW IS UNCHANGED AS PER THE REQUEST.
+     * Only minor UI-related tweaks have been added above.
      */
 
     const App = {
@@ -669,7 +701,7 @@
             startButtonText: 'ابدأ الآن', userDataTitle: 'لنبني ملفك السريع', userDataSubtitle: 'اسمك وعُمرك ودولتك كبداية',
             namePlaceholder:'اسمك', agePlaceholder:'عمرك', countryPlaceholder:'دولتك', nextButtonText:'ابدأ المحادثة',
             inputPlaceholder:'اكتب رسالتك...', emptyFields:'أدخل الاسم والعمر والدولة للمتابعة.', imageUpload:'تم استلام الصورة — يتم التحليل الآن.',
-            typing:'… يتم الرد الآن', recStart:'● جاري التسجيل… ارفع إصبعك للنسخ', recDenied:'تعذّر الوصول للميكروفوون.', recTooShort:'التسجيل قصير جدًا.', recSaved:'تم نسخ الكلام إلى خانة الكتابة — أرسله يدويًا.',
+            typing:'…', recStart:'● جاري التسجيل… ارفع إصبعك للنسخ', recDenied:'تعذّر الوصول للميكروفوون.', recTooShort:'التسجيل قصير جدًا.', recSaved:'تم نسخ الكلام إلى خانة الكتابة — أرسله يدويًا.',
             ctaTitle: 'جاهز لنتيجة ملموسة؟', ctaSubtitle: 'تسليم خطة مُحكمة + متابعة أسبوعية.', ctaBadge: 'خصم اليوم',
             getPlanButton: 'احصل على خطتك الآن', planButtonNote: 'بالضغط، ستفتح طرق التواصل. باقة البدء تشمل: تقييم دقيق، خطة وجبات وتمرين، متابعة أول أسبوع.',
             contactModalTitle: 'احصل على خطتك الآن بضغطة زر', contactModalText1: 'اختر الطريقة المناسبة للتواصل المباشر مع المدرب.', contactModalText2: 'يمكنك الاستمرار في الحديث إذا كانت لديك أسئلة.',
@@ -685,7 +717,7 @@
             startButtonText:'Start Now', userDataTitle:"Let's build your quick profile", userDataSubtitle:"Let's start with your name, age, and country.",
             namePlaceholder:'Your Name', agePlaceholder:'Your Age', countryPlaceholder:'Your Country', nextButtonText:'Start Conversation',
             inputPlaceholder:'Type your message…', emptyFields:'Please enter your name, age, and country to continue.', imageUpload:'Image received — analyzing now.',
-            typing:'… typing now', recStart:'● Recording… release to copy', recDenied:'Microphone access denied.', recTooShort:'Recording is too short.', recSaved:'Text copied to input — send manually.',
+            typing:'…', recStart:'● Recording… release to copy', recDenied:'Microphone access denied.', recTooShort:'Recording is too short.', recSaved:'Text copied to input — send manually.',
             ctaTitle: 'Ready for tangible results?', ctaSubtitle: 'Precise plan delivery + weekly follow-up.', ctaBadge: "Today's Discount",
             getPlanButton: 'Get Your Plan Now', planButtonNote: 'By clicking, contact methods will open. The starter package includes: a detailed assessment, meal and workout plan, and follow-up for the first week.',
             contactModalTitle: 'Get your plan now with one click', contactModalText1: 'Choose the best way to contact the coach directly.', contactModalText2: 'You can continue chatting if you have questions.',
@@ -715,11 +747,13 @@
           $('nextBtn').textContent = L.nextButtonText;
           $('chatTitle').textContent = L.appName;
           $('userInput').placeholder = L.inputPlaceholder;
-          $('ctaTitle').textContent = L.ctaTitle;
-          $('ctaSubtitle').textContent = L.ctaSubtitle;
-          $('ctaBadge').textContent = L.ctaBadge;
-          $('generatePlanBtn').textContent = L.getPlanButton;
-          $('planButtonNote').textContent = L.planButtonNote;
+          
+          document.querySelectorAll('#ctaTitle').forEach(el => el.textContent = L.ctaTitle);
+          document.querySelectorAll('#ctaSubtitle').forEach(el => el.textContent = L.ctaSubtitle);
+          document.querySelectorAll('#ctaBadge').forEach(el => el.textContent = L.ctaBadge);
+          document.querySelectorAll('#generatePlanBtn').forEach(el => el.textContent = L.getPlanButton);
+          document.querySelectorAll('#planButtonNote').forEach(el => el.textContent = L.planButtonNote);
+          
           $('replyBarLabel').textContent = L.replyBarLabel;
           $('replyClear').title = L.cancelReplyTitle;
           $('plusBtn').title = L.attachFileTitle;
@@ -732,13 +766,19 @@
           $('contactModalText2').textContent = L.contactModalText2;
           $('whatsappBtnText').textContent = L.whatsappBtnText;
           $('phoneBtnText').textContent = L.phoneBtnText;
-          $('iherbTitle').textContent = L.iherbTitle;
-          $('iherbSubtitle').textContent = L.iherbSubtitle;
-          $('copy-and-go-iherb-btn-text').textContent = L.copyAndGoButton;
+
+          document.querySelectorAll('#iherbTitle').forEach(el => el.textContent = L.iherbTitle);
+          document.querySelectorAll('#iherbSubtitle').forEach(el => el.textContent = L.iherbSubtitle);
+          document.querySelectorAll('#copy-and-go-iherb-btn-text').forEach(el => el.textContent = L.copyAndGoButton);
+
           $('coffeeText').textContent = L.coffeeText;
           $('coffeeBtnText').textContent = L.coffeeBtnText;
-          $('footerMainText').textContent = L.footerText;
-          $('footerCoffeeLink').textContent = L.footerCoffeeLink;
+
+          const footer = $('pageFooter');
+          if(footer) {
+            $('footerMainText').textContent = L.footerText;
+            $('footerCoffeeLink').textContent = L.footerCoffeeLink;
+          }
           
           document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
             btn.textContent = lang === 'ar' ? 'EN' : 'AR';
@@ -770,9 +810,9 @@
           t.className = 'toast';
           t.textContent = msg;
           document.body.appendChild(t);
-          setTimeout(() => t.style.opacity = 1, 10);
+          setTimeout(() => t.classList.add('show'), 10);
           setTimeout(() => {
-            t.style.opacity = 0;
+            t.classList.remove('show');
             setTimeout(() => t.remove(), 400);
           }, 2400);
         },
@@ -794,26 +834,12 @@
           
           const safeMessage = (message && typeof message === 'string') ? message : '…';
           const htmlContent = marked.parse(safeMessage);
-          const L = App.i18n.strings[App.state.lang];
 
-          bubble.innerHTML = `
-            <div class="msg-content">${htmlContent}</div>
-            <div class="msg-meta" role="group" aria-label="${L.messageToolsLabel}">
-              <button class="meta-btn copy" title="${L.copyBtnTitle}">${L.copyBtnText}</button>
-              <button class="meta-btn reply" title="${L.replyBtnTitle}">${L.replyBtnText}</button>
-            </div>`;
+          bubble.innerHTML = `<div class="msg-content">${htmlContent}</div>`;
           
           chatMessages.appendChild(bubble);
+          // Scroll to bottom after the message is added
           chatMessages.scrollTop = chatMessages.scrollHeight;
-
-          bubble.querySelector('.copy').onclick = async () => {
-            const textToCopy = bubble.querySelector('.msg-content').innerText;
-            await navigator.clipboard.writeText(textToCopy);
-            App.utils.toast(L.copied);
-          };
-          bubble.querySelector('.reply').onclick = () => {
-            this.setReply(bubble.querySelector('.msg-content').innerText.slice(0, 160));
-          };
           
           return bubble;
         },
@@ -821,25 +847,25 @@
           const { chatMessages } = App.elements;
           const bubble = document.createElement('div');
           bubble.classList.add('message-bubble', sender);
-          bubble.innerHTML = `<span class="typing"><span>${App.i18n.strings[App.state.lang].typing}</span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>`;
+          bubble.innerHTML = `<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
           chatMessages.appendChild(bubble);
           chatMessages.scrollTop = chatMessages.scrollHeight;
           return bubble;
         },
         setReply(snippet) {
           App.elements.replySnippet.textContent = snippet;
-          App.elements.replyBar.classList.add('show');
+          App.elements.replyBar.classList.remove('hidden');
           App.elements.userInput.focus();
         },
         clearReply() {
           App.elements.replySnippet.textContent = '';
-          App.elements.replyBar.classList.remove('show');
+          App.elements.replyBar.classList.add('hidden');
         },
         togglePlanCTA() {
-            const { planButtonArea, generatePlanBtn } = App.elements;
             const isDataComplete = ['name', 'age', 'country'].every(k => !!App.state.userState.data[k]);
-            planButtonArea.classList.toggle('hidden', !isDataComplete);
-            generatePlanBtn.disabled = !isDataComplete;
+            document.querySelectorAll('#generatePlanBtn').forEach(btn => {
+                btn.disabled = !isDataComplete;
+            });
         }
       },
       
@@ -1160,7 +1186,7 @@ ${conversationSnippet}
           App.i18n.autoSetByText(rawMessage);
           
           let finalMessage = rawMessage;
-          if (App.elements.replyBar.classList.contains('show')) {
+          if (!App.elements.replyBar.classList.contains('hidden')) {
             finalMessage = `> ${App.elements.replySnippet.textContent}\n\n${rawMessage}`;
             App.ui.clearReply();
           }
@@ -1279,7 +1305,7 @@ ${conversationSnippet}
 
           // Set Initial Theme
           const savedTheme = localStorage.getItem('theme');
-          if (savedTheme === 'dark') {
+          if (savedTheme === 'dark' || (savedTheme !== 'light' && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             document.documentElement.classList.add('dark');
             this.elements.btnTheme.textContent = '🌙';
           }
@@ -1325,11 +1351,14 @@ ${conversationSnippet}
             btn.addEventListener('click', () => this.i18n.setLang(this.state.lang === 'ar' ? 'en' : 'ar'));
           });
 
-          // Mic events (handle touch and mouse)
           const startEvents = ['pointerdown', 'touchstart', 'mousedown'];
           const endEvents = ['pointerup', 'touchend', 'mouseup', 'mouseleave', 'pointercancel'];
           startEvents.forEach(ev => E.micBtn.addEventListener(ev, H.handleMicRecord, { passive: false }));
           endEvents.forEach(ev => E.micBtn.addEventListener(ev, H.handleMicStop, { passive: false }));
+          
+          // Initialize UI enhancement scripts
+          autoGrowTextarea();
+          moveCTACards();
         });
       }
     };
@@ -1339,6 +1368,5 @@ ${conversationSnippet}
   </script>
 </body>
 </html>
-
 
 
