@@ -1,5 +1,6 @@
 // netlify/functions/gemini-proxy.js
-// Gemini proxy with: multi-model fallback (auto), vision+audio inline support, streaming, retries, and strict guards.
+// Gemini proxy: multi-model fallback, vision+audio inline, streaming, retries, strict guards,
+// auto language mirroring (AR/EN), and concise vision mode for short, actionable replies.
 
 const MAX_TRIES = 3;                     // محاولات لكل نموذج
 const BASE_BACKOFF_MS = 600;             // ارتداد أُسّي مع jitter
@@ -13,7 +14,7 @@ const MAX_INLINE_BYTES = 15 * 1024 * 1024; // 15MB/part
 const ALLOWED_IMAGE = /^image\/(png|jpe?g|webp|gif|bmp|svg\+xml)$/i;
 const ALLOWED_AUDIO = /^audio\/(webm|ogg|mp3|mpeg|wav|m4a|aac|3gpp|3gpp2|mp4)$/i;
 
-// ترتيب نماذج جيميني المرشحة (يمكن تعديلها)
+// ترتيب نماذج جيميني المرشحة
 const MODEL_POOL = [
   "gemini-2.5-flash-preview-05-20",
   "gemini-2.0-flash-exp",
@@ -46,7 +47,7 @@ exports.handler = async (event) => {
   try { payload = JSON.parse(event.body || "{}"); }
   catch { return resp(400, baseHeaders, { error: "Invalid JSON" }); }
 
-  // Inputs
+  // Inputs (+ معلمات إضافية للتكامل)
   let {
     prompt,
     messages,            // [{role:"user"|"model"|"system", content:"...", images?:[], audio?:{}}]
@@ -59,7 +60,13 @@ exports.handler = async (event) => {
     system,              // string
     stream = false,
     timeout_ms = DEFAULT_TIMEOUT_MS,
-    include_raw = false
+    include_raw = false,
+
+    // ---- New tuning knobs ----
+    mode,                // "default" | "image_brief" | "qa" (مستقبلاً)
+    force_lang,          // "ar" | "en" | undefined
+    concise_image,       // boolean: يفرض ردًا موجزًا عند وجود صور
+    guard_level = "strict" // "relaxed" | "strict" — يؤثر على قوالب الحراسة فقط
   } = payload || {};
 
   // Validate/clamp
@@ -72,14 +79,24 @@ exports.handler = async (event) => {
     return resp(400, baseHeaders, { error: "Missing prompt or messages[]" });
   }
 
+  // --------- Guardrails & Language mirroring ----------
+  const contentPreview = textPreview(prompt || messages?.map(m=>m?.content||"").join("\n"));
+  const lang = chooseLang(force_lang, contentPreview);
+  const hasTopImages = Array.isArray(images) && images.length > 0;
+  const hasAnyImages = hasTopImages || !!(Array.isArray(messages) && messages.some(m=>Array.isArray(m.images) && m.images.length));
+  const useImageBrief = concise_image === true || mode === "image_brief" || hasAnyImages;
+
+  // حقن تعليمات حراسة قصيرة (بدون إطالة) — تُضاف قبل محتوى المستخدم
+  const guard = buildGuardrails({ lang, useImageBrief, level: guard_level });
+
   // Build contents + media
   const contents = Array.isArray(messages)
-    ? normalizeMessagesWithMedia(messages)
-    : [{ role: "user", parts: buildParts(prompt, images, audio) }];
+    ? normalizeMessagesWithMedia(messages, guard)
+    : [{ role: "user", parts: buildParts(wrapPrompt(prompt, lang, useImageBrief, guard), images, audio) }];
 
   const generationConfig = { temperature, topP: top_p, maxOutputTokens: max_output_tokens };
   const systemInstruction = (system && typeof system === "string")
-    ? { role: "system", parts: [{ text: system }] }
+    ? { role: "system", parts: [{ text: system } ] }
     : undefined;
 
   // Candidate models order
@@ -87,7 +104,7 @@ exports.handler = async (event) => {
     ? [...MODEL_POOL]
     : Array.from(new Set([model, ...MODEL_POOL])); // جرّب المطلوب أولًا ثم الباقي
 
-  // ============== STREAMING (SSE) مع سقوط على نماذج أخرى ==============
+  // ================== STREAMING (SSE) ==================
   if (stream) {
     const headers = {
       ...baseHeaders,
@@ -113,7 +130,7 @@ exports.handler = async (event) => {
           statusCode: 200,
           headers,
           body: await streamBody(async function* () {
-            yield encoder.encode(`event: meta\ndata: ${JSON.stringify({ requestId, model: m })}\n\n`);
+            yield encoder.encode(`event: meta\ndata: ${JSON.stringify({ requestId, model: m, lang })}\n\n`);
             let buffer = "";
             while (true) {
               const { value, done } = await reader.read();
@@ -131,15 +148,14 @@ exports.handler = async (event) => {
           })
         };
       }
-      // last model failed
       if (mi === candidates.length - 1) {
-        return sseOnce.errorResp || resp(502, baseHeaders, { error: "All models failed (stream)", requestId });
+        return sseOnce.errorResp || resp(502, baseHeaders, { error: "All models failed (stream)", requestId, lang });
       }
       // else: try next model
     }
   }
 
-  // ============== NON-STREAM مع سقوط على نماذج أخرى + retries ==============
+  // ================== NON-STREAM + Fallback ==================
   for (let mi = 0; mi < candidates.length; mi++) {
     const m = candidates[mi];
     const url = makeUrl(m, false, API_KEY);
@@ -152,21 +168,23 @@ exports.handler = async (event) => {
     const jsonOnce = await tryJSONOnce(url, body, timeout_ms, include_raw);
     if (jsonOnce.ok) {
       return resp(200, baseHeaders, {
-        text: jsonOnce.text,
+        text: mirrorLanguage(jsonOnce.text, lang), // ضمان المرآة اللغوية
         raw: include_raw ? jsonOnce.raw : undefined,
         model: m,
+        lang,
+        usage: jsonOnce.usage || undefined,
         requestId,
         took_ms: Date.now() - reqStart
       });
     }
     if (mi === candidates.length - 1) {
       const status = jsonOnce.statusCode || 502;
-      return resp(status, baseHeaders, { ...(jsonOnce.error || { error: "All models failed" }), requestId });
+      return resp(status, baseHeaders, { ...(jsonOnce.error || { error: "All models failed" }), requestId, lang });
     }
     // else: fallback to next model
   }
 
-  return resp(500, baseHeaders, { error: "Unknown failure", requestId });
+  return resp(500, baseHeaders, { error: "Unknown failure", requestId, lang });
 };
 
 /* -------------------- Helpers -------------------- */
@@ -186,6 +204,53 @@ function makeUrl(model, isStream, apiKey) {
   return `${base}/${encodeURIComponent(model)}:${method}?key=${apiKey}`;
 }
 
+function hasArabic(s){ return /[\u0600-\u06FF]/.test(s || "") }
+function chooseLang(force, sample){
+  if(force === "ar" || force === "en") return force;
+  return hasArabic(sample) ? "ar" : "en";
+}
+function mirrorLanguage(text, lang){
+  // لا نغيّر النص إن كان فارغًا أو النموذج أعاد اللغة المطلوبة.
+  if(!text) return text;
+  if(lang === "ar" && hasArabic(text)) return text;
+  if(lang === "en" && !hasArabic(text)) return text;
+  // عند اللزوم: نضيف سطرًا تمهيديًا قصيرًا بلغة الهدف لتجنب تداخل اللغات من بعض النماذج.
+  return (lang === "ar")
+    ? `**ملاحظة:** الرد باللغة العربية.\n\n${text}`
+    : `**Note:** Response in English.\n\n${text}`;
+}
+
+function textPreview(s){
+  if(!s) return "";
+  return (s || "").slice(0, 6000); // معاينة كافية لاختيار اللغة فقط
+}
+
+/* ---- Guardrails ---- */
+
+function buildGuardrails({ lang, useImageBrief, level }){
+  const L = (lang === "ar") ? {
+    mirror: "استخدم نفس لغة المستخدم تلقائيًا (العربية إن كانت ظاهرة).",
+    beBrief: "كن موجزًا وعمليًا بدون مقدمات أو اعتذارات.",
+    imageBrief: `إن كانت هناك صورة: قدّم 3–5 نقاط تنفيذية مختصرة + خطوة واحدة الآن. لا مقدّمات.`,
+    strict: "تجنّب العموميات والحشو. استخدم نقاط واضحة قابلة للتنفيذ.",
+  } : {
+    mirror: "Mirror the user's language automatically (English if detected).",
+    beBrief: "Be concise and practical. No preambles or apologies.",
+    imageBrief: `If an image is present: return 3–5 tight, actionable bullets + one immediate step. No preamble.`,
+    strict: "Avoid vagueness and fluff. Use clear, executable bullets."
+  };
+  const lines = [L.mirror, L.beBrief, (useImageBrief ? L.imageBrief : ""), (level !== "relaxed" ? L.strict : "")].filter(Boolean);
+  return lines.join("\n");
+}
+
+function wrapPrompt(prompt, lang, useImageBrief, guard){
+  // نحقن الحراسة قبل محتوى المستخدم مع فاصل واضح
+  const head = (lang === "ar")
+    ? "تعليمات حراسة موجزة (اتبعها بدقة):"
+    : "Concise guardrails (follow strictly):";
+  return `${head}\n${guard}\n\n---\n${prompt || ""}`;
+}
+
 /* ---- Messages & Media ---- */
 
 function buildParts(prompt, images, audio) {
@@ -195,14 +260,22 @@ function buildParts(prompt, images, audio) {
   return parts;
 }
 
-function normalizeMessagesWithMedia(messages) {
+function normalizeMessagesWithMedia(messages, guard) {
   // Gemini expects: [{role:"user"|"model"|"system", parts:[{text|inline_data}...]}]
   const safeRole = (r) => (r === "user" || r === "model" || r === "system") ? r : "user";
+  let injected = false;
   return messages
     .filter(m => m && (typeof m.content === "string" || m.images || m.audio))
     .map(m => {
       const parts = [];
-      if (typeof m.content === "string" && m.content.trim()) parts.push({ text: m.content });
+      // حقن الحراسة مرة واحدة في أول رسالة user فقط
+      if (!injected && m.role === "user") {
+        const content = (typeof m.content === "string" && m.content.trim()) ? m.content : "";
+        parts.push({ text: wrapPrompt(content, chooseLang(undefined, content), !!(m.images && m.images.length), guard) });
+        injected = true;
+      } else if (typeof m.content === "string" && m.content.trim()) {
+        parts.push({ text: m.content });
+      }
       parts.push(...coerceMediaParts(m.images, m.audio));
       return { role: safeRole(m.role), parts };
     })
@@ -350,7 +423,13 @@ async function tryJSONOnce(url, body, timeout_ms, include_raw) {
         const safety = data?.promptFeedback || data?.candidates?.[0]?.safetyRatings;
         return { ok: false, statusCode: 502, error: { error: "Empty/blocked response", safety, raw: include_raw ? data : undefined } };
       }
-      return { ok: true, text, raw: include_raw ? data : undefined };
+      const usage = data?.usageMetadata ? {
+        promptTokenCount: data.usageMetadata.promptTokenCount,
+        candidatesTokenCount: data.usageMetadata.candidatesTokenCount,
+        totalTokenCount: data.usageMetadata.totalTokenCount
+      } : undefined;
+
+      return { ok: true, text, raw: include_raw ? data : undefined, usage };
     } catch (e) {
       clearTimeout(t);
       if (attempt < MAX_TRIES) { await sleepWithJitter(attempt); continue; }
