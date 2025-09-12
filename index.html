@@ -383,6 +383,9 @@
 
   <!-- Welcome -->
   <div class="welcome-screen" id="welcomeScreen">
+    <div class="absolute top-4 right-4 z-10" style="inset-inline-end: 1rem; inset-inline-start: auto;">
+      <button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-3 !h-9 rounded-lg !border-white/40 hover:!border-accent !text-white">AR</button>
+    </div>
     <img id="welcomeAvatar" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=200&q=80" alt="Coach Avatar" class="w-32 h-32 rounded-full mb-6 shadow-xl object-cover border-4 border-white/50"/>
     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-2" id="welcomeTitle">مدربك الشخصي الذكي</h1>
     <p class="text-base sm:text-lg lg:text-xl font-light text-white/90 mb-8 max-w-xl" id="welcomeSubtitle">جاهز للتغيير؟ خطتك مصممة خصيصًا لك — تنفيذ محكم، متابعة دقيقة، ونتيجة ملموسة.</p>
@@ -391,6 +394,9 @@
 
   <!-- Profile -->
   <div class="user-data-screen hidden" id="userDataScreen">
+    <div class="absolute top-4 right-4 z-10" style="inset-inline-end: 1rem; inset-inline-start: auto;">
+      <button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-3 !h-9 rounded-lg !border-white/40 hover:!border-accent !text-white">AR</button>
+    </div>
     <div class="w-full max-w-sm p-6 sm:p-8 space-y-6 rounded-2xl shadow-xl border border-white/20">
       <div class="text-center">
         <h2 class="text-2xl sm:text-3xl font-extrabold" id="userDataTitle">لنبني ملفك السريع</h2>
@@ -433,7 +439,7 @@
         <span class="text-xl font-bold" id="chatTitle">مدربك الشخصي الذكي</span>
       </div>
       <div class="flex items-center gap-2">
-        <button id="btnLang" class="icon-btn text-sm font-bold border !w-auto px-3 !h-9 rounded-lg !border-border hover:!border-accent">AR</button>
+        <button id="btnLang" class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-3 !h-9 rounded-lg !border-border hover:!border-accent">AR</button>
         <button id="btnTheme" class="icon-btn text-xl border !w-9 !h-9 rounded-lg !border-border hover:!border-accent">☀️</button>
       </div>
     </div>
@@ -523,7 +529,6 @@
     const userAgeInput = $('userAge');
     const userCountryInput = $('userCountry');
     const btnTheme = $('btnTheme');
-    const btnLang = $('btnLang');
     const plusBtn = $('plusBtn');
     const fileInput = $('fileInput');
     const micBtn = $('micBtn');
@@ -652,10 +657,11 @@
       $('whatsappBtnText').textContent = L.whatsappBtnText;
       $('phoneBtnText').textContent = L.phoneBtnText;
       $('pageFooter').textContent = L.footerText;
-      btnLang.textContent = lang==='ar' ? 'EN' : 'AR';
+      document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
+        btn.textContent = lang==='ar' ? 'EN' : 'AR';
+      });
       document.title = `${L.appName} | Smart Personal Coach`;
 
-      // Update CTA Subtitle and Badge dynamically based on language
       if (lang === 'ar') {
         $('ctaSubtitle').textContent = 'تسليم خطة مُحكمة + متابعة أسبوعية.';
         $('ctaBadge').textContent = 'خصم اليوم';
@@ -824,8 +830,6 @@
           });
         }
         if (audio) payload.audio = audio;
-        // This function would typically point to a serverless function endpoint
-        // For local dev, you might mock this or point to a local server
         const res = await fetch('/.netlify/functions/gemini-proxy',{
           method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)
         });
@@ -1056,9 +1060,16 @@ ${convo}
       });
 
       btnTheme.addEventListener('click', setTheme);
-      btnLang.addEventListener('click',()=> setLang(LANG==='ar' ? 'en' : 'ar'));
+      
+      document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
+        btn.addEventListener('click', () => setLang(LANG === 'ar' ? 'en' : 'ar'));
+      });
+      
       const savedTheme=localStorage.getItem('theme'); if(savedTheme==='dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent='🌙' }
-      setLang('ar');
+      
+      const browserLang = navigator.language.split('-')[0];
+      const initialLang = browserLang === 'ar' ? 'ar' : 'en';
+      setLang(initialLang);
 
       function keyHandler(e){ if(e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); } }
       sendBtn.addEventListener('click', sendMessage);
@@ -1106,6 +1117,5 @@ ${convo}
   </script>
 </body>
 </html>
-
 
 
