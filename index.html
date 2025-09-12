@@ -54,6 +54,7 @@
     .send-btn{background:var(--accent);color:#fff;border-radius:999px}
     html[dir="rtl"] .input-area{flex-direction:row-reverse}
     html[dir="rtl"] #userInput{text-align:right}
+    html[dir="ltr"] #userInput{text-align:left}
 
     .welcome-screen,.user-data-screen{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;text-align:center;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff}
     .cta-btn{background:var(--accent);font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.25);padding:1rem 2rem;border-radius:999px}
@@ -163,10 +164,10 @@
     <div id="planButtonArea" class="px-4 py-3 hidden">
       <div class="rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-3 card-cta justify-between">
         <div>
-          <div class="text-[.98rem] font-bold text-slate-800 dark:text-slate-100">جاهز لنتيجة ملموسة؟</div>
-          <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">تسليم خطة مُحكمة + متابعة أسبوعية + دعم مباشر.</div>
+          <div id="ctaTitle" class="text-[.98rem] font-bold text-slate-800 dark:text-slate-100">جاهز لنتيجة ملموسة؟</div>
+          <div id="ctaSubtitle" class="text-sm text-slate-600 dark:text-slate-300 mt-1">تسليم خطة مُحكمة + متابعة أسبوعية + دعم مباشر.</div>
         </div>
-        <span class="badge">خصم اليوم</span>
+        <span id="ctaBadge" class="badge">خصم اليوم</span>
         <button id="generatePlanBtn" class="btn send-btn font-bold px-4 py-2 rounded-lg" disabled>احصل على خطتك الآن</button>
       </div>
       <p id="planButtonNote" class="text-gray-700 dark:text-gray-300 text-sm mt-2">بالضغط، ستفتح طرق التواصل. باقة البدء تشمل: تقييم دقيق، خطة وجبات وتمرين، متابعة أول أسبوع.</p>
@@ -174,7 +175,7 @@
 
     <!-- Reply bar -->
     <div id="replyBar" class="reply-bar" aria-live="polite">
-      <strong>رد على:</strong>
+      <strong id="replyBarLabel">رد على:</strong>
       <span id="replySnippet" class="truncate"></span>
       <button id="replyClear" class="x" title="إلغاء">×</button>
     </div>
@@ -205,24 +206,24 @@
         <button id="closeContactBtn" class="close-button" title="إغلاق" aria-label="إغلاق">×</button>
       </div>
       <div class="modal-body">
-        <p class="mb-3 text-sm text-gray-600 dark:text-gray-300">اختر الطريقة المناسبة للتواصل المباشر مع المدرب.
-          <span class="block mt-2 text-[12px] text-gray-500">يمكنك الاستمرار في الحديث إذا كانت لديك أسئلة.</span>
+        <p id="contactModalText1" class="mb-3 text-sm text-gray-600 dark:text-gray-300">اختر الطريقة المناسبة للتواصل المباشر مع المدرب.
+          <span id="contactModalText2" class="block mt-2 text-[12px] text-gray-500">يمكنك الاستمرار في الحديث إذا كانت لديك أسئلة.</span>
         </p>
         <div class="contact-actions">
           <a class="contact-btn contact-whatsapp" href="https://wa.me/971502061209" target="_blank" rel="noopener" title="واتساب مباشر">
             <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M19.11 17.18c-.28-.14-1.65-.81-1.9-.9-.26-.1-.44-.14-.62.14-.18.27-.71.9-.87 1.09-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.66-1.55-1.94-.16-.27-.02-.42.12-.56.12-.12.28-.3.42-.46.14-.16.18-.27.28-.46.1-.18.06-.34-.02-.48-.08-.14-.62-1.5-.84-2.06-.22-.52-.44-.45-.62-.46h-.54c-.18 0-.48.07-.74.34-.26.27-1 1-1 2.42s1.03 2.8 1.18 2.99c.14.2 2.03 3.1 4.93 4.33.69.3 1.22.48 1.64.62.69.22 1.32.19 1.82.12.56-.08 1.65-.68 1.88-1.35.24-.67.24-1.24.16-1.35-.06-.1-.24-.16-.52-.3z"/><path d="M26.9 5.1A13.9 13.9 0 0 0 16 .1C7.3.1.2 7.1.2 15.8c0 2.7.7 5.2 2 7.4L.1 31.9l8.9-2.3c2.1 1.1 4.5 1.7 7 1.7h.1c8.7 0 15.8-7 15.8-15.7 0-4.2-1.6-8.1-4.9-10.9z"/></svg>
-            <span>واتساب مباشر</span>
+            <span id="whatsappBtnText">واتساب مباشر</span>
           </a>
           <a class="contact-btn contact-phone" href="tel:+971502061209" title="اتصال هاتفي">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.11.37 2.3.57 3.58.57a1 1 0 0 1 1 1V21a1 1 0 0 1-1 1C10.61 22 2 13.39 2 3a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.27.2 2.47.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
-            <span>اتصال هاتفي</span>
+            <span id="phoneBtnText">اتصال هاتفي</span>
           </a>
         </div>
       </div>
     </div>
   </div>
 
-  <footer class="footer">© Powered by Mustafa Elsafy | مصطفى الصافي</footer>
+  <footer class="footer" id="pageFooter">© Powered by Mustafa Elsafy | مصطفى الصافي</footer>
 
   <script type="module">
     /* =========================
@@ -251,9 +252,6 @@
     const generatePlanBtn = $('generatePlanBtn');
     const contactModal = $('contactModal');
     const closeContactBtn = $('closeContactBtn');
-    const btnSave = $('btnSave');
-    const btnLoad = $('btnLoad');
-    const btnClear = $('btnClear');
     const replyBar = $('replyBar');
     const replySnippet = $('replySnippet');
     const replyClear = $('replyClear');
@@ -281,19 +279,61 @@
         inputPlaceholder:'اكتب رسالتك...', emptyFields:'أدخل الاسم والعمر والدولة للمتابعة.', imageUpload:'تم استلام الصورة — يتم التحليل الآن.',
         typing:'… يتم الرد الآن',
         recStart:'● جاري التسجيل… ارفع إصبعك للنسخ', recDenied:'تعذّر الوصول للميكروفوون.', recTooShort:'التسجيل قصير جدًا.', recSaved:'تم نسخ الكلام إلى خانة الكتابة — أرسله يدويًا.',
-        saved:'تم حفظ المحادثة', copied:'تم النسخ', cleared:'تم المسح', imported:'تم الاستيراد — سيتم العرض', invalid:'ملف غير صالح'
+        ctaTitle: 'جاهز لنتيجة ملموسة؟',
+        ctaSubtitle: 'تسليم خطة مُحكمة + متابعة أسبوعية + دعم مباشر.',
+        ctaBadge: 'خصم اليوم',
+        getPlanButton: 'احصل على خطتك الآن',
+        planButtonNote: 'بالضغط، ستفتح طرق التواصل. باقة البدء تشمل: تقييم دقيق، خطة وجبات وتمرين، متابعة أول أسبوع.',
+        contactModalTitle: 'احصل على خطتك الآن بضغطة زر',
+        contactModalText1: 'اختر الطريقة المناسبة للتواصل المباشر مع المدرب.',
+        contactModalText2: 'يمكنك الاستمرار في الحديث إذا كانت لديك أسئلة.',
+        whatsappBtnText: 'واتساب مباشر',
+        phoneBtnText: 'اتصال هاتفي',
+        replyBarLabel: 'رد على:',
+        footerText: '© Powered by Mustafa Elsafy | مصطفى الصافي',
+        messageToolsLabel: 'أدوات الرسالة',
+        copyBtnText: 'نسخ',
+        replyBtnText: 'رد',
+        copyBtnTitle: 'نسخ الرسالة',
+        replyBtnTitle: 'رد',
+        cancelReplyTitle: 'إلغاء',
+        attachFileTitle: 'صورة/ملف',
+        recordAudioTitle: 'اضغط مطولاً للتسجيل',
+        sendTitle: 'إرسال',
+        closeModalTitle: 'إغلاق'
       },
       en: {
         appName:'Smart Personal Coach',
-        welcomeSubtitle:'Welcome — we build a precise, doable plan step by step.',
-        startButtonText:'Start now',
-        userDataTitle:'Let’s create your quick profile',
-        userDataSubtitle:'Your name, age, and country to begin',
-        namePlaceholder:'Your name', agePlaceholder:'Your age', countryPlaceholder:'Your country', nextButtonText:'Start chat',
-        inputPlaceholder:'Type your message…', emptyFields:'Please fill name, age and country.', imageUpload:'Image received — analyzing now.',
-        typing:'typing…',
-        recStart:'● Recording… release to copy', recDenied:'Microphone permission denied.', recTooShort:'Recording too short.', recSaved:'Transcript copied to the input — send manually.',
-        saved:'Chat saved', copied:'Copied', cleared:'Cleared', imported:'Imported', invalid:'Invalid file'
+        welcomeSubtitle:'Ready for a change? Your plan is tailored for you—precise execution, close follow-up, and tangible results.',
+        startButtonText:'Start Now',
+        userDataTitle:"Let's create your quick profile",
+        userDataSubtitle:'We need some info to start',
+        namePlaceholder:'Your Name', agePlaceholder:'Your Age', countryPlaceholder:'Your Country', nextButtonText:'Start Conversation',
+        inputPlaceholder:'Type your message…', emptyFields:'Please enter your name, age, and country to continue.', imageUpload:'Image received — analyzing now.',
+        typing:'… typing now',
+        recStart:'● Recording… release to copy', recDenied:'Microphone access denied.', recTooShort:'Recording is too short.', recSaved:'Text copied to input — send manually.',
+        ctaTitle: 'Ready for tangible results?',
+        ctaSubtitle: 'Precise plan + weekly follow-up + direct support.',
+        ctaBadge: "Today's Offer",
+        getPlanButton: 'Get Your Plan Now',
+        planButtonNote: 'By clicking, contact options will open. The starter package includes: detailed assessment, meal & workout plan, and first week follow-up.',
+        contactModalTitle: 'Get your plan now with one click',
+        contactModalText1: 'Choose the best way to contact the coach directly.',
+        contactModalText2: 'You can continue chatting if you have questions.',
+        whatsappBtnText: 'Direct WhatsApp',
+        phoneBtnText: 'Phone Call',
+        replyBarLabel: 'Reply to:',
+        footerText: '© Powered by Mustafa Elsafy',
+        messageToolsLabel: 'Message Tools',
+        copyBtnText: 'Copy',
+        replyBtnText: 'Reply',
+        copyBtnTitle: 'Copy Message',
+        replyBtnTitle: 'Reply',
+        cancelReplyTitle: 'Cancel',
+        attachFileTitle: 'Image/File',
+        recordAudioTitle: 'Press and hold to record',
+        sendTitle: 'Send',
+        closeModalTitle: 'Close'
       }
     };
 
@@ -302,19 +342,50 @@
       document.documentElement.lang = lang;
       document.documentElement.dir = lang==='ar'?'rtl':'ltr';
       const L = i18n[LANG];
+      
+      // Welcome Screen
       $('welcomeTitle').textContent = L.appName;
       $('welcomeSubtitle').textContent = L.welcomeSubtitle;
       $('startBtn').textContent = L.startButtonText;
+      
+      // User Data Screen
       $('userDataTitle').textContent = L.userDataTitle;
       $('userDataSubtitle').textContent = L.userDataSubtitle;
       $('userName').placeholder = L.namePlaceholder;
       $('userAge').placeholder = L.agePlaceholder;
       $('userCountry').placeholder = L.countryPlaceholder;
       $('nextBtn').textContent = L.nextButtonText;
+      
+      // Chat Screen
       $('chatTitle').textContent = L.appName;
       $('userInput').placeholder = L.inputPlaceholder;
-      $('generatePlanBtn').textContent = (lang==='ar'?'احصل على خطتك الآن':'Get your plan now');
-      btnLang.textContent = lang==='ar' ? 'AR' : 'EN';
+      $('ctaTitle').textContent = L.ctaTitle;
+      $('ctaSubtitle').textContent = L.ctaSubtitle;
+      $('ctaBadge').textContent = L.ctaBadge;
+      $('generatePlanBtn').textContent = L.getPlanButton;
+      $('planButtonNote').textContent = L.planButtonNote;
+      $('replyBarLabel').textContent = L.replyBarLabel;
+      $('replyClear').title = L.cancelReplyTitle;
+
+      // Input area tooltips
+      $('plusBtn').title = L.attachFileTitle;
+      $('micBtn').title = L.recordAudioTitle;
+      $('sendBtn').title = L.sendTitle;
+      
+      // Contact Modal
+      $('contactModalTitle').textContent = L.contactModalTitle;
+      $('closeContactBtn').title = L.closeModalTitle;
+      $('closeContactBtn').setAttribute('aria-label', L.closeModalTitle);
+      $('contactModalText1').firstChild.nodeValue = L.contactModalText1 + ' ';
+      $('contactModalText2').textContent = L.contactModalText2;
+      $('whatsappBtnText').textContent = L.whatsappBtnText;
+      $('phoneBtnText').textContent = L.phoneBtnText;
+
+      // Footer
+      $('pageFooter').textContent = L.footerText;
+
+      // Global
+      btnLang.textContent = lang==='ar' ? 'EN' : 'AR';
       document.title = `${L.appName} | Smart Personal Coach`;
     }
 
@@ -350,40 +421,20 @@
     const Storage = {
       KEY: 'smart-coach-history-v1',
       save(){
-        const payload = { chatHistory, userState, lang: LANG, theme: document.documentElement.classList.contains('dark')?'dark':'light' };
-        localStorage.setItem(this.KEY, JSON.stringify(payload));
-        toast(i18n[LANG].saved);
+        // Not implemented as per previous request to remove buttons
       },
       load(){
-        try{
-          const raw = localStorage.getItem(this.KEY);
-          if(!raw) return false;
-          const { chatHistory: h=[], userState: s={}, lang, theme } = JSON.parse(raw);
-          chatHistory = Array.isArray(h) ? h : [];
-          userState = s || userState;
-          if(lang) setLang(lang);
-          if(theme==='dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent='🌙' }
-          return true;
-        }catch{ return false }
+        // Not implemented as per previous request to remove buttons
+        return false;
       },
       clear(){
-        localStorage.removeItem(this.KEY);
-        toast(i18n[LANG].cleared);
+       // Not implemented as per previous request to remove buttons
       },
       export(){
-        const blob = new Blob([localStorage.getItem(this.KEY) || '{}'], {type:'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href=url; a.download='chat_history.json'; a.click();
-        URL.revokeObjectURL(url);
+       // Not implemented as per previous request to remove buttons
       },
       async import(file){
-        const text = await file.text();
-        try{
-          const j = JSON.parse(text);
-          localStorage.setItem(this.KEY, JSON.stringify(j));
-          toast(i18n[LANG].imported);
-          return true;
-        }catch{ toast(i18n[LANG].invalid); return false }
+        // Not implemented as per previous request to remove buttons
       }
     };
 
@@ -394,13 +445,15 @@
     ========================= */
     function displayMessage(message, sender){
       const b=document.createElement('div'); b.classList.add('message-bubble', sender);
-      const safe = (message && typeof message === 'string') ? message : (LANG==='ar'?'…':'…');
+      const safe = (message && typeof message === 'string') ? message : '…';
       const html = marked.parse(safe);
+      const L = i18n[LANG];
+      
       b.innerHTML = `
         <div class="msg-content">${html}</div>
-        <div class="msg-meta" role="group" aria-label="أدوات الرسالة">
-          <button class="meta-btn copy" title="${LANG==='ar'?'نسخ الرسالة':'Copy'}">${LANG==='ar'?'نسخ':'Copy'}</button>
-          <button class="meta-btn reply" title="${LANG==='ar'?'رد':'Reply'}">${LANG==='ar'?'رد':'Reply'}</button>
+        <div class="msg-meta" role="group" aria-label="${L.messageToolsLabel}">
+          <button class="meta-btn copy" title="${L.copyBtnTitle}">${L.copyBtnText}</button>
+          <button class="meta-btn reply" title="${L.replyBtnTitle}">${L.replyBtnText}</button>
         </div>`;
       chatMessages.appendChild(b); chatMessages.scrollTop = chatMessages.scrollHeight;
 
@@ -574,7 +627,7 @@
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 【١٢) ضمان الجودة قبل الإرسال (Checklist)】
-- لا تكرار أسئلة/معلومات مُجاب عنها.  
+- لا تكرار لأسئلة/معلومات مُجاب عنها.  
 - لا ذكر لاسم المستخدم.  
 - لا عبارات أو افتتاحيات آلية في أي موضع.  
 - اللغة مطابقة للمستخدم (أو مصري بروفيشنال).  
@@ -742,7 +795,6 @@
         const reply = aiResp || (LANG==='ar'?'تمت القراءة.':'Read.');
         displayMessage(reply,'ai');
         chatHistory.push({role:'assistant',parts:[{text:reply}]});
-        Storage.save();
       },
       async extractPdfText(file){
         displayMessage(`**تم استلام PDF:** ${file.name}`,'user');
@@ -804,7 +856,6 @@ ${convo}
       chatHistory.push({role:'assistant',parts:[{text:response}]});
       displayMessage(response,'ai');
       togglePlanCTA();
-      Storage.save();
     }
 
     function sendMessage(){
@@ -827,7 +878,6 @@ ${convo}
       analyzeUserMessage(finalMsg);
       processAIResponse(finalMsg);
       userInput.value='';
-      Storage.save();
     }
 
     /* =========================
@@ -850,7 +900,6 @@ ${convo}
           ? `مرحبًا ${name}. `
           : `Welcome ${name}. We’ll collect key data and build a precise, doable plan.`;
         chatHistory.push({role:'assistant',parts:[{text:welcomeMsg}]}); displayMessage(welcomeMsg,'ai'); togglePlanCTA();
-        Storage.save();
       });
 
       // Theme & Lang
@@ -887,7 +936,7 @@ ${convo}
           displayMessage(reply, 'ai');
           chatHistory.push({role:'user',parts:[{text:'[صورة مرفوعة]'}]});
           chatHistory.push({role:'assistant',parts:[{text:reply}]});
-          togglePlanCTA(); Storage.save();
+          togglePlanCTA();
         };
         reader.readAsDataURL(file)
       });
@@ -915,26 +964,6 @@ ${convo}
       });
       closeContactBtn.addEventListener('click',()=>{ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') });
       contactModal.addEventListener('click', e=>{ if(e.target===contactModal){ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') } });
-
-      // Save/Load/Clear + import
-      // btnSave.addEventListener('click', ()=>{ Storage.save(); Storage.export(); }); // Removed
-      // btnLoad.addEventListener('click', ()=>{ // Removed
-      //   const ok = Storage.load();
-      //   if(!ok){ toast(LANG==='ar'?'لا توجد محادثة محفوظة':'No saved chat'); return; }
-      //   chatMessages.innerHTML='';
-      //   chatHistory.forEach(m => displayMessage(m.parts?.[0]?.text || '', m.role==='assistant'?'ai':'user'));
-      //   togglePlanCTA();
-      // });
-      // btnClear.addEventListener('click', ()=>{ Storage.clear(); chatMessages.innerHTML=''; chatHistory=[]; }); // Removed
-
-      // Right-click on Load to import JSON
-      // const importBtn = document.createElement('input'); // Removed
-      // importBtn.type='file';
-      // importBtn.accept='application/json';
-      // importBtn.style.display='none';
-      // document.body.appendChild(importBtn);
-      // btnLoad.addEventListener('contextmenu', (e)=>{ e.preventDefault(); importBtn.click(); });
-      // importBtn.onchange = async (e)=>{ const f=e.target.files[0]; if(!f) return; await Storage.import(f); btnLoad.click(); };
     });
   </script>
 </body>
