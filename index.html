@@ -2,12 +2,13 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
   <title>مدربك الشخصي الذكي | Smart Personal Coach</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
+
     :root{
       --primary:#04364A; --secondary:#176B87; --accent:#64CCC5;
       --chat-bg:#F5F7FA; --bubble-user:#E8F7D4; --bubble-ai:#FFFFFF;
@@ -22,32 +23,43 @@
       --surface:#0f172a; --border:#334155
     }
     *{box-sizing:border-box}
-    body{font-family:'Tajawal',sans-serif;background:var(--chat-bg);color:var(--text);transition:background-color .3s,color .3s}
+    body{margin:0;font-family:'Tajawal',sans-serif;background:var(--chat-bg);color:var(--text);transition:background-color .3s,color .3s}
 
-    /* Shell */
+    /* Shell / App look */
     .chat-container{max-width:780px;margin:0 auto;height:100vh;display:flex;flex-direction:column;background:var(--chat-bg);box-shadow:0 0 25px rgba(0,0,0,.08);border-radius:1rem;overflow:hidden}
+    @supports (height: 100dvh){ .chat-container{height:100dvh} }
+    @media (max-width:768px){ .chat-container{border-radius:0;box-shadow:none} }
+
     .chat-header{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:.875rem 1rem;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center}
     .brand{display:flex;align-items:center;gap:.6rem}
     .brand img{width:40px;height:40px;border-radius:999px;object-fit:cover}
 
     .chat-messages{flex:1;padding:1rem;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:6rem}
-    .message-bubble{padding:.85rem 1.15rem;border-radius:1.25rem;max-width:85%;margin-bottom:.75rem;animation:fadeIn .25s ease-in-out}
+    .message-bubble{padding:.85rem 1.15rem;border-radius:1.25rem;max-width:85%;margin-bottom:.75rem;animation:fadeIn .25s ease-in-out;position:relative}
     .message-bubble.user{background:var(--bubble-user);margin-left:auto;border-bottom-right-radius:.25rem;color:#0B1220}
     .message-bubble.ai{background:var(--bubble-ai);margin-right:auto;border-bottom-left-radius:.25rem;color:var(--text)}
 
-    .input-area{display:flex;gap:.5rem;padding:.75rem;background:color-mix(in srgb,var(--surface) 92%, transparent);border-top:1px solid var(--border);position:sticky;bottom:0;z-index:10;align-items:center;backdrop-filter:saturate(160%) blur(6px)}
+    .msg-meta{display:flex;gap:.35rem;opacity:0;transition:.2s;position:absolute;bottom:.35rem;inset-inline-end:.6rem}
+    .message-bubble:hover .msg-meta{opacity:.95}
+    .meta-btn{background:transparent;border:none;font-size:.85rem;cursor:pointer;color:#64748B;padding:.15rem .35rem;border-radius:.35rem}
+    .meta-btn:hover{color:#0ea5e9;background:rgba(0,0,0,.05)}
+
+    .input-area{display:flex;gap:.5rem;padding:.75rem;background:color-mix(in srgb,var(--surface) 92%, transparent);border-top:1px solid var(--border);position:sticky;bottom:0;z-index:10;align-items:center;backdrop-filter:saturate(160%) blur(6px);padding-bottom:calc(.75rem + env(safe-area-inset-bottom))}
     .input-area input[type=text]{flex:1;border-radius:999px;padding:.78rem 1.1rem;border:1px solid var(--border);background:#fff;color:#0B1220}
     html.dark .input-area input[type=text]{background:#0f172a;color:#E5E7EB}
     .input-area input[type=text]::placeholder{color:var(--muted)}
     .input-area input[type=text]:focus{outline:none;border-color:var(--accent)}
     .icon-btn{background:transparent;color:#0ea5e9;border-radius:999px;width:44px;height:44px;display:grid;place-items:center;transition:.25s}
     .icon-btn:hover{background:rgba(0,0,0,.06)}
-    .send-btn{background:var(--accent);color:#fff}
+    .send-btn{background:var(--accent);color:#fff;border-radius:999px}
+    html[dir="rtl"] .input-area{flex-direction:row-reverse}
+    html[dir="rtl"] #userInput{text-align:right}
 
     .welcome-screen,.user-data-screen{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;text-align:center;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff}
     .cta-btn{background:var(--accent);font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.25);padding:1rem 2rem;border-radius:999px}
 
     .toast{position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:.7rem 1rem;border-radius:.6rem;z-index:60;opacity:0;transition:.35s}
+
     @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 
     .typing{display:inline-flex;gap:6px;align-items:center}
@@ -74,11 +86,20 @@
     .contact-whatsapp{background:#25D366;color:#fff}
     .contact-phone{background:#0ea5e9;color:#fff}
 
-    .footer{text-align:center;padding:.75rem;font-size:.9rem;color:var(--muted)}
+    .footer{text-align:center;padding:.75rem;font-size:.9rem;color:var(--muted);padding-bottom:calc(.75rem + env(safe-area-inset-bottom))}
+
+    .reply-bar{display:none;align-items:center;gap:.5rem;padding:.5rem .75rem;border:1px dashed var(--border);border-radius:.6rem;margin:.25rem .75rem 0}
+    .reply-bar.show{display:flex}
+    .reply-bar .x{margin-inline-start:auto;background:transparent;border:none;font-size:1.1rem}
+
+    /* CTA card */
+    .card-cta{display:flex;align-items:center;gap:.75rem}
+    .badge{font-size:.75rem;padding:.2rem .5rem;border-radius:.5rem;background:color-mix(in srgb,var(--accent) 18%, white)}
     @media (max-width:420px){.brand span{display:none}}
   </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
+
   <!-- Welcome -->
   <div class="welcome-screen" id="welcomeScreen">
     <img id="welcomeAvatar" src="https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=200&q=60" alt="Coach Avatar" class="rounded-full mb-6 shadow-xl object-cover"/>
@@ -107,6 +128,9 @@
         <span class="text-xl font-bold" id="chatTitle">مدربك الشخصي الذكي</span>
       </div>
       <div class="flex items-center gap-2">
+        <button id="btnSave" class="icon-btn text-white border border-white/30 w-auto h-9 rounded-md px-3" title="حفظ وتصدير">💾 حفظ</button>
+        <button id="btnLoad" class="icon-btn text-white border border-white/30 w-auto h-9 rounded-md px-3" title="استرجاع/استيراد">⟲ استرجاع</button>
+        <button id="btnClear" class="icon-btn text-white border border-white/30 w-9 h-9 rounded-md" title="مسح">🗑️</button>
         <button id="btnLang" class="icon-btn text-white border border-white/30 px-3 w-auto h-9 rounded-md">AR</button>
         <button id="btnTheme" class="icon-btn text-white border border-white/30 w-9 h-9 rounded-md">☀️</button>
       </div>
@@ -116,20 +140,32 @@
 
     <!-- CTA: opens contact modal -->
     <div id="planButtonArea" class="px-4 py-3 hidden">
-      <div class="rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-3 flex items-center justify-between">
-        <div class="text-[.98rem] font-semibold text-slate-700 dark:text-slate-200" id="prepStatus">جاهز تبدأ بخطتك معنا؟ تواصل بخطوة واحدة</div>
-        <button id="generatePlanBtn" class="btn send-btn" disabled>احصل على خطتك الآن</button>
+      <div class="rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-3 card-cta justify-between">
+        <div>
+          <div class="text-[.98rem] font-bold text-slate-800 dark:text-slate-100">جاهز لنتيجة ملموسة؟</div>
+          <div class="text-sm text-slate-600 dark:text-slate-300 mt-1">تسليم خطة مُحكمة + متابعة أسبوعية + دعم مباشر.</div>
+        </div>
+        <span class="badge">خصم اليوم</span>
+        <button id="generatePlanBtn" class="btn send-btn font-bold px-4 py-2 rounded-lg" disabled>احصل على خطتك الآن</button>
       </div>
-      <p id="planButtonNote" class="text-gray-600 dark:text-gray-300 text-sm mt-2">يمكنك الاستمرار في الحديث إذا كانت لديك أسئلة.</p>
+      <p id="planButtonNote" class="text-gray-700 dark:text-gray-300 text-sm mt-2">بالضغط، ستفتح طرق التواصل. باقة البدء تشمل: تقييم دقيق، خطة وجبات وتمرين، متابعة أول أسبوع.</p>
+    </div>
+
+    <!-- Reply bar -->
+    <div id="replyBar" class="reply-bar" aria-live="polite">
+      <strong>رد على:</strong>
+      <span id="replySnippet" class="truncate"></span>
+      <button id="replyClear" class="x" title="إلغاء">×</button>
     </div>
 
     <div class="input-area" id="inputArea">
-      <input type="text" id="userInput" placeholder="اكتب رسالتك..." dir="rtl" 
+      <input type="text" id="userInput" placeholder="اكتب رسالتك..." dir="rtl"
              autocomplete="off" autocorrect="off" autocapitalize="none" spellcheck="false" />
       <input type="file" id="imageInput" accept="image/*" class="hidden" />
-      <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة">➕</button>
+      <input type="file" id="fileInput" accept=".txt,.csv,application/pdf" class="hidden" />
+      <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة/ملف" title="صورة/ملف">➕</button>
       <button id="micBtn" class="icon-btn mic-btn" aria-label="تسجيل صوتي" title="اضغط مطولاً للتسجيل">🎙️</button>
-      <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل">↪</button>
+      <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل" title="إرسال">↪</button>
     </div>
     <div class="px-4 pb-2 -mt-2 hidden" id="recHintWrap"><span class="rec-hint" id="recHint">● جاري التسجيل… ارفع إصبعك للنسخ إلى خانة الكتابة</span></div>
   </div>
@@ -138,7 +174,7 @@
   <div id="contactModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog" aria-labelledby="contactModalTitle">
     <div class="modal-content">
       <div class="modal-header">
-        <h3 id="contactModalTitle" class="text-lg font-extrabold">اختر طريقة التواصل</h3>
+        <h3 id="contactModalTitle" class="text-lg font-extrabold">احصل على خطتك الآن بضغطة زر</h3>
         <button id="closeContactBtn" class="close-button" title="إغلاق" aria-label="إغلاق">×</button>
       </div>
       <div class="modal-body">
@@ -146,11 +182,11 @@
           <span class="block mt-2 text-[12px] text-gray-500">يمكنك الاستمرار في الحديث إذا كانت لديك أسئلة.</span>
         </p>
         <div class="contact-actions">
-          <a class="contact-btn contact-whatsapp" href="https://wa.me/971502061209" target="_blank" rel="noopener">
+          <a class="contact-btn contact-whatsapp" href="https://wa.me/971502061209" target="_blank" rel="noopener" title="واتساب مباشر">
             <svg viewBox="0 0 32 32" fill="currentColor" aria-hidden="true"><path d="M19.11 17.18c-.28-.14-1.65-.81-1.9-.9-.26-.1-.44-.14-.62.14-.18.27-.71.9-.87 1.09-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.66-1.55-1.94-.16-.27-.02-.42.12-.56.12-.12.28-.3.42-.46.14-.16.18-.27.28-.46.1-.18.06-.34-.02-.48-.08-.14-.62-1.5-.84-2.06-.22-.52-.44-.45-.62-.46h-.54c-.18 0-.48.07-.74.34-.26.27-1 1-1 2.42s1.03 2.8 1.18 2.99c.14.2 2.03 3.1 4.93 4.33.69.3 1.22.48 1.64.62.69.22 1.32.19 1.82.12.56-.08 1.65-.68 1.88-1.35.24-.67.24-1.24.16-1.35-.06-.1-.24-.16-.52-.3z"/><path d="M26.9 5.1A13.9 13.9 0 0 0 16 .1C7.3.1.2 7.1.2 15.8c0 2.7.7 5.2 2 7.4L.1 31.9l8.9-2.3c2.1 1.1 4.5 1.7 7 1.7h.1c8.7 0 15.8-7 15.8-15.7 0-4.2-1.6-8.1-4.9-10.9z"/></svg>
             <span>واتساب مباشر</span>
           </a>
-          <a class="contact-btn contact-phone" href="tel:+971502061209">
+          <a class="contact-btn contact-phone" href="tel:+971502061209" title="اتصال هاتفي">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.11.37 2.3.57 3.58.57a1 1 0 0 1 1 1V21a1 1 0 0 1-1 1C10.61 22 2 13.39 2 3a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.27.2 2.47.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
             <span>اتصال هاتفي</span>
           </a>
@@ -162,7 +198,9 @@
   <footer class="footer">© Powered by Mustafa Elsafy | مصطفى الصافي</footer>
 
   <script type="module">
-    /* ===== Elements ===== */
+    /* =========================
+       Elements
+    ========================= */
     const $ = id => document.getElementById(id);
     const chatMessages = $('chatMessages');
     const userInput = $('userInput');
@@ -179,21 +217,32 @@
     const btnLang = $('btnLang');
     const plusBtn = $('plusBtn');
     const imageInput = $('imageInput');
+    const fileInput = $('fileInput');
     const micBtn = $('micBtn');
     const recHintWrap = $('recHintWrap');
     const planButtonArea = $('planButtonArea');
     const generatePlanBtn = $('generatePlanBtn');
     const contactModal = $('contactModal');
     const closeContactBtn = $('closeContactBtn');
+    const btnSave = $('btnSave');
+    const btnLoad = $('btnLoad');
+    const btnClear = $('btnClear');
+    const replyBar = $('replyBar');
+    const replySnippet = $('replySnippet');
+    const replyClear = $('replyClear');
 
-    /* ===== State ===== */
+    /* =========================
+       State
+    ========================= */
     let userState = { step: 0, data: {}, persona:'neutral' };
     let LANG = 'ar';
     let chatHistory = [];
     const MAX_TURNS = 12;
     const MAX_PROMPT_CHARS = 14000;
 
-    /* ===== i18n ===== */
+    /* =========================
+       i18n
+    ========================= */
     const i18n = {
       ar: {
         appName: 'مدربك الشخصي الذكي',
@@ -204,28 +253,47 @@
         namePlaceholder:'اسمك', agePlaceholder:'عمرك', countryPlaceholder:'دولتك', nextButtonText:'ابدأ المحادثة',
         inputPlaceholder:'اكتب رسالتك...', emptyFields:'أدخل الاسم والعمر والدولة للمتابعة.', imageUpload:'تم استلام الصورة — يتم التحليل الآن.',
         typing:'… يتم الرد الآن',
-        recStart:'● جاري التسجيل… ارفع إصبعك للنسخ', recDenied:'تعذّر الوصول للميكروفون.', recTooShort:'التسجيل قصير جدًا.', recSaved:'تم نسخ الكلام إلى خانة الكتابة — أرسله يدويًا.'
+        recStart:'● جاري التسجيل… ارفع إصبعك للنسخ', recDenied:'تعذّر الوصول للميكروفون.', recTooShort:'التسجيل قصير جدًا.', recSaved:'تم نسخ الكلام إلى خانة الكتابة — أرسله يدويًا.',
+        saved:'تم حفظ المحادثة', copied:'تم النسخ', cleared:'تم المسح', imported:'تم الاستيراد — سيتم العرض', invalid:'ملف غير صالح'
       },
       en: {
-        appName:'Smart Personal Coach', welcomeSubtitle:'Welcome — we build a precise, doable plan step by step.', startButtonText:'Start now',
-        userDataTitle:'Let’s create your quick profile', userDataSubtitle:'Your name, age, and country to begin', namePlaceholder:'Your name', agePlaceholder:'Your age', countryPlaceholder:'Your country', nextButtonText:'Start chat',
+        appName:'Smart Personal Coach',
+        welcomeSubtitle:'Welcome — we build a precise, doable plan step by step.',
+        startButtonText:'Start now',
+        userDataTitle:'Let’s create your quick profile',
+        userDataSubtitle:'Your name, age, and country to begin',
+        namePlaceholder:'Your name', agePlaceholder:'Your age', countryPlaceholder:'Your country', nextButtonText:'Start chat',
         inputPlaceholder:'Type your message…', emptyFields:'Please fill name, age and country.', imageUpload:'Image received — analyzing now.',
         typing:'typing…',
-        recStart:'● Recording… release to copy', recDenied:'Microphone permission denied.', recTooShort:'Recording too short.', recSaved:'Transcript copied to the input — send manually.'
+        recStart:'● Recording… release to copy', recDenied:'Microphone permission denied.', recTooShort:'Recording too short.', recSaved:'Transcript copied to the input — send manually.',
+        saved:'Chat saved', copied:'Copied', cleared:'Cleared', imported:'Imported', invalid:'Invalid file'
       }
     };
 
     function setLang(lang){
-      LANG = lang; document.documentElement.lang = lang; document.documentElement.dir = lang==='ar'?'rtl':'ltr';
+      LANG = lang;
+      document.documentElement.lang = lang;
+      document.documentElement.dir = lang==='ar'?'rtl':'ltr';
       const L = i18n[LANG];
-      $('welcomeTitle').textContent = L.appName; $('welcomeSubtitle').textContent = L.welcomeSubtitle; $('startBtn').textContent = L.startButtonText;
-      $('userDataTitle').textContent = L.userDataTitle; $('userDataSubtitle').textContent = L.userDataSubtitle;
-      $('userName').placeholder = L.namePlaceholder; $('userAge').placeholder = L.agePlaceholder; $('userCountry').placeholder = L.countryPlaceholder; $('nextBtn').textContent = L.nextButtonText;
-      $('chatTitle').textContent = L.appName; $('userInput').placeholder = L.inputPlaceholder; $('generatePlanBtn').textContent = 'احصل على خطتك الآن';
-      btnLang.textContent = lang==='ar' ? 'AR' : 'EN'; document.title = `${L.appName} | Smart Personal Coach`;
+      $('welcomeTitle').textContent = L.appName;
+      $('welcomeSubtitle').textContent = L.welcomeSubtitle;
+      $('startBtn').textContent = L.startButtonText;
+      $('userDataTitle').textContent = L.userDataTitle;
+      $('userDataSubtitle').textContent = L.userDataSubtitle;
+      $('userName').placeholder = L.namePlaceholder;
+      $('userAge').placeholder = L.agePlaceholder;
+      $('userCountry').placeholder = L.countryPlaceholder;
+      $('nextBtn').textContent = L.nextButtonText;
+      $('chatTitle').textContent = L.appName;
+      $('userInput').placeholder = L.inputPlaceholder;
+      $('generatePlanBtn').textContent = (lang==='ar'?'احصل على خطتك الآن':'Get your plan now');
+      btnLang.textContent = lang==='ar' ? 'AR' : 'EN';
+      document.title = `${L.appName} | Smart Personal Coach`;
     }
 
-    /* ===== Utilities ===== */
+    /* =========================
+       Utilities
+    ========================= */
     function setTheme(){
       document.documentElement.classList.toggle('dark');
       btnTheme.textContent = document.documentElement.classList.contains('dark') ? '🌙' : '☀️';
@@ -236,173 +304,221 @@
       document.body.appendChild(t); setTimeout(()=>t.style.opacity=1,10);
       setTimeout(()=>{t.style.opacity=0; setTimeout(()=>t.remove(),400)},2400)
     }
+
+    /* =========================
+       Language helper
+    ========================= */
+    const Lang = {
+      isArabic(s){ return /[\u0600-\u06FF]/.test(s) },
+      autoSetByText(s){
+        if(!s) return;
+        const target = this.isArabic(s) ? 'ar' : 'en';
+        if(target!==LANG) setLang(target);
+      }
+    };
+
+    /* =========================
+       Storage / History
+    ========================= */
+    const Storage = {
+      KEY: 'smart-coach-history-v1',
+      save(){
+        const payload = { chatHistory, userState, lang: LANG, theme: document.documentElement.classList.contains('dark')?'dark':'light' };
+        localStorage.setItem(this.KEY, JSON.stringify(payload));
+        toast(i18n[LANG].saved);
+      },
+      load(){
+        try{
+          const raw = localStorage.getItem(this.KEY);
+          if(!raw) return false;
+          const { chatHistory: h=[], userState: s={}, lang, theme } = JSON.parse(raw);
+          chatHistory = Array.isArray(h) ? h : [];
+          userState = s || userState;
+          if(lang) setLang(lang);
+          if(theme==='dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent='🌙' }
+          return true;
+        }catch{ return false }
+      },
+      clear(){
+        localStorage.removeItem(this.KEY);
+        toast(i18n[LANG].cleared);
+      },
+      export(){
+        const blob = new Blob([localStorage.getItem(this.KEY) || '{}'], {type:'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href=url; a.download='chat_history.json'; a.click();
+        URL.revokeObjectURL(url);
+      },
+      async import(file){
+        const text = await file.text();
+        try{
+          const j = JSON.parse(text);
+          localStorage.setItem(this.KEY, JSON.stringify(j));
+          toast(i18n[LANG].imported);
+          return true;
+        }catch{ toast(i18n[LANG].invalid); return false }
+      }
+    };
+
+    function compactHistory(){ if (chatHistory.length > MAX_TURNS) chatHistory = chatHistory.slice(-MAX_TURNS) }
+
+    /* =========================
+       Messages UI
+    ========================= */
     function displayMessage(message, sender){
       const b=document.createElement('div'); b.classList.add('message-bubble', sender);
       const safe = (message && typeof message === 'string') ? message : (LANG==='ar'?'…':'…');
-      b.innerHTML = marked.parse(safe);
-      chatMessages.appendChild(b); chatMessages.scrollTop = chatMessages.scrollHeight; return b
+      const html = marked.parse(safe);
+      b.innerHTML = `
+        <div class="msg-content">${html}</div>
+        <div class="msg-meta" role="group" aria-label="أدوات الرسالة">
+          <button class="meta-btn copy" title="${LANG==='ar'?'نسخ الرسالة':'Copy'}">${LANG==='ar'?'نسخ':'Copy'}</button>
+          <button class="meta-btn reply" title="${LANG==='ar'?'رد':'Reply'}">${LANG==='ar'?'رد':'Reply'}</button>
+        </div>`;
+      chatMessages.appendChild(b); chatMessages.scrollTop = chatMessages.scrollHeight;
+
+      // Copy
+      b.querySelector('.copy').onclick = async ()=>{
+        const txt = b.querySelector('.msg-content').innerText;
+        await navigator.clipboard.writeText(txt);
+        toast(i18n[LANG].copied);
+      };
+      // Reply
+      b.querySelector('.reply').onclick = ()=>{
+        UI.setReply(b.querySelector('.msg-content').innerText.slice(0,160));
+      };
+      return b;
     }
-    function isDataComplete(){ return ['name','age','country'].every(k => !!userState.data[k]) }
-    function togglePlanCTA(){ const ready = isDataComplete(); planButtonArea.classList.toggle('hidden', !ready); generatePlanBtn.disabled = !ready }
-    function showTyping(sender='ai'){ const b=document.createElement('div'); b.classList.add('message-bubble', sender); b.innerHTML = `<span class="typing"><span>${i18n[LANG].typing}</span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>`; chatMessages.appendChild(b); chatMessages.scrollTop=chatMessages.scrollHeight; return b }
+    function showTyping(sender='ai'){
+      const b=document.createElement('div'); b.classList.add('message-bubble', sender);
+      b.innerHTML = `<span class="typing"><span>${i18n[LANG].typing}</span><span class="dot"></span><span class="dot"></span><span class="dot"></span></span>`;
+      chatMessages.appendChild(b); chatMessages.scrollTop=chatMessages.scrollHeight; return b
+    }
     function removeNode(n){ if(n && n.parentNode) n.parentNode.removeChild(n) }
 
-    /* ===== AI Prompts ===== */
+    const UI = {
+      setReply(snippet){ replySnippet.textContent = snippet; replyBar.classList.add('show'); userInput.focus(); },
+      clearReply(){ replySnippet.textContent = ''; replyBar.classList.remove('show'); }
+    };
+    replyClear.addEventListener('click', UI.clearReply);
+
+    /* =========================
+       i18n injection
+    ========================= */
+    function togglePlanCTA(){ const ready = isDataComplete(); planButtonArea.classList.toggle('hidden', !ready); generatePlanBtn.disabled = !ready }
+    function isDataComplete(){ return ['name','age','country'].every(k => !!userState.data[k]) }
+
+    /* =========================
+       Prompts
+    ========================= */
     function buildCoachSystemPrompt(){ return `
-📌 التوجيه التنفيذي الشامل للمساعد الرياضي/الغذائي (نسخة إنتاجية عالية الدقة)
+📌 التوجيه التنفيذي الشامل للمساعد الرياضي والغذائي
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+━━━━━━━━━━━━━━━━━━━━━━
 【١) الهوية والدور】
-- إنت المساعد الافتراضي للمدرّب الدولي **مصطفى الصافي**.
-- دورك: مدرّب شخصي وأخصائي تغذية محترف، ترد كإنسان واعي، تحلل الرسائل بدقة، وتقدّم حلول عملية مبنية على العلم.
-- تتكلم بنفس لغة ولهجة المستخدم تلقائيًا (مرآة لغوية). إن لم تتعرف على اللهجة، استخدم **مصري بروفيشنال** واضح ومحترم (بدون عامية مبالغ فيها).
+- إنت المساعد الافتراضي للمدرّب الدولي **مصطفى الصافي**.  
+- دورك: مدرّب شخصي وأخصائي تغذية عالمي المستوى.  
+- تتكلم بنفس لغة ولهجة المستخدم تلقائيًا. لو مش واضحة → استخدم **مصري بروفيشنال**.  
+- بتفكر وترد كإنسان واعي: تحلّل، تستنتج، وتجاوب باحتراف.  
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【٢) مبادئ الحديث وسلوك المحادثة】
-- التحية مرة واحدة فقط في بداية المحادثة أو عند تحية جديدة من المستخدم.
-- لا تكرار لمعلومات قالها المستخدم سابقًا. راجع الذاكرة الداخلية قبل كل رد.
-- لا تطلب صورًا أو ملفات أبدًا؛ لكن **لو أُرسلت** صورة/ملف/تحليل InBody، قم بتحليلها فورًا بدقة.
-- لا تسأل أكثر من **سؤال واحد** في الرسالة؛ مسموح بسؤالين فقط إن كانا مرتبطين جدًا (مثال: الطول والوزن).
-- الردود بشرية، تفاعلية، مركّزة، بلا حشو أو ثناء زائد أو لغة تسويقية فارغة.
-- لو بدأ المستخدم دون هدف واضح: **عرّف نفسك باقتضاب** كمساعد مصطفى الصافي للتدريب والتغذية، ثم اسأله: «تحب نبدأ بهدفك الحالي ولا عندك استفسار معيّن؟».
+━━━━━━━━━━━━━━━━━━━━━━
+【٢) أسلوب المحادثة】
+- التحية مرة واحدة فقط في البداية.  
+- ما تكررش معلومات قالها العميل.  
+- الرد يبدأ بـ **ملخص قصير للي فهمته** → بعده **الحل/الخطة/الإجابة**.  
+- أسئلة قليلة وضرورية فقط (سؤال واحد، أو اتنين لو مرتبطين جدًا).  
+- الردود قصيرة، دقيقة، بشرية، ممتعة، غير مملة.  
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【٣) إدارة السياق والذاكرة الداخلية (Internal State)】
-- احتفظ داخليًا (غير مرئي للمستخدم) بـ: 
-  • الهدف الحالي (خسارة دهون/بناء عضل/لياقة/صحة عامة/إصابة/استشارة فقط).  
-  • البيانات الأساسية التي حصلت عليها (العمر، الجنس، الطول، الوزن، بلد/منطقة، مستوى النشاط، تفضيلات الأكل، عدد الوجبات، توافر التمرين، مكان التمرين، قيود صحية/أدوية/حساسيات).  
-  • عناصر شخصية المستخدم (متحمّس/متردد/قلِق/مشغول/حاسم).  
-  • ملخص آخر إجابات مهمة وأي حدود/تحذيرات صحية.  
-- قبل كل رد: \`مراجعة صامتة\` للتأكد من: عدم تكرار أسئلة مجابة، توافق الرد مع الهدف والقيود الصحية، الأسلوب مناسب للشخصية.
+━━━━━━━━━━━━━━━━━━━━━━
+【٣) إدارة السياق والذاكرة】
+- احفظ داخليًا (ما يظهرش للمستخدم):  
+  • الهدف الأساسي (دهون/عضل/لياقة/صحة).  
+  • البيانات الأساسية (عمر، جنس، طول، وزن، نشاط، مكان التمرين، وجبات، قيود).  
+  • الشخصية (متحمس/متردد/قلق/غير ملتزم).  
+  • أي إصابات/أدوية/أمراض.  
+- قبل الرد: اعمل **مراجعة صامتة** للتأكد إنك مش بتكرر سؤال أو معلومة.  
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【٤) جمع البيانات الذكي (عند طلب "خطة")】
-- الهدف: **جمع الحد الأدنى الكافي** لبناء خطة دقيقة 100% **مرّة واحدة** دون تقطيع مراحل.
-- لو المستخدم طلب خطة مباشرة وكان الهدف واضحًا وبعض الأساسيات ناقصة: اسأل فقط **أقل عدد** من الأسئلة الضرورية (سؤال واحد أو سؤالين مرتبطين).
-- قائمة الحد الأدنى (Minimum Viable Data) لبناء خطة كاملة:
-  1) الهدف الأساسي (خسارة دهون/بناء عضل/تحسين لياقة/صحة عامة).  
+━━━━━━━━━━━━━━━━━━━━━━
+【٤) جمع البيانات عند طلب خطة】
+- لازم تجمع **الحد الأدنى الكافي** مرة واحدة:  
+  1) الهدف الأساسي.  
   2) الجنس + العمر.  
-  3) الطول + الوزن الحالي.  
-  4) مستوى النشاط الحالي (ثابت/خفيف/متوسط/عالٍ) وتاريخ تمرين مختصر.  
-  5) مكان التمرين المتاح (جيم/منزل) وعدد الأيام الأسبوعية الممكنة.  
-  6) تفضيلات/ممنوعات غذائية + عدد الوجبات الممكن.  
-  7) قيود صحية/أدوية/إصابات (إن وجِدت).  
-- لو توفّرت هذه العناصر بوضوح، **لا تسأل المزيد** وابدأ بناء الخطة فورًا.
-- ممنوع تحويل المحادثة لاستجواب؛ أي استفسار إضافي يجب أن يكون مبررًا ودقيقًا.
+  3) الطول + الوزن.  
+  4) النشاط/تاريخ التمرين.  
+  5) مكان التمرين وعدد الأيام.  
+  6) تفضيلات/ممنوعات غذائية + عدد الوجبات.  
+  7) أمراض/إصابات/أدوية.  
+- لو المعلومات دي واضحة → ابني الخطة فورًا.  
+- ممنوع الاستجواب أو التكرار.  
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【٥) سياسة تقديم الخطة النهائية】
-- بعد اكتمال البيانات الأساسية، قدّم **الخطة كاملة مرّة واحدة** في رسالة واحدة شاملة، بصياغة نظيفة ومنسّقة بدون نقص.
-- لا تقسّم الخطة على مراحل.
-- إن كانت هناك نقطة غامضة لا تمنع البناء، افترض اختيارًا منطقيًا وأذكره شفهيًا داخل الخطة (افتراض موضّح)، وقدّم بديلًا.
-- لو طلب المستخدم فقط جزءًا محددًا (يوم غذائي، تمرينة عضلة X، سناك قبل التمرين…): 
-  • اسأله دفعة واحدة عن **الحد الأدنى** اللازم للدقة،  
-  • ثم أعطِ الرد المطلوب مباشرة وبنفس الرسالة التالية دون إطالة.
+━━━━━━━━━━━━━━━━━━━━━━
+【٥) تقديم الخطة】
+- لو البيانات كاملة → قدم الخطة **مرة واحدة كاملة** بصياغة نظيفة.  
+- لو طلب جزء (يوم غذائي/عضلة/سناك) → اسأله دفعة واحدة عن أي معلومة ناقصة ثم قدم الرد مباشرة.  
+- ما تقسّمش الخطة على مراحل.  
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【٦) الدقّة العلمية والاحتياطات】
-- خطط التدريب: مبادئ القوة/الهايبرتروفي/اللياقة، تدرّج أحمال، راحة كافية، تمارين بديلة عند الإصابات، RPE عند الحاجة.  
-- خطط التغذية: سعرات محسوبة، ماكروز دقيقة، أوزان بالمقادير (جرام/مل/ملعقة)، بدائل واقعية، توزيع وجبات مناسب للنشاط.  
-- أدوية/أمراض/إصابات: عدّل التمارين/الأطعمة فورًا بما يناسب الحالة؛ اذكر تحذيرات موجزة واحترم القيود.  
-- عند طلب «تحوّل جذري وفوري» في الأكل/التدريب:  
-  • نبّه أنه **قاسٍ** وقد لا يناسب الجميع،  
-  • إن أصرّ المستخدم: تابع بناء خطة قوية وفق رغبته مع كتابة **تنبيه وضمان إخلاء مسؤولية** مختصرين بأسلوب مهذب.
+━━━━━━━━━━━━━━━━━━━━━━
+【٦) الدقة العلمية والاحتياطات】
+- التدريب: قوة/هايبرتروفي/لياقة، تقدم تدريجي، راحة، بدائل إصابات.  
+- التغذية: سعرات دقيقة، ماكروز، أوزان بالجرام، بدائل بسيطة.  
+- الإصابات/الأدوية: خليك آمن وعدّل فورًا.  
+- لو طلب تحول جذري سريع → نبّه إنه صعب ومخاطره عالية، ولو أصر قدّم الخطة مع **إخلاء مسؤولية** محترم.  
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【٧) سياسة الأسلوب والتعامل】
-- ممتع غير ممل: أضف لمسات مشجعة مختصرة ومهنية (بدون إيموجي مبالغ فيها).  
-- إن حدث تجاوز من المستخدم: ردّ بأدب وحزم أن الحوار يجب أن يكون راقيًا وإنك موجود للمساعدة فقط.  
-- لا مجاملات زائدة، لا وعود غير واقعية، لا نصائح عامة فضفاضة بلا أرقام أو صياغة قابلة للتنفيذ.
+━━━━━━━━━━━━━━━━━━━━━━
+【٧) الأسلوب البشري والتعامل】
+- الرد ممتع ومشجع، بلا مبالغة أو ملل.  
+- لو تجاوز العميل: رد باحترام وحزم إن الحوار لازم يفضل راقي.  
+- ما تديش وعود أو نتائج قطعية؛ استخدم احتمالات واقعية.  
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【٨) تحليل الوسائط (إن وصلت)】
-- صور الجسم: استنتج بنية الجسم، توزيع دهون/عضل، ملاحظات وضعية (مثال: ميل حوض/كتف)، وانعكاسها على اختيار التمارين.  
-- تقارير/صور InBody: اقرأ الأرقام الظاهرة (نسبة الدهون، كتلة عضلية، ماء الجسم، BMR…) وعلّق عمليًا.  
-- صور الوجبات: استدلّ على المكونات وطريقة التحضير التقريبية وقدّم تقدير سعرات/ماكروز منطقيًا، مع نصائح تحسين.  
-- ملفات نصية/صور بها كتابة: استخرج المعلومات الهامة وادمجها في التوصيات.  
-- ملاحظة: لا تطلب وسائط؛ **تحلّل فقط ما يرسله المستخدم**.
+━━━━━━━━━━━━━━━━━━━━━━
+【٨) تحليل الوسائط】
+- صور جسم: استنتج بنية، دهون، عضل، وضعيات.  
+- InBody/ملفات: استخرج الأرقام وعلّق عمليًا.  
+- صور وجبات: استدل على المكونات، السعرات، ماكروز، خطوات التحضير.  
+- أي ملف نص/صورة: اقرأ وحلّل وأدمج في الرد.  
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【٩) تنسيقات جاهزة للخطط والردود (Templates)】
-أ) **فورمات خطة التدريب (كاملة)**  
-- **الهدف:** <مختصر واضح>  
-- **الأسبوع:** <عدد الأيام> — <Gym/Home>  
-- **إرشادات عامة:** إحماء 5–10د + تبريد/إطالة 5–10د، تتبّع RPE، تدرّج أحمال أسبوعي.  
-- **خطة الأيام:**  
-  • **Day 1 — Upper Strength**  
-    - Bench Press — 4×6 @ RPE 7–8 — Rest 120–150s — Notes: قبضة متوسطة، ثبات لوح الكتف.  
-    - Row (Chest Supported) — 4×8 — Rest 90s — Notes: سحب للكوع لا لليد.  
-    - Overhead Press — 3×8 — Rest 90s — Notes: كور مشدود.  
-    - Accessory: Face Pull 3×12 — Plank 3×45s.  
-  • **Day 2 — Lower Strength**  
-    - Back Squat — 4×6 @ RPE 7–8 — Rest 150s — Notes: عمق مناسب وثبات الركبة.  
-    - RDL — 4×8 — Rest 120s — Notes: ظهر محايد، هيب-هينج.  
-    - Split Squat — 3×10/leg — Rest 90s.  
-    - Accessory: Calf Raises 3×15 — Side Plank 3×35s.  
-  … (أكمل بقية الأيام حسب عددها)  
-- **تقدّم أسبوعي:** +2.5–5% وزن أو +1–2 تكرار/مجموعة بحسب الاستجابة.  
-- **بدائل الإصابات:** <تمارين بديلة لكل حركة مؤلمة>  
-- **مؤشرات المتابعة:** الأداء، RPE، جودة الحركة، غياب الألم.
+━━━━━━━━━━━━━━━━━━━━━━
+【٩) الفورماتات】
+أ) خطة تدريب كاملة:  
+- الهدف، عدد الأيام، مكان التمرين.  
+- يوم بيوم: Exercise (EN) + Sets + Reps + Rest + Notes.  
+- تقدم أسبوعي + بدائل إصابات + مؤشرات متابعة.  
 
-ب) **فورمات خطة التغذية (كاملة)**  
-- **السعرات اليومية المستهدفة:** <عدد> kcal  
-- **التوزيع التقريبي:** Protein <g> — Carbs <g> — Fat <g>  
-- **عدد الوجبات:** <عدد> — **نمط التوزيع:** <أوقات تقريبية>  
-- **مثال يوم كامل (مقادير دقيقة):**  
-  1) **فطار**: شوفان 60جم + لبن نصف دسم 200مل + زبدة فول سوداني 10جم + موزة 120جم  
-     - **السعرات:** <عدد> kcal — **الماكروز:** P <g> / C <g> / F <g>  
-     - **التحضير:** <خطوات مختصرة> — **بدائل:** <قائمة بدائل>  
-  2) **غداء**: صدور دجاج 150جم (وزن بعد التسوية) + رز بسمتي مطبوخ 180جم + خضار سوتيه 150جم  
-     - **السعرات:** … — **الماكروز:** …  
-     - **تحضير/نصائح:** …  
-  3) **سناك**: زبادي يوناني 170جم + عسل 10جم + مكسرات 15جم  
-  4) **عشاء**: بيضتان كبار + توست حبة كاملة 2 شريحة + سلطة كبيرة  
-- **بدائل عملية:** <قائمة بدائل لكل وجبة>  
-- **إرشادات سوائل/ملح/ألياف/كافيين:** مختصرة قابلة للتنفيذ.  
-- **تعديلات أسبوعية:** ±100–200 kcal حسب الميزان/الأداء.
+ب) خطة غذاء كاملة:  
+- السعرات، الماكروز.  
+- مثال يوم كامل: كل وجبة = مكونات بالجرام + طريقة + سعرات/ماكروز + بدائل.  
 
-ج) **وصفة وجبة عند الطلب (كاملة التفاصيل)**  
-- **الاسم:** <اسم الوصفة>  
-- **المكونات (بالجرام/المل/القطع):** <قائمة دقيقة>  
-- **الخطوات:** مرقّمة وواضحة  
-- **السعرات والماكروز:** إجمالي و/أو لكل حصة  
-- **نصائح الجودة:** <حرارة/قوام/تتبيلة/تخزين>  
-- **بدائل/حساسيات:** <بدائل مناسبة>
+ج) وصفة عند الطلب:  
+- المكونات بالجرام/مل.  
+- خطوات التحضير.  
+- السعرات والماكروز.  
+- نصائح + بدائل.  
 
-د) **ردود استشارية قصيرة (بدون خطة كاملة)**  
-- **ملخص فهمي:** <سطر واحد>  
-- **الإجابة العملية:** <3–6 سطور قابلة للتطبيق اليوم>  
-- **سؤال مكمل واحد فقط (إن لزم):** <سؤال>  
+د) رد استشاري قصير:  
+- ملخص فهم.  
+- حل عملي مباشر.  
+- سؤال مكمل (لو ضروري).  
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【١٠) منطق القرار عند استلام رسالة المستخدم】
-- لو قال: «عايز خطة» ولم يحدّد الهدف/الأساسيات: اسأل **أقل حد** من البيانات (سؤال أو اثنين مرتبطين) من قائمة الحد الأدنى، ثم بعد اكتمالها قدّم الخطة فورًا.  
-- لو كان الهدف واضحًا والبيانات الأساسية مكتملة: **لا تسأل** وقدّم الخطة مباشرة في رسالة واحدة كاملة.  
-- لو طلب جزءًا من خطة/وجبة/تمرينة: اسأله دفعة واحدة عن الحد الأدنى اللازم ثم قدّم المطلوب مباشرة في الرد التالي.  
-- لو بدأ بتحية أو حديث عام: رحّب باختصار مرة واحدة، ثم وجّه لسؤال عملي: «تحب نبدأ بهدفك الحالي ولا عندك استفسار؟».  
-- لو أرسل وسائط: حلّلها وادمج النتائج في التوصيات دون طلب وسائط إضافية.  
-- لو طلب «تحوّل جذري سريع»: قدّم تنبيهًا مختصرًا بالمخاطر وإخلاء مسؤولية ثم ابنِ الخطة بناءً على طلبه مع بدائل أهدأ.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【١١) حدود اللياقة والحوكمة】
-- لو حدث تجاوز لفظي: «أفضّل إن الحوار يفضل راقي. أنا موجود علشان أساعدك في التدريب والتغذية — نكمل؟».  
-- لا معلومات طبية تشخيصية؛ أي أعراض مقلقة → «أنصح بمراجعة الطبيب».  
-- لا وعود نتائج محددة بزمن قطعي؛ استخدم صياغات احتمالية مع خطة تنفيذ.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-【١٢) ضمان الجودة قبل الإرسال (Checklist)】
-قبل كل رد، تأكّد داخليًا من:  
-- لا تكرار أسئلة مجابة.  
-- اللغة مطابقة للعميل (أو مصري بروفيشنال).  
-- الرد **مباشر** على طلب المستخدم، كامل، بدون نقص.  
-- في الخطط: كل العناصر المطلوبة موجودة (تدريب+تغذية+إرشادات+تقدّم+بدائل).  
-- لو كان الرد استشاري: يوجد ملخص فهم + حل عملي + سؤال واحد (إن لزم).  
-- إن كانت البيانات كافية لخطّة: لا تسأل أكثر — قدّم الخطة الآن.
-
+━━━━━━━━━━━━━━━━━━━━━━
+【١٠) قواعد نهائية】
+- اجمع البيانات الضرورية مرة واحدة فقط.  
+- ما تعيدش ولا تكرر.  
+- ردودك دائمًا كاملة، دقيقة، عملية.  
+- التمارين بالإنجليزي فقط، من غير جداول.  
+- كل رد لازم يخلي العميل حاسس إنه بيتعامل مع مدرب حقيقي محترف.  
 ` }
-    function buildImagePrompt(){ return `حلّل الصورة في 2-4 أسطر: 1) ما الذي تراه؟ 2) أي نص/مكونات ظاهرة إن وجدت. 3) الدلالة الصحية/الرياضية. كن محددًا وعمليًا واعتمد فقط على الصورة المرسلة.` }
+    function buildImagePrompt(){
+      return `حلّل الصورة بنقاط تنفيذية مختصرة فقط (3-5 نقاط) بدون أي مقدمات:
+- ماذا ترى (مختصر محدد).
+- أي نص/قيم ظاهرة إن وُجدت.
+- التفسير الصحي/الرياضي العملي.
+- خطوة واحدة مقترحة الآن.
+لا تكتب جُمل عامة.`;
+    }
 
-    /* ===== AI Call (proxy) ===== */
+    /* =========================
+       AI Call (proxy)
+    ========================= */
     async function callAI(prompt, {images, audio} = {}){
       try{
         const payload = { prompt };
@@ -426,13 +542,23 @@
       }catch(e){ console.error(e); return '' }
     }
 
-    /* ===== Health flags ===== */
+    /* =========================
+       Health flags
+    ========================= */
     const MED_FLAGS=/(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i;
     function analyzeUserMessage(msg){ if(MED_FLAGS.test(msg)){ displayMessage('تم رصد حالة صحية — سنضيف احتياطات مناسبة. اذكر تفاصيل الدواء/الجرعة أو التشخيص إن وُجد.', 'ai') } }
 
-    /* ===== History & State helpers ===== */
-    function compactHistory(){
-      if (chatHistory.length > MAX_TURNS) chatHistory = chatHistory.slice(-MAX_TURNS);
+    /* =========================
+       Internal State
+    ========================= */
+    function compactAndSnippet(){
+      compactHistory();
+      const lines = chatHistory.map(m=>{
+        const role = m.role === 'assistant' ? 'المدرب' : 'المستخدم';
+        const txt  = (m.parts?.[0]?.text || '').replace(/\s+/g,' ').slice(0,1200);
+        return `${role}: ${txt}`;
+      });
+      return lines.join('\n').slice(0, MAX_PROMPT_CHARS);
     }
     function buildInternalStateSummary(){
       const d = userState.data || {};
@@ -446,17 +572,10 @@
       if (d.meals)   fields.push(`وجبات/اليوم: ${d.meals}`);
       return fields.length ? `🗒️ ملخص الحالة: ${fields.join(' | ')}` : '';
     }
-    function buildConversationSnippet(){
-      compactHistory();
-      const lines = chatHistory.map(m=>{
-        const role = m.role === 'assistant' ? 'المدرب' : 'المستخدم';
-        const txt  = (m.parts?.[0]?.text || '').replace(/\s+/g,' ').slice(0,1200);
-        return `${role}: ${txt}`;
-      });
-      return lines.join('\n').slice(0, MAX_PROMPT_CHARS);
-    }
 
-    /* ===== Voice to text ===== */
+    /* =========================
+       Voice to text
+    ========================= */
     let recording=false; let sttSession=0; let recognition=null; let mediaStream=null; let mediaRecorder=null; let audioChunks=[]; let recStartTime=0;
     const supportSpeechRecognition = ()=> ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window);
     function startLocalRecognition(){
@@ -523,17 +642,68 @@
       reader.readAsDataURL(blob);
     }
 
-    /* ===== Conversation Engine ===== */
-    async function processAIResponse(message){
-      const typingEl = showTyping('ai');
+    /* =========================
+       Files: TXT/CSV/PDF + Images
+    ========================= */
+    const Files = {
+      async handleFile(file){
+        const name = (file.name||'').toLowerCase();
+        if(name.endsWith('.txt')||name.endsWith('.csv')){
+          const text = await file.text();
+          displayMessage(`**تم استلام ملف:** ${file.name}\n\n\`\`\`\n${text.slice(0,1200)}\n\`\`\`\n`, 'user');
+          await Files.analyzeText(text);
+        }else if(name.endsWith('.pdf')){
+          await Files.extractPdfText(file);
+        }else{
+          toast(LANG==='ar'?'نوع الملف غير مدعوم هنا — ارفع صورة أو PDF/CSV/TXT':'Unsupported file type');
+        }
+      },
+      async analyzeText(text){
+        const typingEl = showTyping('ai');
+        const prompt = `استخرج أهم البيانات من النص التالي وقدّم خلاصة تنفيذية من 5-7 نقاط ثم توصية عملية واحدة:\n\n${text.slice(0,12000)}`;
+        const aiResp = await callAI(prompt);
+        removeNode(typingEl);
+        const reply = aiResp || (LANG==='ar'?'تمت القراءة.':'Read.');
+        displayMessage(reply,'ai');
+        chatHistory.push({role:'assistant',parts:[{text:reply}]});
+        Storage.save();
+      },
+      async extractPdfText(file){
+        displayMessage(`**تم استلام PDF:** ${file.name}`,'user');
+        if(!window.pdfjsLib){
+          await new Promise((res,rej)=>{
+            const s=document.createElement('script');
+            s.src='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.5.136/pdf.min.js';
+            s.onload=res; s.onerror=rej; document.head.appendChild(s);
+          });
+        }
+        const buf = await file.arrayBuffer();
+        const pdf = await pdfjsLib.getDocument({data:buf}).promise;
+        let text=''; 
+        for(let p=1;p<=Math.min(pdf.numPages,20);p++){
+          const page = await pdf.getPage(p);
+          const content = await page.getTextContent();
+          text += content.items.map(i=>i.str).join(' ') + '\n';
+          if(text.length>12000) break;
+        }
+        await Files.analyzeText(text);
+      }
+    };
 
-      // تحديث حالة مبسّط من الرسالة (اختياري)
+    /* =========================
+       Conversation Engine
+    ========================= */
+    function analyzeMsgForState(message){
       if (/خطة|أخس|تخسيس|تضخيم|عضل/i.test(message)) userState.data.goal = userState.data.goal || 'خطة مخصصة';
       if (/جيم|بيت|منزل/i.test(message)) userState.data.gym = userState.data.gym || 'غير محدد';
-      if (MED_FLAGS.test(message)) userState.data.health = (userState.data.health || 'قيود صحية') ;
+      if (MED_FLAGS.test(message)) userState.data.health = (userState.data.health || 'قيود صحية');
+    }
 
+    async function processAIResponse(message){
+      const typingEl = showTyping('ai');
+      analyzeMsgForState(message);
       const state = buildInternalStateSummary();
-      const convo = buildConversationSnippet();
+      const convo = compactAndSnippet();
 
       const coachPrompt =
 `${buildCoachSystemPrompt()}
@@ -545,11 +715,7 @@ ${convo}
 رسالة المستخدم الأخيرة: ${message}`;
 
       let response = '';
-      try{
-        response = await callAI(coachPrompt);
-      }catch(e){
-        console.error(e);
-      }
+      try{ response = await callAI(coachPrompt); }catch(e){ console.error(e); }
 
       removeNode(typingEl);
 
@@ -562,57 +728,99 @@ ${convo}
       chatHistory.push({role:'assistant',parts:[{text:response}]});
       displayMessage(response,'ai');
       togglePlanCTA();
+      Storage.save();
     }
 
     function sendMessage(){
-      const message=(userInput.value||'').trim(); if(!message) return;
-      displayMessage(message,'user');
-      chatHistory.push({role:'user',parts:[{text:message}]});
-      analyzeUserMessage(message);
-      processAIResponse(message);
+      const raw=(userInput.value||'').trim(); if(!raw) return;
+
+      // لغة تلقائية
+      Lang.autoSetByText(raw);
+
+      // رد على رسالة مقتبسة إن وُجد
+      let finalMsg = raw;
+      if(replyBar.classList.contains('show')){
+        finalMsg = (LANG==='ar'
+          ? `> ${replySnippet.textContent}\n\n${raw}`
+          : `> ${replySnippet.textContent}\n\n${raw}`);
+        UI.clearReply();
+      }
+
+      displayMessage(finalMsg,'user');
+      chatHistory.push({role:'user',parts:[{text:finalMsg}]});
+      analyzeUserMessage(finalMsg);
+      processAIResponse(finalMsg);
       userInput.value='';
+      Storage.save();
     }
 
-    /* ===== Events ===== */
+    /* =========================
+       Events
+    ========================= */
     document.addEventListener('DOMContentLoaded',()=>{
+      // Welcome -> Profile
       startBtn.addEventListener('click',()=>{ welcomeScreen.classList.add('hidden'); userDataScreen.classList.remove('hidden'); setLang(LANG) });
+
+      // Profile -> Chat
       nextBtn.addEventListener('click',()=>{
         const name=(userNameInput.value||'').trim();
         const age=(userAgeInput.value||'').trim();
         const country=(userCountryInput.value||'').trim();
+        Lang.autoSetByText(name || country);
         if(!name||!age||!country){ toast(i18n[LANG].emptyFields); return }
         userState.data={...userState.data,name,age,country};
         userDataScreen.classList.add('hidden'); chatContainer.classList.remove('hidden');
-        const welcomeMsg = `مرحبًا ${name}. نمشي خطوة خطوة لتجميع بياناتك وبناء خطة دقيقة قابلة للتنفيذ.`;
+        const welcomeMsg = (LANG==='ar')
+          ? `مرحبًا ${name}. نمشي خطوة خطوة لتجميع بياناتك وبناء خطة دقيقة قابلة للتنفيذ.`
+          : `Welcome ${name}. We’ll collect key data and build a precise, doable plan.`;
         chatHistory.push({role:'assistant',parts:[{text:welcomeMsg}]}); displayMessage(welcomeMsg,'ai'); togglePlanCTA();
+        Storage.save();
       });
 
+      // Theme & Lang
       btnTheme.addEventListener('click', setTheme);
       btnLang.addEventListener('click',()=> setLang(LANG==='ar' ? 'en' : 'ar'));
-      plusBtn.addEventListener('click',()=> imageInput.click());
+      const savedTheme=localStorage.getItem('theme'); if(savedTheme==='dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent='🌙' }
+      setLang('ar');
 
+      // Inputs
+      function keyHandler(e){ if(e.key==='Enter') sendMessage() }
+      sendBtn.addEventListener('click', sendMessage);
+      userInput.addEventListener('keypress', keyHandler);
+
+      // Plus: short press = image, long press = file
+      let pressTimer;
+      plusBtn.addEventListener('mousedown', ()=>{ pressTimer = setTimeout(()=> fileInput.click(), 400) });
+      plusBtn.addEventListener('mouseup', ()=>{ clearTimeout(pressTimer); imageInput.click(); });
+      plusBtn.addEventListener('mouseleave', ()=> clearTimeout(pressTimer));
+      plusBtn.addEventListener('touchstart', ()=>{ pressTimer = setTimeout(()=> fileInput.click(), 400) }, {passive:true});
+      plusBtn.addEventListener('touchend', ()=>{ clearTimeout(pressTimer); imageInput.click(); }, {passive:true});
+
+      // Image upload -> analyze
       imageInput.addEventListener('change', async (e)=>{
         const file=e.target.files[0]; if(!file) return;
         const reader=new FileReader(); reader.onload= async (ev)=>{
           const dataUrl = ev.target.result;
-          const imgHTML=`<img src="${dataUrl}" class="max-w-[220px] rounded-lg my-2" alt="uploaded"/>`;
+          const imgHTML=`<img src="${dataUrl}" class="max-w-[220px] rounded-lg my-2" alt="uploaded image"/>`;
           displayMessage(imgHTML,'user'); toast(i18n[LANG].imageUpload);
           const typingEl = showTyping('ai');
           let aiResp = await callAI(buildImagePrompt(), { images: [dataUrl] });
           removeNode(typingEl);
           const bad = /قدّم|provide|يرجى تقديم|please provide|لا أستطيع رؤية الصورة/i.test(aiResp||'');
-          const reply = bad || !aiResp ? (LANG==='ar'? 'تم استلام الصورة ومعالجتها. لو عايز تحليل أدق، ابعت صورة أوضح وهحلّلها بالتفصيل.' : 'Image received and processed. For deeper analysis, upload a clearer photo.') : aiResp;
+          const reply = bad || !aiResp ? (LANG==='ar'? 'تم استلام الصورة ومعالجتها. لنتيجة أوضح، أرسل صورة أوضح وسأحلّلها بدقة.' : 'Image received and processed. For clearer results, upload a sharper image.') : aiResp;
           displayMessage(reply, 'ai');
           chatHistory.push({role:'user',parts:[{text:'[صورة مرفوعة]'}]});
           chatHistory.push({role:'assistant',parts:[{text:reply}]});
-          togglePlanCTA();
+          togglePlanCTA(); Storage.save();
         };
         reader.readAsDataURL(file)
       });
 
-      function keyHandler(e){ if(e.key==='Enter') sendMessage() }
-      sendBtn.addEventListener('click', sendMessage);
-      userInput.addEventListener('keypress', keyHandler);
+      // File upload -> parse/read
+      fileInput.addEventListener('change', async (e)=>{
+        const f=e.target.files[0]; if(!f) return;
+        await Files.handleFile(f);
+      });
 
       // Mic interactions
       const startEvents = ['pointerdown','touchstart','mousedown'];
@@ -621,14 +829,35 @@ ${convo}
       endEvents.forEach(ev => micBtn.addEventListener(ev, (e)=>{ e.preventDefault(); stopRecording() }, {passive:false}));
 
       // CTA -> contact
-      generatePlanBtn.addEventListener('click', ()=>{ contactModal.classList.add('open'); contactModal.setAttribute('aria-hidden','false') });
+      generatePlanBtn.addEventListener('click', ()=>{
+        const body = contactModal.querySelector('.modal-body');
+        const pitch = document.createElement('div');
+        pitch.className='mb-3 text-[.95rem] font-semibold';
+        pitch.textContent = 'نبدأ اليوم: خطة دقيقة + متابعة أسبوعية + دعم مباشر — اشترك الآن.';
+        body.prepend(pitch);
+        contactModal.classList.add('open'); contactModal.setAttribute('aria-hidden','false');
+      });
       closeContactBtn.addEventListener('click',()=>{ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') });
       contactModal.addEventListener('click', e=>{ if(e.target===contactModal){ contactModal.classList.remove('open'); contactModal.setAttribute('aria-hidden','true') } });
 
-      const savedTheme=localStorage.getItem('theme'); if(savedTheme==='dark'){ document.documentElement.classList.add('dark'); btnTheme.textContent='🌙' }
-      setLang('ar');
-    })
+      // Save/Load/Clear + import
+      btnSave.addEventListener('click', ()=>{ Storage.save(); Storage.export(); });
+      btnLoad.addEventListener('click', ()=>{
+        const ok = Storage.load();
+        if(!ok){ toast(LANG==='ar'?'لا توجد محادثة محفوظة':'No saved chat'); return; }
+        chatMessages.innerHTML='';
+        chatHistory.forEach(m => displayMessage(m.parts?.[0]?.text || '', m.role==='assistant'?'ai':'user'));
+        togglePlanCTA();
+      });
+      btnClear.addEventListener('click', ()=>{ Storage.clear(); chatMessages.innerHTML=''; chatHistory=[]; });
+
+      // Right-click on Load to import JSON
+      const importBtn = document.createElement('input');
+      importBtn.type='file'; importBtn.accept='application/json'; importBtn.style.display='none';
+      document.body.appendChild(importBtn);
+      btnLoad.addEventListener('contextmenu', (e)=>{ e.preventDefault(); importBtn.click(); });
+      importBtn.onchange = async (e)=>{ const f=e.target.files[0]; if(!f) return; await Storage.import(f); btnLoad.click(); };
+    });
   </script>
 </body>
 </html>
-
