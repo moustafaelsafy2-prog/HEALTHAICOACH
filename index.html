@@ -473,6 +473,33 @@
           <button id="generatePlanBtn" class="send-btn font-bold px-4 py-2 rounded-lg" disabled>احصل على خطتك</button>
         </div>
       </div>
+      
+      <!-- iHerb Discount Banner -->
+      <div id="iherb-card" class="mt-3 flex items-center gap-3 rounded-xl p-3 bg-gradient-to-r from-emerald-50 to-green-50 dark:from-emerald-900/40 dark:to-green-900/40 border border-emerald-200 dark:border-emerald-700/60 shadow-sm">
+        <div class="flex-shrink-0 grid place-items-center w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-800 text-emerald-600 dark:text-emerald-400">
+          <svg class="w-7 h-7" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66l.95-2.3c.48.17.98.3 1.5.38c3.3.5 6.22-2.39 6.84-5.64c.45-2.3-1.05-4.42-3.23-5.32c-.6-.25-1.25-.37-1.92-.37c-.85 0-1.67.2-2.43.56l-1.89-.66C7.9 3.83 17 8 17 8Z" /></svg>
+        </div>
+        <div class="flex-1 min-w-0">
+          <p id="iherbTitle" class="font-extrabold text-sm text-emerald-800 dark:text-emerald-200">
+            احصل على مكملاتك من iHerb
+          </p>
+          <p id="iherbSubtitle" class="text-xs text-emerald-700 dark:text-emerald-300 mt-1">
+            خصم إضافي 10% هدية من مدربك لدعم رحلتك!
+          </p>
+        </div>
+        <!-- START MODIFICATION -->
+        <div class="flex items-center gap-2 flex-wrap justify-end">
+          <div id="iherb-code" class="px-3 py-1.5 rounded-lg bg-white dark:bg-gray-800 border-2 border-dashed border-emerald-400 dark:border-emerald-600 font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">
+            AYT3413
+          </div>
+          <a id="copy-and-go-iherb-btn" href="https://iherb.co/fL9KCv1i?rcode=AYT3413&utm_medium=appshare" target="_blank" rel="noopener noreferrer" class="flex-shrink-0 flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold hover:bg-emerald-700 transition-colors text-sm shadow">
+            <span id="copy-and-go-iherb-btn-text">انسخ وتوجه للمتجر</span>
+            <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"></path></svg>
+          </a>
+        </div>
+        <!-- END MODIFICATION -->
+      </div>
+
       <p id="planButtonNote" class="text-gray-700 dark:text-gray-300 text-xs mt-2 px-2">بالضغط، ستفتح طرق التواصل. باقة البدء تشمل: تقييم دقيق، خطة وجبات وتمرين، متابعة أول أسبوع.</p>
     </div>
 
@@ -526,12 +553,12 @@
         </div>
         <!-- Buy Me a Coffee Section -->
         <div class="text-center mt-6 pt-4 border-t border-border">
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            <p id="coffeeText" class="text-sm text-gray-600 dark:text-gray-400 mb-2">
                 هل أعجبتك هذه الأداة المجانية؟ دعمك يساعدنا على التطوير والاستمرار.
             </p>
             <a href="https://buymeacoffee.com/aipersonaltrainer" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center gap-2 px-5 py-2 font-bold text-gray-800 bg-amber-400 rounded-lg shadow-md hover:bg-amber-500 transition-colors">
                 <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4v-2z"/></svg>
-                ادعمني بقهوة
+                <span id="coffeeBtnText">ادعمني بقهوة</span>
             </a>
         </div>
       </div>
@@ -542,10 +569,10 @@
        Page Footer
   ======================== -->
   <footer class="footer" id="pageFooter">
-    © Powered by Mustafa Elsafy | مصطفى الصافي
+    <span id="footerMainText">© Powered by Mustafa Elsafy | مصطفى الصافي</span>
     <span class="mx-1">|</span>
     <a href="https://buymeacoffee.com/aipersonaltrainer" target="_blank" rel="noopener noreferrer" class="hover:text-accent transition-colors">
-      ادعم الأداة بقهوة
+      <span id="footerCoffeeLink">ادعم الأداة بقهوة</span>
     </a>
   </footer>
 
@@ -627,6 +654,8 @@
           replyBar: $('replyBar'),
           replySnippet: $('replySnippet'),
           replyClear: $('replyClear'),
+          copyAndGoIherbBtn: $('copy-and-go-iherb-btn'), 
+          iherbCode: $('iherb-code'),       
         };
       },
 
@@ -646,20 +675,26 @@
             contactModalTitle: 'احصل على خطتك الآن بضغطة زر', contactModalText1: 'اختر الطريقة المناسبة للتواصل المباشر مع المدرب.', contactModalText2: 'يمكنك الاستمرار في الحديث إذا كانت لديك أسئلة.',
             whatsappBtnText: 'واتساب مباشر', phoneBtnText: 'اتصال هاتفي', replyBarLabel: 'رد على:', footerText: '© Powered by Mustafa Elsafy | مصطفى الصافي',
             messageToolsLabel: 'أدوات الرسالة', copyBtnText: 'نسخ', replyBtnText: 'رد', copyBtnTitle: 'نسخ الرسالة', replyBtnTitle: 'رد',
-            cancelReplyTitle: 'إلغاء', attachFileTitle: 'صورة/ملف', recordAudioTitle: 'اضغط مطولاً للتسجيل', sendTitle: 'إرسال', closeModalTitle: 'إغلاق', copied: 'تم النسخ!'
+            cancelReplyTitle: 'إلغاء', attachFileTitle: 'صورة/ملف', recordAudioTitle: 'اضغط مطولاً للتسجيل', sendTitle: 'إرسال', closeModalTitle: 'إغلاق', copied: 'تم النسخ!',
+            iherbTitle: 'احصل على مكملاتك من iHerb', iherbSubtitle: 'خصم إضافي 10% هدية من مدربك لدعم رحلتك!',
+            copyAndGoButton: 'انسخ وتوجه للمتجر', iherbCopiedAndRedirecting: 'تم نسخ الكود! يتم الآن تحويلك...',
+            coffeeText: 'هل أعجبتك هذه الأداة المجانية؟ دعمك يساعدنا على التطوير والاستمرار.', coffeeBtnText: 'ادعمني بقهوة', footerCoffeeLink: 'ادعم الأداة بقهوة'
           },
           en: {
             appName:'Smart Personal Coach', welcomeSubtitle:'Ready for a change? Your plan is tailored for you—precise execution, close follow-up, and tangible results.',
-            startButtonText:'Start Now', userDataTitle:"Let's create your quick profile", userDataSubtitle:'We need some info to start',
+            startButtonText:'Start Now', userDataTitle:"Let's build your quick profile", userDataSubtitle:"Let's start with your name, age, and country.",
             namePlaceholder:'Your Name', agePlaceholder:'Your Age', countryPlaceholder:'Your Country', nextButtonText:'Start Conversation',
             inputPlaceholder:'Type your message…', emptyFields:'Please enter your name, age, and country to continue.', imageUpload:'Image received — analyzing now.',
             typing:'… typing now', recStart:'● Recording… release to copy', recDenied:'Microphone access denied.', recTooShort:'Recording is too short.', recSaved:'Text copied to input — send manually.',
-            ctaTitle: 'Ready for tangible results?', ctaSubtitle: 'Precise plan + weekly follow-up.', ctaBadge: "Today's Offer",
-            getPlanButton: 'Get Your Plan Now', planButtonNote: 'By clicking, contact options will open. The starter package includes: detailed assessment, meal & workout plan, and first week follow-up.',
+            ctaTitle: 'Ready for tangible results?', ctaSubtitle: 'Precise plan delivery + weekly follow-up.', ctaBadge: "Today's Discount",
+            getPlanButton: 'Get Your Plan Now', planButtonNote: 'By clicking, contact methods will open. The starter package includes: a detailed assessment, meal and workout plan, and follow-up for the first week.',
             contactModalTitle: 'Get your plan now with one click', contactModalText1: 'Choose the best way to contact the coach directly.', contactModalText2: 'You can continue chatting if you have questions.',
             whatsappBtnText: 'Direct WhatsApp', phoneBtnText: 'Phone Call', replyBarLabel: 'Reply to:', footerText: '© Powered by Mustafa Elsafy',
             messageToolsLabel: 'Message Tools', copyBtnText: 'Copy', replyBtnText: 'Reply', copyBtnTitle: 'Copy Message', replyBtnTitle: 'Reply',
-            cancelReplyTitle: 'Cancel', attachFileTitle: 'Image/File', recordAudioTitle: 'Press and hold to record', sendTitle: 'Send', closeModalTitle: 'Close', copied: 'Copied!'
+            cancelReplyTitle: 'Cancel', attachFileTitle: 'Image/File', recordAudioTitle: 'Press and hold to record', sendTitle: 'Send', closeModalTitle: 'Close', copied: 'Copied!',
+            iherbTitle: 'Get your supplements from iHerb', iherbSubtitle: 'An extra 10% discount, a gift from your coach to support your journey!',
+            copyAndGoButton: 'Copy & Go to Store', iherbCopiedAndRedirecting: 'Code copied! Redirecting...',
+            coffeeText: 'Did you like this free tool? Your support helps us to develop and continue.', coffeeBtnText: 'Support me with a coffee', footerCoffeeLink: 'Support the tool with a coffee'
           }
         },
         setLang(lang) {
@@ -697,10 +732,14 @@
           $('contactModalText2').textContent = L.contactModalText2;
           $('whatsappBtnText').textContent = L.whatsappBtnText;
           $('phoneBtnText').textContent = L.phoneBtnText;
+          $('iherbTitle').textContent = L.iherbTitle;
+          $('iherbSubtitle').textContent = L.iherbSubtitle;
+          $('copy-and-go-iherb-btn-text').textContent = L.copyAndGoButton;
+          $('coffeeText').textContent = L.coffeeText;
+          $('coffeeBtnText').textContent = L.coffeeBtnText;
+          $('footerMainText').textContent = L.footerText;
+          $('footerCoffeeLink').textContent = L.footerCoffeeLink;
           
-          const footer = $('pageFooter');
-          footer.childNodes[0].nodeValue = L.footerText + ' ';
-
           document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
             btn.textContent = lang === 'ar' ? 'EN' : 'AR';
           });
@@ -1023,6 +1062,12 @@
 د) **رد استشاري قصير**: ملخص، حل عملي، سؤال مكمل واحد (إن لزم).
 【١٠) ضمان الجودة قبل الإرسال (Checklist)】
 - لا تكرار لأسئلة/معلومات. لا ذكر لاسم المستخدم. لا عبارات آلية. اللغة مطابقة. الرد مباشر ومنسّق.
+【١١) التسويق الذكي للمكملات (iHerb)】
+- عندما يكون السياق مناسبًا (مثل الحديث عن مكملات غذائية، بروتين، فيتامينات، كرياتين، أو وجبات صحية)، يمكنك بذكاء ودون إلحاح اقتراح منتجات يمكن إيجادها على موقع iHerb.
+- يجب أن يكون الاقتراح طبيعيًا كجزء من النصيحة، وليس كإعلان مباشر.
+- مثال: "بالنسبة لمصدر بروتين جيد وعالي الجودة، فيه خيارات ممتازة على iHerb ممكن تشوفها."
+- بعد الاقتراح مباشرةً، قدّم كود الخصم AYT3413 كهدية حصرية من المدرب. يجب تقديمها بهذه الصيغة بالضبط: "وبما إنك معايا، تقدر تستخدم كود الخصم ده (AYT3413) وتاخد خصم إضافي 10% هدية من الكابتن مصطفى."
+- **مهم جدًا:** لا تذكر iHerb أو الكود في كل رسالة. فقط عند الحاجة الحقيقية في سياق المكملات أو المنتجات الصحية لضمان أن التجربة تبدو طبيعية ومفيدة للمستخدم.
           `;
         },
         buildImagePrompt() {
@@ -1259,6 +1304,23 @@ ${conversationSnippet}
           E.closeContactBtn.addEventListener('click', H.closeContactModal);
           E.contactModal.addEventListener('click', (e) => H.handleModalClick(e));
 
+          E.copyAndGoIherbBtn.addEventListener('click', (e) => {
+              e.preventDefault(); 
+              const L = this.i18n.strings[this.state.lang];
+              const code = E.iherbCode.textContent.trim();
+              const url = E.copyAndGoIherbBtn.href;
+
+              navigator.clipboard.writeText(code).then(() => {
+                  this.utils.toast(L.iherbCopiedAndRedirecting);
+                  setTimeout(() => {
+                      window.open(url, '_blank');
+                  }, 800);
+              }).catch(err => {
+                  console.error('Failed to copy iHerb code: ', err);
+                  window.open(url, '_blank');
+              });
+          });
+
           document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
             btn.addEventListener('click', () => this.i18n.setLang(this.state.lang === 'ar' ? 'en' : 'ar'));
           });
@@ -1277,6 +1339,5 @@ ${conversationSnippet}
   </script>
 </body>
 </html>
-
 
 
