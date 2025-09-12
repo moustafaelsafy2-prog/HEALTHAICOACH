@@ -1,6 +1,23 @@
 {
   "name": "netlify-functions",
   "version": "1.0.0",
+  "private": true,
+  "description": "Serverless functions for Smart Personal Coach (Gemini proxy with fallback/stream/vision/audio).",
   "main": "gemini-proxy.js",
-  "dependencies": {}
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "dev": "netlify dev",
+    "dev:functions": "netlify dev --framework=#static --port=8888",
+    "serve": "netlify dev",
+    "start": "netlify dev",
+    "test": "node -e \"console.log('OK')\""
+  },
+  "dependencies": {
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.34.1"
+  }
 }
