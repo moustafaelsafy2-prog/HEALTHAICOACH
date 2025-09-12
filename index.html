@@ -7,111 +7,351 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap');
+    /* -- Font Import -- */
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;700;800;900&display=swap');
 
-    :root{
-      --primary:#04364A; --secondary:#176B87; --accent:#64CCC5;
-      --chat-bg:#F5F7FA; --bubble-user:#E8F7D4; --bubble-ai:#FFFFFF;
-      --backdrop:rgba(2,6,23,.55);
-      --text:#0B1220; --muted:#64748B;
-      --surface:#FFFFFF; --border:#E5E7EB
+    /* -- Theme Variables (Light & Dark) -- */
+    :root {
+      --primary: #1B4332;      /* Deep Forest Green */
+      --secondary: #2D6A4F;    /* Medium Sea Green */
+      --accent: #FF7B54;       /* Vibrant Coral */
+      --chat-bg: #F7F9F7;      /* Off-white with a hint of green */
+      --bubble-user: #FFEADD;  /* Light Coral */
+      --bubble-ai: #FFFFFF;
+      --backdrop: rgba(27, 67, 50, 0.6);
+      --text: #0D1B13;
+      --muted: #556B5F;
+      --surface: #FFFFFF;
+      --border: #D8E0DA;
     }
-    html.dark{
-      --primary:#0f172a; --secondary:#334155; --accent:#10B981;
-      --chat-bg:#0B1220; --bubble-user:#394150; --bubble-ai:#111827;
-      --backdrop:rgba(0,0,0,.7); --text:#E5E7EB; --muted:#94A3B8;
-      --surface:#0f172a; --border:#334155
+
+    html.dark {
+      --primary: #0D2119;
+      --secondary: #1B4332;
+      --accent: #FF8A65;
+      --chat-bg: #101814;
+      --bubble-user: #4A2C21;
+      --bubble-ai: #1A2D24;
+      --backdrop: rgba(0, 0, 0, 0.7);
+      --text: #E0E0E0;
+      --muted: #8A9E94;
+      --surface: #0D2119;
+      --border: #2D6A4F;
     }
-    *{box-sizing:border-box}
-    body{margin:0;font-family:'Tajawal',sans-serif;background:var(--chat-bg);color:var(--text);transition:background-color .3s,color .3s}
 
-    /* Shell / App look */
-    .chat-container{max-width:780px;margin:0 auto;height:100vh;display:flex;flex-direction:column;background:var(--chat-bg);box-shadow:0 0 25px rgba(0,0,0,.08);border-radius:1rem;overflow:hidden}
-    @supports (height: 100dvh){ .chat-container{height:100dvh} }
-    @media (max-width:768px){ .chat-container{border-radius:0;box-shadow:none} }
+    /* -- Base & Typography -- */
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Cairo', sans-serif;
+      background: var(--chat-bg);
+      color: var(--text);
+      transition: background-color .3s, color .3s;
+    }
 
-    .chat-header{background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff;padding:.875rem 1rem;position:sticky;top:0;z-index:10;display:flex;justify-content:space-between;align-items:center}
-    .brand{display:flex;align-items:center;gap:.6rem}
-    .brand img{width:40px;height:40px;border-radius:999px;object-fit:cover}
+    /* -- App Shell -- */
+    .chat-container {
+      max-width: 820px;
+      margin: 0 auto;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background: var(--chat-bg);
+      box-shadow: 0 10px 35px rgba(0, 0, 0, 0.1);
+      border-radius: 1.5rem;
+      overflow: hidden;
+    }
+    @supports (height: 100dvh) { .chat-container { height: 100dvh; } }
+    @media (max-width: 768px) { .chat-container { border-radius: 0; box-shadow: none; } }
 
-    .chat-messages{flex:1;padding:1rem;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:6rem}
-    .message-bubble{padding:.85rem 1.15rem;border-radius:1.25rem;max-width:85%;margin-bottom:.75rem;animation:fadeIn .25s ease-in-out;position:relative}
-    .message-bubble.user{background:var(--bubble-user);margin-left:auto;border-bottom-right-radius:.25rem;color:#0B1220}
-    .message-bubble.ai{background:var(--bubble-ai);margin-right:auto;border-bottom-left-radius:.25rem;color:var(--text)}
+    /* -- Header -- */
+    .chat-header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      color: var(--text);
+      padding: .875rem 1.25rem;
+      position: sticky; top: 0; z-index: 10;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .brand { display: flex; align-items: center; gap: .75rem; }
+    .brand img {
+      width: 44px; height: 44px;
+      border-radius: 999px; object-fit: cover;
+      border: 2px solid var(--accent);
+    }
+    .brand span { font-weight: 800; }
+    @media (max-width: 420px) { .brand span { display: none; } }
 
-    .msg-meta{display:flex;gap:.35rem;opacity:0;transition:.2s;position:absolute;bottom:.35rem;inset-inline-end:.6rem}
-    .message-bubble:hover .msg-meta{opacity:.95}
-    .meta-btn{background:transparent;border:none;font-size:.85rem;cursor:pointer;color:#64748B;padding:.15rem .35rem;border-radius:.35rem}
-    .meta-btn:hover{color:#0ea5e9;background:rgba(0,0,0,.05)}
+    /* -- Chat Area -- */
+    .chat-messages {
+      flex: 1; padding: 1.25rem;
+      overflow-y: auto; -webkit-overflow-scrolling: touch;
+      padding-bottom: 7rem;
+      background-image: radial-gradient(circle at 1px 1px, rgba(0,0,0,0.03) 1px, transparent 0);
+      background-size: 25px 25px;
+    }
+    html.dark .chat-messages {
+       background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0);
+    }
 
-    .input-area{display:flex;gap:.5rem;padding:.75rem;background:color-mix(in srgb,var(--surface) 92%, transparent);border-top:1px solid var(--border);position:sticky;bottom:0;z-index:10;align-items:center;backdrop-filter:saturate(160%) blur(6px);padding-bottom:calc(.75rem + env(safe-area-inset-bottom))}
-    .input-area input[type=text]{flex:1;border-radius:999px;padding:.78rem 1.1rem;border:1px solid var(--border);background:#fff;color:#0B1220}
-    html.dark .input-area input[type=text]{background:#0f172a;color:#E5E7EB}
-    .input-area input[type=text]::placeholder{color:var(--muted)}
-    .input-area input[type=text]:focus{outline:none;border-color:var(--accent)}
-    .icon-btn{background:transparent;color:#0ea5e9;border-radius:999px;width:44px;height:44px;display:grid;place-items:center;transition:.25s}
-    .icon-btn:hover{background:rgba(0,0,0,.06)}
-    .send-btn{background:var(--accent);color:#fff;border-radius:999px}
-    html[dir="rtl"] .input-area{flex-direction:row-reverse}
-    html[dir="rtl"] #userInput{text-align:right}
-    html[dir="ltr"] #userInput{text-align:left}
+    /* -- Message Bubbles -- */
+    .message-bubble {
+      padding: .85rem 1.2rem;
+      border-radius: 1.25rem; max-width: 85%;
+      margin-bottom: .85rem; animation: fadeIn .3s ease-out;
+      position: relative; line-height: 1.6;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .message-bubble.user {
+      background: var(--bubble-user);
+      color: #3D1E11; margin-left: auto;
+      border-bottom-right-radius: .35rem;
+    }
+    .message-bubble.ai {
+      background: var(--bubble-ai);
+      color: var(--text); margin-right: auto;
+      border: 1px solid var(--border);
+      border-bottom-left-radius: .35rem;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+    }
+    .message-bubble strong { color: var(--primary); }
+    html.dark .message-bubble strong { color: var(--accent); }
 
-    .welcome-screen,.user-data-screen{display:flex;flex-direction:column;justify-content:center;align-items:center;height:100vh;text-align:center;background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff}
-    .cta-btn{background:var(--accent);font-weight:700;box-shadow:0 6px 16px rgba(0,0,0,.25);padding:1rem 2rem;border-radius:999px}
+    .msg-meta {
+      display: flex; gap: .35rem; opacity: 0;
+      transition: .2s; position: absolute;
+      bottom: .35rem; inset-inline-end: .6rem;
+    }
+    .message-bubble:hover .msg-meta { opacity: .95; }
+    .meta-btn {
+      background: transparent; border: none; font-size: .85rem;
+      cursor: pointer; color: var(--muted);
+      padding: .15rem .35rem; border-radius: .35rem;
+    }
+    .meta-btn:hover { color: var(--accent); background: rgba(0,0,0,.05); }
 
-    .toast{position:fixed;bottom:1.2rem;left:50%;transform:translateX(-50%);background:#111827;color:#fff;padding:.7rem 1rem;border-radius:.6rem;z-index:60;opacity:0;transition:.35s}
+    /* -- Input Area -- */
+    .input-area {
+      display: flex; gap: .5rem; padding: .75rem;
+      background: color-mix(in srgb, var(--surface) 92%, transparent);
+      border-top: 1px solid var(--border);
+      position: sticky; bottom: 0; z-index: 10;
+      align-items: center; backdrop-filter: saturate(160%) blur(8px);
+      padding-bottom: calc(.75rem + env(safe-area-inset-bottom));
+    }
+    .input-area input[type=text] {
+      flex: 1; border-radius: 999px;
+      padding: .85rem 1.25rem; border: 1px solid var(--border);
+      background: var(--surface); color: var(--text);
+      font-family: 'Cairo', sans-serif; font-size: 1rem;
+    }
+    .input-area input[type=text]::placeholder { color: var(--muted); }
+    .input-area input[type=text]:focus {
+      outline: none; border-color: var(--accent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 20%, transparent);
+    }
+    .icon-btn {
+      background: transparent; color: var(--secondary);
+      border-radius: 999px; width: 48px; height: 48px;
+      display: grid; place-items: center; transition: .25s;
+      border: 1px solid transparent;
+    }
+    html.dark .icon-btn { color: var(--muted); }
+    .icon-btn:hover {
+      color: var(--accent);
+      background: color-mix(in srgb, var(--accent) 10%, transparent);
+    }
+    .send-btn {
+      background: var(--accent); color: #fff;
+    }
+    .send-btn:hover { background: color-mix(in srgb, var(--accent) 90%, black); }
+    html[dir="rtl"] .input-area { flex-direction: row-reverse; }
+    html[dir="rtl"] #userInput { text-align: right; }
+    html[dir="ltr"] #userInput { text-align: left; }
 
-    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    /* -- Welcome & Profile Screens -- */
+    .welcome-screen, .user-data-screen {
+      display: flex; flex-direction: column; justify-content: center;
+      align-items: center; height: 100vh; text-align: center;
+      background-color: var(--primary); color: #fff;
+      padding: 1rem;
+      position: relative;
+    }
+    .welcome-screen::before, .user-data-screen::before {
+      content: '';
+      position: absolute; inset: 0; z-index: 1;
+      background: linear-gradient(135deg, rgba(27, 67, 50, 0.9), rgba(45, 106, 79, 0.8)), 
+                  url('https://images.unsplash.com/photo-1549060279-7e168fcee0c2?auto=format&fit=crop&w=1200&q=70') center/cover;
+      opacity: 0.8;
+    }
+    .welcome-screen > *, .user-data-screen > * {
+      position: relative; z-index: 2;
+    }
+    .cta-btn {
+      background: var(--accent); font-weight: 800;
+      box-shadow: 0 8px 20px rgba(0,0,0,.25);
+      padding: 1rem 2.5rem; border-radius: .75rem;
+      transition: all .25s ease-out;
+      border: 2px solid transparent;
+    }
+    .cta-btn:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(0,0,0,.3);
+      background: color-mix(in srgb, var(--accent) 90%, black);
+    }
+    .cta-btn:active {
+      transform: translateY(0);
+    }
+    
+    #userDataScreen .w-full.max-w-sm {
+        background: rgba(13, 33, 25, 0.4);
+        backdrop-filter: blur(10px);
+    }
+    #userDataScreen input {
+        border-radius: 0.75rem !important;
+        font-family: 'Cairo', sans-serif;
+    }
 
-    .typing{display:inline-flex;gap:6px;align-items:center}
-    .dot{width:6px;height:6px;border-radius:999px;background:#9CA3AF;animation:blink 1.2s infinite}
-    .dot:nth-child(2){animation-delay:.2s}.dot:nth-child(3){animation-delay:.4s}
-    @keyframes blink{0%,80%,100%{opacity:.2}40%{opacity:1}}
+    /* -- Misc & Animations -- */
+    .toast {
+      position: fixed; bottom: 1.2rem; left: 50%; transform: translateX(-50%);
+      background: #111827; color: #fff; padding: .8rem 1.2rem;
+      border-radius: .75rem; z-index: 60; opacity: 0;
+      transition: .35s; font-weight: 500;
+    }
 
-    .mic-btn{position:relative}
-    .mic-live::after{content:'';position:absolute;inset:-2px;border:2px solid #ef4444;border-radius:999px;animation:pulse 1s infinite}
-    @keyframes pulse{0%{transform:scale(.95);opacity:.9}70%{transform:scale(1.05);opacity:.2}100%{transform:scale(.95);opacity:.9}}
-    .rec-hint{font-size:.8rem;color:#ef4444;margin-inline-end:.35rem}
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px) scale(0.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
 
-    .modal{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:var(--backdrop);z-index:50}
-    .modal.open{display:flex}
-    .modal-content{width:min(560px,96vw);max-height:86vh;overflow:hidden;background:#fff;border-radius:1rem;box-shadow:0 20px 60px rgba(0,0,0,.25);display:flex;flex-direction:column}
-    html.dark .modal-content{background:#0f172a;color:#E5E7EB}
-    .modal-header{display:flex;justify-content:space-between;align-items:center;padding:.85rem 1rem;border-bottom:1px solid var(--border);background:linear-gradient(135deg,var(--primary),var(--secondary));color:#fff}
-    .modal-body{padding:1rem}
-    .close-button{background:transparent;color:#fff;font-size:1.75rem;line-height:1;padding:0 .25rem}
-    .contact-actions{display:grid;grid-template-columns:1fr;gap:.8rem}
-    @media (min-width:520px){.contact-actions{grid-template-columns:1fr 1fr}}
-    .contact-btn{display:flex;align-items:center;gap:.75rem;padding:1rem;border-radius:.9rem;font-weight:800;justify-content:center}
-    .contact-btn svg{width:22px;height:22px}
-    .contact-whatsapp{background:#25D366;color:#fff}
-    .contact-phone{background:#0ea5e9;color:#fff}
+    .typing { display: inline-flex; gap: 6px; align-items: center; }
+    .dot {
+      width: 7px; height: 7px; border-radius: 999px;
+      background: var(--muted); animation: blink 1.2s infinite;
+    }
+    .dot:nth-child(2) { animation-delay: .2s; }
+    .dot:nth-child(3) { animation-delay: .4s; }
+    @keyframes blink { 0%, 80%, 100% { opacity: .2; } 40% { opacity: 1; } }
 
-    .footer{text-align:center;padding:.75rem;font-size:.9rem;color:var(--muted);padding-bottom:calc(.75rem + env(safe-area-inset-bottom))}
+    .mic-btn.mic-live {
+      background: color-mix(in srgb, #ef4444 15%, transparent);
+      color: #ef4444;
+    }
+    .mic-live::after {
+      content: ''; position: absolute; inset: -3px;
+      border: 2px solid #ef4444; border-radius: 999px;
+      animation: pulse 1.2s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(.95); opacity: .9; }
+      70% { transform: scale(1.08); opacity: .2; }
+      100% { transform: scale(.95); opacity: .9; }
+    }
+    .rec-hint { font-size: .8rem; color: #ef4444; margin-inline-end: .35rem; }
 
-    .reply-bar{display:none;align-items:center;gap:.5rem;padding:.5rem .75rem;border:1px dashed var(--border);border-radius:.6rem;margin:.25rem .75rem 0}
-    .reply-bar.show{display:flex}
-    .reply-bar .x{margin-inline-start:auto;background:transparent;border:none;font-size:1.1rem}
+    /* -- Modal -- */
+    .modal {
+      position: fixed; inset: 0; display: none;
+      align-items: center; justify-content: center;
+      background: var(--backdrop); z-index: 50;
+    }
+    .modal.open { display: flex; }
+    .modal-content {
+      width: min(560px, 96vw); max-height: 86vh; overflow: hidden;
+      background: var(--surface); border-radius: 1rem;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+      display: flex; flex-direction: column;
+    }
+    .modal-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: .85rem 1.25rem; border-bottom: 1px solid var(--border);
+      background: var(--secondary); color: #fff;
+    }
+    .modal-body { padding: 1.5rem; }
+    .close-button {
+      background: transparent; color: #fff;
+      font-size: 1.75rem; line-height: 1; padding: 0 .25rem;
+      opacity: 0.8; transition: opacity .2s;
+    }
+    .close-button:hover { opacity: 1; }
+    .contact-actions { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media (min-width: 520px) { .contact-actions { grid-template-columns: 1fr 1fr; } }
+    .contact-btn {
+      display: flex; align-items: center; gap: .75rem;
+      padding: 1rem; border-radius: .75rem; font-weight: 800;
+      justify-content: center; transition: all .2s;
+    }
+    .contact-btn:hover { transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,.15); }
+    .contact-btn svg { width: 24px; height: 24px; }
+    .contact-whatsapp { background: #25D366; color: #fff; }
+    .contact-phone { background: #0ea5e9; color: #fff; }
 
-    /* CTA card */
-    .card-cta{display:flex;align-items:center;gap:.75rem}
-    .badge{font-size:.75rem;padding:.2rem .5rem;border-radius:.5rem;background:color-mix(in srgb,var(--accent) 18%, white)}
-    @media (max-width:420px){.brand span{display:none}}
+    /* -- Footer -- */
+    .footer {
+      text-align: center; padding: .75rem;
+      font-size: .9rem; color: var(--muted);
+      padding-bottom: calc(.75rem + env(safe-area-inset-bottom));
+      background: var(--surface);
+    }
+
+    /* -- Reply Bar -- */
+    .reply-bar {
+      display: none; align-items: center; gap: .5rem;
+      padding: .5rem .75rem;
+      border: 1px dashed var(--border);
+      border-radius: .6rem; margin: .25rem .75rem 0;
+      background: color-mix(in srgb, var(--accent) 5%, transparent);
+    }
+    .reply-bar.show { display: flex; }
+    .reply-bar .x {
+      margin-inline-start: auto; background: transparent;
+      border: none; font-size: 1.1rem;
+      color: var(--muted);
+    }
+    .reply-bar .x:hover { color: var(--accent); }
+
+    /* -- CTA Card -- */
+    .card-cta {
+      display: flex; align-items: center; gap: .75rem;
+      background: var(--surface);
+      border: 1px solid var(--border);
+    }
+    .badge {
+      font-size: .75rem; padding: .2rem .6rem; border-radius: .5rem;
+      background: color-mix(in srgb, var(--accent) 20%, transparent);
+      color: color-mix(in srgb, var(--accent) 90%, black);
+      font-weight: 700;
+    }
+    html.dark .badge {
+        color: var(--text);
+    }
+    #generatePlanBtn {
+        font-weight: 700;
+        transition: all .2s;
+    }
+    #generatePlanBtn:hover:not(:disabled) {
+        transform: scale(1.03);
+    }
+    #generatePlanBtn:disabled {
+        background-color: var(--muted);
+        cursor: not-allowed;
+    }
   </style>
 </head>
 <body class="flex flex-col h-screen overflow-hidden">
 
   <!-- Welcome -->
   <div class="welcome-screen" id="welcomeScreen">
-    <img id="welcomeAvatar" src="https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=200&q=60" alt="Coach Avatar" class="rounded-full mb-6 shadow-xl object-cover"/>
-    <h1 class="text-4xl font-bold mb-2" id="welcomeTitle">مدربك الشخصي الذكي</h1>
-    <p class="text-xl font-light text-white/90 mb-6" id="welcomeSubtitle">جاهز للتغيير؟ خطتك مصممة خصيصًا لك — تنفيذ محكم، متابعة دقيقة، ونتيجة ملموسة.</p>
+    <img id="welcomeAvatar" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=200&q=80" alt="Coach Avatar" class="w-32 h-32 rounded-full mb-6 shadow-xl object-cover border-4 border-white/50"/>
+    <h1 class="text-4xl lg:text-5xl font-black mb-2" id="welcomeTitle">مدربك الشخصي الذكي</h1>
+    <p class="text-lg lg:text-xl font-light text-white/90 mb-8 max-w-xl" id="welcomeSubtitle">جاهز للتغيير؟ خطتك مصممة خصيصًا لك — تنفيذ محكم، متابعة دقيقة، ونتيجة ملموسة.</p>
     <button id="startBtn" class="cta-btn">ابدأ الآن</button>
   </div>
 
   <!-- Profile -->
   <div class="user-data-screen hidden" id="userDataScreen">
-    <div class="w-full max-w-sm p-8 space-y-6 bg-white/10 backdrop-blur-md rounded-2xl shadow-xl border border-white/20">
+    <div class="w-full max-w-sm p-8 space-y-6 rounded-2xl shadow-xl border border-white/20">
       <div class="text-center">
         <h2 class="text-3xl font-extrabold" id="userDataTitle">لنبني ملفك السريع</h2>
         <p class="text-white/80 mt-2" id="userDataSubtitle">نحتاج بعض المعلومات للبدء</p>
@@ -149,12 +389,12 @@
   <div class="chat-container hidden" id="chatContainer">
     <div class="chat-header">
       <div class="brand">
-        <img id="chatAvatar" src="https://images.unsplash.com/photo-1605296867304-46d5465a13f1?auto=format&fit=crop&w=80&q=60" alt="Coach Avatar"/>
+        <img id="chatAvatar" src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?auto=format&fit=crop&w=80&q=80" alt="Coach Avatar"/>
         <span class="text-xl font-bold" id="chatTitle">مدربك الشخصي الذكي</span>
       </div>
       <div class="flex items-center gap-2">
-        <button id="btnLang" class="icon-btn text-white border border-white/30 px-3 w-auto h-9 rounded-md">AR</button>
-        <button id="btnTheme" class="icon-btn text-white border border-white/30 w-9 h-9 rounded-md">☀️</button>
+        <button id="btnLang" class="icon-btn text-sm font-bold border !w-auto px-3 !h-9 rounded-lg !border-border hover:!border-accent">AR</button>
+        <button id="btnTheme" class="icon-btn text-xl border !w-9 !h-9 rounded-lg !border-border hover:!border-accent">☀️</button>
       </div>
     </div>
 
@@ -162,15 +402,15 @@
 
     <!-- CTA: opens contact modal -->
     <div id="planButtonArea" class="px-4 py-3 hidden">
-      <div class="rounded-xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 p-3 card-cta justify-between">
+      <div class="rounded-xl p-3 card-cta justify-between">
         <div>
           <div id="ctaTitle" class="text-[.98rem] font-bold text-slate-800 dark:text-slate-100">جاهز لنتيجة ملموسة؟</div>
           <div id="ctaSubtitle" class="text-sm text-slate-600 dark:text-slate-300 mt-1">تسليم خطة مُحكمة + متابعة أسبوعية + دعم مباشر.</div>
         </div>
         <span id="ctaBadge" class="badge">خصم اليوم</span>
-        <button id="generatePlanBtn" class="btn send-btn font-bold px-4 py-2 rounded-lg" disabled>احصل على خطتك الآن</button>
+        <button id="generatePlanBtn" class="send-btn font-bold px-4 py-2 rounded-lg" disabled>احصل على خطتك الآن</button>
       </div>
-      <p id="planButtonNote" class="text-gray-700 dark:text-gray-300 text-sm mt-2">بالضغط، ستفتح طرق التواصل. باقة البدء تشمل: تقييم دقيق، خطة وجبات وتمرين، متابعة أول أسبوع.</p>
+      <p id="planButtonNote" class="text-gray-700 dark:text-gray-300 text-xs mt-2 px-2">بالضغط، ستفتح طرق التواصل. باقة البدء تشمل: تقييم دقيق، خطة وجبات وتمرين، متابعة أول أسبوع.</p>
     </div>
 
     <!-- Reply bar -->
@@ -968,6 +1208,5 @@ ${convo}
   </script>
 </body>
 </html>
-
 
 
