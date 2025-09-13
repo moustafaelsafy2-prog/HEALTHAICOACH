@@ -9,8 +9,6 @@
   <style>
     /* =================================================================
        -- 1. FONT & THEME VARIABLES (HEALTH & FITNESS THEME) --
-       تم اعتماد هوية بصرية جديدة تماماً تركز على ألوان حيوية
-       مستوحاة من الصحة والرياضة (الأخضر المنعش والرمادي الداكن).
     ================================================================= */
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
 
@@ -18,37 +16,23 @@
       --font-family-base: 'Cairo', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       
       /* Light Theme: Clean, Fresh, Energetic */
-      --color-accent: #22C55E;            /* Vibrant Green */
-      --color-accent-hover: #16A34A;     /* Darker Green */
-      --color-bg-main: #F4F5F7;          /* Clean light gray background */
-      --color-bg-surface: #FFFFFF;       /* White for cards, header, input */
-      --color-bubble-ai: #FFFFFF;        /* AI bubbles are clean white */
-      --color-bubble-user: #DCFCE7;      /* Light green for user bubbles */
-      
-      --color-text-primary: #1F2937;      /* Dark gray for primary text */
-      --color-text-secondary: #6B7280;    /* Lighter gray for secondary text */
-      --color-text-accent: #FFFFFF;       /* White text on accent backgrounds */
-      --color-text-user-bubble: #14532D; /* Dark green text for user bubbles */
-
-      --color-border: #E5E7EB;           /* Subtle border color */
+      --color-accent: #22C55E; --color-accent-hover: #16A34A;
+      --color-bg-main: #F4F5F7; --color-bg-surface: #FFFFFF;
+      --color-bubble-ai: #FFFFFF; --color-bubble-user: #DCFCE7;
+      --color-text-primary: #1F2937; --color-text-secondary: #6B7280;
+      --color-text-accent: #FFFFFF; --color-text-user-bubble: #14532D;
+      --color-border: #E5E7EB;
       --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
       --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
     }
 
     html.dark {
       /* Dark Theme: Focused, Modern, Techy */
-      --color-accent: #4ADE80;            /* Brighter Green for contrast */
-      --color-accent-hover: #22C55E;     /* Vibrant Green */
-      --color-bg-main: #111827;          /* Deep dark blue-gray */
-      --color-bg-surface: #1F2937;       /* Lighter dark blue-gray */
-      --color-bubble-ai: #374151;        /* AI bubbles are distinct gray */
-      --color-bubble-user: #166534;      /* Deep green for user bubbles */
-      
-      --color-text-primary: #F3F4F6;      /* Off-white for primary text */
-      --color-text-secondary: #9CA3AF;    /* Lighter gray for secondary text */
-      --color-text-accent: #1F2937;       /* Dark text on accent backgrounds */
-      --color-text-user-bubble: #D1FAE5; /* Light green text for user bubbles */
-      
+      --color-accent: #4ADE80; --color-accent-hover: #22C55E;
+      --color-bg-main: #111827; --color-bg-surface: #1F2937;
+      --color-bubble-ai: #374151; --color-bubble-user: #166534;
+      --color-text-primary: #F3F4F6; --color-text-secondary: #9CA3AF;
+      --color-text-accent: #1F2937; --color-text-user-bubble: #D1FAE5;
       --color-border: #4B5563;
       --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.15);
       --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.25), 0 2px 4px -2px rgb(0 0 0 / 0.25);
@@ -58,528 +42,298 @@
        -- 2. BASE & TYPOGRAPHY --
     ================================================================= */
     *, *::before, *::after { box-sizing: border-box; }
-
     body {
-      margin: 0;
-      font-family: var(--font-family-base);
-      background-color: var(--color-bg-main);
-      color: var(--color-text-primary);
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-      transition: background-color 0.3s, color 0.3s;
-      line-height: 1.6;
+      margin: 0; font-family: var(--font-family-base);
+      background-color: var(--color-bg-main); color: var(--color-text-primary);
+      -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;
+      transition: background-color 0.3s, color 0.3s; line-height: 1.6;
     }
 
     /* =================================================================
        -- 3. APP SHELL & RESPONSIVE LAYOUT --
-       هيكل متجاوب بالكامل، مصمم للجوال أولاً ثم يتكيف مع الشاشات الأكبر.
     ================================================================= */
     .app-shell {
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      height: 100dvh;
-      background-color: var(--color-bg-surface);
-      overflow: hidden;
+      display: flex; flex-direction: column; height: 100vh; height: 100dvh;
+      background-color: var(--color-bg-surface); overflow: hidden;
     }
-    
-    /* On tablets and desktops, the app becomes a centered card */
     @media (min-width: 768px) {
       body { padding: 1rem; }
       .app-shell {
-        max-width: 820px;
-        margin: 0 auto;
-        border-radius: 1.5rem;
-        box-shadow: var(--shadow-md);
-        height: calc(100dvh - 2rem);
-        border: 1px solid var(--color-border);
+        max-width: 820px; margin: 0 auto; border-radius: 1.5rem; box-shadow: var(--shadow-md);
+        height: calc(100dvh - 2rem); border: 1px solid var(--color-border);
       }
     }
-    @media (min-width: 1024px) {
-      body { padding: 2rem; }
-      .app-shell { height: calc(100dvh - 4rem); }
-    }
+    @media (min-width: 1024px) { body { padding: 2rem; } .app-shell { height: calc(100dvh - 4rem); } }
 
     /* =================================================================
        -- 4. WELCOME & PROFILE SCREENS --
-       شاشات ترحيب حديثة مع خلفية رياضية ملهمة.
     ================================================================= */
     .welcome-screen, .user-data-screen {
       display: flex; flex-direction: column; justify-content: center;
       align-items: center; text-align: center;
-      padding: 1.5rem; height: 100%;
-      background-color: #000; color: #fff;
+      padding: 1.5rem; height: 100%; background-color: #000; color: #fff;
     }
     .welcome-screen::before, .user-data-screen::before {
       content: ''; position: absolute; inset: 0;
       background-image: linear-gradient(180deg, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0.6) 100%), url('https://images.unsplash.com/photo-1599058917212-d750089bc07e?auto=format&fit=crop&w=1200&q=75');
-      background-size: cover; background-position: center;
-      opacity: 0.6; z-index: 1;
+      background-size: cover; background-position: center; opacity: 0.6; z-index: 1;
     }
     .welcome-screen > *, .user-data-screen > * { position: relative; z-index: 2; }
-
     .cta-btn {
       background-color: var(--color-accent); color: var(--color-text-accent);
-      font-weight: 700; font-size: 1.1rem;
-      padding: 0.9rem 3rem;
-      border-radius: 50px; /* Pill shape */
-      transition: all 0.25s ease; border: none; cursor: pointer;
+      font-weight: 700; font-size: 1.1rem; padding: 0.9rem 3rem;
+      border-radius: 50px; transition: all 0.25s ease; border: none; cursor: pointer;
       box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
     }
     .cta-btn:hover {
-      transform: translateY(-3px) scale(1.03);
-      background-color: var(--color-accent-hover);
+      transform: translateY(-3px) scale(1.03); background-color: var(--color-accent-hover);
       box-shadow: 0 6px 20px rgba(34, 197, 94, 0.4);
     }
     #userDataScreen .w-full.max-w-sm {
-      background: rgba(31, 41, 55, 0.5);
-      backdrop-filter: blur(15px);
+      background: rgba(31, 41, 55, 0.5); backdrop-filter: blur(15px);
       border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    
-    /* Animation for the "Get Plan" button */
-    @keyframes pulse-animation {
-      0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
-      70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); }
-      100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
-    }
-    .cta-btn-animated {
-        animation: pulse-animation 2.5s infinite cubic-bezier(0.66, 0, 0, 1);
-    }
-
+    @keyframes pulse-animation { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { transform: scale(1.02); box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+    .cta-btn-animated { animation: pulse-animation 2.5s infinite cubic-bezier(0.66, 0, 0, 1); }
 
     /* =================================================================
-       -- 5. CHAT UI COMPONENTS --
-       تصميم واجهة المحادثة لتكون شبيهة بتطبيقات المراسلة الحديثة.
+       -- 5. CHAT UI COMPONENTS (UPGRADED) --
     ================================================================= */
     .chat-header {
       display: flex; justify-content: space-between; align-items: center;
-      padding: 0.75rem 1rem;
-      background-color: var(--color-bg-surface);
-      border-bottom: 1px solid var(--color-border);
-      flex-shrink: 0; z-index: 20;
+      padding: 0.75rem 1rem; background-color: var(--color-bg-surface);
+      border-bottom: 1px solid var(--color-border); flex-shrink: 0; z-index: 20;
     }
     .brand img {
       width: 42px; height: 42px;
-      border: 2px solid var(--color-accent);
-      cursor: pointer; /* New: Make avatar clickable */
+      border: 2px solid var(--color-accent); cursor: pointer;
     }
-    
     .chat-messages {
-      flex: 1;
-      padding: 1rem;
-      overflow-y: auto;
-      background-color: var(--color-bg-main);
+      flex: 1; padding: 1rem; overflow-y: auto; background-color: var(--color-bg-main);
       -webkit-overflow-scrolling: touch;
     }
-    
     .message-bubble {
-      max-width: 80%;
-      padding: 0.7rem 1.1rem;
-      border-radius: 20px;
-      margin-bottom: 0.5rem;
-      line-height: 1.6;
-      word-wrap: break-word;
-      box-shadow: var(--shadow-sm);
-      animation: fadeIn 0.4s ease-out;
-      display: flex; flex-direction: column;
+      max-width: 80%; padding: 0.5rem 1rem; border-radius: 12px; margin-bottom: 0.25rem;
+      line-height: 1.6; word-wrap: break-word; box-shadow: var(--shadow-sm);
+      animation: fadeIn 0.4s ease-out; display: flex; flex-direction: column;
+      position: relative; -webkit-user-select: none; user-select: none;
     }
     .message-bubble.user {
-      background-color: var(--color-bubble-user);
-      color: var(--color-text-user-bubble);
-      margin-left: auto;
-      border-bottom-right-radius: 5px;
+      background-color: var(--color-bubble-user); color: var(--color-text-user-bubble);
+      margin-left: auto; border-bottom-right-radius: 5px;
     }
     .message-bubble.ai {
-      background-color: var(--color-bubble-ai);
-      color: var(--color-text-primary);
-      margin-right: auto;
-      border: 1px solid var(--color-border);
-      border-bottom-left-radius: 5px;
+      background-color: var(--color-bubble-ai); color: var(--color-text-primary);
+      margin-right: auto; border: 1px solid var(--color-border); border-bottom-left-radius: 5px;
     }
-    html[dir="rtl"] .message-bubble.user { margin-right: auto; margin-left: initial; }
-    html[dir="rtl"] .message-bubble.ai { margin-left: auto; margin-right: initial; }
+    html[dir="rtl"] .message-bubble.user { margin-right: auto; margin-left: initial; border-bottom-right-radius: 5px; border-bottom-left-radius: 12px;}
+    html[dir="rtl"] .message-bubble.ai { margin-left: auto; margin-right: initial; border-bottom-left-radius: 5px; border-bottom-right-radius: 12px;}
 
-    .typing {
-        display: flex; gap: 5px; align-items: center; padding: 0.5rem 0;
-    }
-    .typing .dot {
-        width: 8px; height: 8px; border-radius: 50%;
-        background-color: var(--color-text-secondary);
-        animation: typing-blink 1.4s infinite both;
-    }
-    .dot:nth-child(2) { animation-delay: 0.2s; }
-    .dot:nth-child(3) { animation-delay: 0.4s; }
+    .message-meta { display: flex; justify-content: flex-end; align-items: center; margin-top: 4px; }
+    .message-time { font-size: 0.7rem; color: var(--color-text-secondary); opacity: 0.8; }
+    html[dir="rtl"] .message-bubble.user .message-time { margin-right: 8px; }
+    html[dir="ltr"] .message-bubble.user .message-time { margin-left: 8px; }
+    
+    .typing { display: flex; gap: 5px; align-items: center; padding: 0.5rem 0; }
+    .typing .dot { width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-text-secondary); animation: typing-blink 1.4s infinite both; }
+    .dot:nth-child(2) { animation-delay: 0.2s; } .dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes typing-blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
 
     /* =================================================================
        -- 6. DYNAMIC CARDS (CTA & iHerb) --
-       تم إعادة تصميم الكروت لتتناسب مع الهوية الجديدة.
     ================================================================= */
-    .dynamic-card {
-        border-radius: 1rem;
-        border: 1px solid var(--color-border);
-        box-shadow: var(--shadow-sm);
-        margin: 1rem 0;
-        animation: fadeIn 0.5s ease-out;
-    }
-    #iherb-card {
-        background: linear-gradient(100deg, var(--color-bubble-user), #fff);
-        border-color: var(--color-accent);
-    }
-    html.dark #iherb-card {
-        background: linear-gradient(100deg, #14532D, #1F2937);
-        border-color: var(--color-accent);
-    }
+    .dynamic-card { border-radius: 1rem; border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); margin: 1rem 0; animation: fadeIn 0.5s ease-out; }
+    #iherb-card { background: linear-gradient(100deg, var(--color-bubble-user), #fff); border-color: var(--color-accent); }
+    html.dark #iherb-card { background: linear-gradient(100deg, #14532D, #1F2937); border-color: var(--color-accent); }
     
     /* =================================================================
        -- 7. INPUT AREA (WhatsApp Style) --
-       منطقة إدخال تشبه واتساب تمامًا مع حقل نصي ينمو تلقائيًا.
     ================================================================= */
-    .input-area-wrapper {
-        background-color: var(--color-bg-surface);
-        padding: 0.5rem;
-        padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
-        border-top: 1px solid var(--color-border);
-        flex-shrink: 0;
-    }
-    .input-area {
-      display: flex;
-      align-items: flex-end; /* Align to bottom for growing textarea */
-      gap: 0.5rem;
-    }
-    .input-field-container {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      background-color: var(--color-bg-main);
-      border-radius: 22px;
-      padding: 0.25rem 0.5rem;
-      border: 1px solid var(--color-border);
-    }
-    .input-field-container:focus-within {
-        border-color: var(--color-accent);
-    }
-    textarea#userInput {
-      flex: 1; border: none; outline: none; background: transparent;
-      padding: 0.6rem; font-family: var(--font-family-base);
-      font-size: 1rem; color: var(--color-text-primary);
-      resize: none; line-height: 1.5; max-height: 125px;
-    }
-    
-    .icon-btn {
-        display: inline-flex; justify-content: center; align-items: center;
-        width: 44px; height: 44px;
-        border-radius: 50%; border: none;
-        background-color: transparent;
-        color: var(--color-text-secondary);
-        cursor: pointer;
-        transition: background-color 0.2s, color 0.2s;
-        flex-shrink: 0;
-    }
+    .input-area-wrapper { background-color: var(--color-bg-surface); padding: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--color-border); flex-shrink: 0; }
+    .input-area { display: flex; align-items: flex-end; gap: 0.5rem; }
+    .input-field-container { flex: 1; display: flex; align-items: center; background-color: var(--color-bg-main); border-radius: 22px; padding: 0.25rem 0.5rem; border: 1px solid var(--color-border); }
+    .input-field-container:focus-within { border-color: var(--color-accent); }
+    textarea#userInput { flex: 1; border: none; outline: none; background: transparent; padding: 0.6rem; font-family: var(--font-family-base); font-size: 1rem; color: var(--color-text-primary); resize: none; line-height: 1.5; max-height: 125px; }
+    .icon-btn { display: inline-flex; justify-content: center; align-items: center; width: 44px; height: 44px; border-radius: 50%; border: none; background-color: transparent; color: var(--color-text-secondary); cursor: pointer; transition: background-color 0.2s, color 0.2s; flex-shrink: 0; }
     .icon-btn:hover { color: var(--color-accent); }
-    
-    .send-btn {
-        background-color: var(--color-accent); color: var(--color-text-accent);
-    }
+    .send-btn { background-color: var(--color-accent); color: var(--color-text-accent); }
     .send-btn:hover { background-color: var(--color-accent-hover); }
-
     .mic-btn.mic-live { color: #ef4444; background-color: rgba(239, 68, 68, 0.1); }
     
     /* =================================================================
-       -- 8. MODALS & UTILITIES --
+       -- 8. MODALS & UTILITIES (UPGRADED) --
     ================================================================= */
-    .modal {
-      position: fixed; inset: 0; display: none;
-      align-items: center; justify-content: center;
-      background: rgba(17, 24, 39, 0.6);
-      backdrop-filter: blur(8px);
-      z-index: 100;
-    }
+    .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(8px); z-index: 100; }
     .modal.open { display: flex; animation: fadeIn 0.3s; }
-    .modal-content {
-      width: min(520px, 92vw); background: var(--color-bg-surface);
-      border-radius: 1.25rem; box-shadow: var(--shadow-md);
-      display: flex; flex-direction: column;
-    }
-    .modal-header {
-        background-color: var(--color-bg-main);
-        border-bottom: 1px solid var(--color-border);
-    }
-    .toast {
-      position: fixed; bottom: 1.5rem; left: 50%;
-      transform: translateX(-50%);
-      background-color: var(--color-text-primary); color: var(--color-bg-surface);
-      padding: 0.8rem 1.2rem; border-radius: 8px; z-index: 110;
-      opacity: 0; font-weight: 500; box-shadow: var(--shadow-md);
-      transition: opacity 0.3s, transform 0.3s;
-    }
+    .modal-content { width: min(520px, 92vw); background: var(--color-bg-surface); border-radius: 1.25rem; box-shadow: var(--shadow-md); display: flex; flex-direction: column; animation: modal-scale-in 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .modal-header { background-color: var(--color-bg-main); border-bottom: 1px solid var(--color-border); }
+    .toast { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); background-color: var(--color-text-primary); color: var(--color-bg-surface); padding: 0.8rem 1.2rem; border-radius: 8px; z-index: 110; opacity: 0; font-weight: 500; box-shadow: var(--shadow-md); transition: opacity 0.3s, transform 0.3s; }
     .toast.show { opacity: 1; transform: translate(-50%, -10px); }
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes modal-scale-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+
+    /* =================================================================
+       -- 9. NEW: CHAT ACTION MENU & PINNED MESSAGE --
+    ================================================================= */
+    #messageContextMenu {
+        position: absolute; display: none; background: var(--color-bg-surface);
+        border-radius: 8px; box-shadow: var(--shadow-md); z-index: 50;
+        padding: 0.25rem; border: 1px solid var(--color-border);
+        transform-origin: top center; animation: modal-scale-in 0.15s ease-out;
+    }
+    #messageContextMenu.show { display: flex; }
+    .context-menu-btn {
+        display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 0.75rem;
+        font-size: 0.9rem; border-radius: 6px; cursor: pointer;
+        transition: background-color 0.2s; white-space: nowrap;
+    }
+    .context-menu-btn:hover { background-color: var(--color-bg-main); }
+    
+    #pinnedMessageArea {
+        padding: 0.5rem 1rem; background-color: var(--color-bg-main); border-bottom: 1px solid var(--color-border);
+        flex-shrink: 0; cursor: pointer; transition: all 0.3s; display: none;
+    }
+    #pinnedMessageArea.show { display: block; }
+    .pinned-content { display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+    .pinned-text {
+        font-size: 0.85rem; color: var(--color-text-secondary);
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
   </style>
 </head>
 <body class="app-shell">
 
-  <!-- =======================
-       Welcome Screen
-  ======================== -->
+  <!-- ======================= Welcome Screen ======================== -->
   <div class="welcome-screen" id="welcomeScreen">
-    <div class="absolute top-4 right-4 z-10" style="inset-inline-end: 1rem; inset-inline-start: auto;">
-      <button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-4 !h-10 !rounded-full !border-white/20 hover:!border-accent !text-white bg-white/10 backdrop-blur-sm">AR</button>
-    </div>
+    <div class="absolute top-4 right-4 z-10" style="inset-inline-end: 1rem; inset-inline-start: auto;"><button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-4 !h-10 !rounded-full !border-white/20 hover:!border-accent !text-white bg-white/10 backdrop-blur-sm">AR</button></div>
     <img id="welcomeAvatar" src="https://images.unsplash.com/photo-1581009137042-c552e485697a?auto=format&fit=crop&w=200&q=80" alt="Coach Avatar" class="w-32 h-32 rounded-full mb-6 shadow-xl object-cover border-4 border-[var(--color-accent)]"/>
     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-2" id="welcomeTitle">مدربك الشخصي الذكي</h1>
     <p class="text-base sm:text-lg lg:text-xl font-light text-white/90 mb-8 max-w-xl" id="welcomeSubtitle">جاهز للتغيير؟ خطتك مصممة خصيصًا لك — تنفيذ محكم، متابعة دقيقة، ونتيجة ملموسة.</p>
     <button id="startBtn" class="cta-btn">ابدأ الآن</button>
   </div>
 
-  <!-- =======================
-       User Profile Screen
-  ======================== -->
+  <!-- ======================= User Profile Screen ======================== -->
   <div class="user-data-screen hidden" id="userDataScreen">
-    <div class="absolute top-4 right-4 z-10" style="inset-inline-end: 1rem; inset-inline-start: auto;">
-       <button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-4 !h-10 !rounded-full !border-white/20 hover:!border-accent !text-white bg-white/10 backdrop-blur-sm">AR</button>
-    </div>
-    <div class="w-full max-w-sm p-6 sm:p-8 space-y-6 rounded-2xl shadow-xl border border-white/20">
-      <div class="text-center">
-        <h2 class="text-2xl sm:text-3xl font-extrabold" id="userDataTitle">لنبني ملفك السريع</h2>
-        <p class="text-white/80 mt-2" id="userDataSubtitle">نحتاج بعض المعلومات للبدء</p>
-      </div>
-      <div class="space-y-4">
-        <input type="text" id="userName" class="block w-full rounded-full py-3.5 px-6 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="اكتب اسمك هنا" dir="auto">
-        <input type="text" inputmode="numeric" id="userAge" class="block w-full rounded-full py-3.5 px-6 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="عمرك" dir="ltr">
-        <input type="text" id="userCountry" class="block w-full rounded-full py-3.5 px-6 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="بلدك" dir="auto">
-      </div>
-      <button id="nextBtn" class="cta-btn w-full mt-4 !py-3 !text-lg !font-bold">ابدأ المحادثة</button>
-    </div>
+    <div class="absolute top-4 right-4 z-10" style="inset-inline-end: 1rem; inset-inline-start: auto;"><button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-4 !h-10 !rounded-full !border-white/20 hover:!border-accent !text-white bg-white/10 backdrop-blur-sm">AR</button></div>
+    <div class="w-full max-w-sm p-6 sm:p-8 space-y-6 rounded-2xl shadow-xl border border-white/20"><div class="text-center"><h2 class="text-2xl sm:text-3xl font-extrabold" id="userDataTitle">لنبني ملفك السريع</h2><p class="text-white/80 mt-2" id="userDataSubtitle">نحتاج بعض المعلومات للبدء</p></div><div class="space-y-4"><input type="text" id="userName" class="block w-full rounded-full py-3.5 px-6 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="اكتب اسمك هنا" dir="auto"><input type="text" inputmode="numeric" id="userAge" class="block w-full rounded-full py-3.5 px-6 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="عمرك" dir="ltr"><input type="text" id="userCountry" class="block w-full rounded-full py-3.5 px-6 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="بلدك" dir="auto"></div><button id="nextBtn" class="cta-btn w-full mt-4 !py-3 !text-lg !font-bold">ابدأ المحادثة</button></div>
   </div>
 
-  <!-- =======================
-       Chat UI
-  ======================== -->
+  <!-- ======================= Chat UI ======================== -->
   <div class="flex flex-col h-full hidden" id="chatContainer">
-    <!-- Chat Header -->
     <div class="chat-header">
-      <div class="brand flex items-center gap-3">
-        <img id="chatAvatar" src="https://images.unsplash.com/photo-1581009137042-c552e485697a?auto=format&fit=crop&w=80&q=80" alt="Coach Avatar" class="rounded-full object-cover"/>
-        <span class="text-lg font-bold" id="chatTitle">مدربك الشخصي الذكي</span>
-      </div>
+      <div class="brand flex items-center gap-3"><img id="chatAvatar" src="https://images.unsplash.com/photo-1581009137042-c552e485697a?auto=format&fit=crop&w=80&q=80" alt="Coach Avatar" class="rounded-full object-cover"/><span class="text-lg font-bold" id="chatTitle">مدربك الشخصي الذكي</span></div>
       <div class="flex items-center gap-1">
-        <!-- New: Reset Button -->
         <button id="resetBtn" class="icon-btn text-xl !w-9 !h-9" title="ابدأ من جديد">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>
+            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
         </button>
         <button id="btnLang" class="lang-toggle-btn icon-btn text-sm font-bold !w-auto px-4 !h-9">AR</button>
         <button id="btnTheme" class="icon-btn text-xl !w-9 !h-9">☀️</button>
       </div>
     </div>
+    
+    <!-- Pinned Message Bar -->
+    <div id="pinnedMessageArea">
+      <div class="pinned-content">
+        <div class="flex items-center gap-2 min-w-0">
+          <svg class="w-4 h-4 text-gray-500 flex-shrink-0" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3a1 1 0 0 1 1 1v5.268l2.999 2.999a1 1 0 0 1 .326 1.638l-.11.094L18 16.223V18a1 1 0 0 1-.993.994L17 19h-4.172l-3.535 3.536a1 1 0 0 1-1.497-1.32l.083-.094L11.414 18H8a1 1 0 0 1-1-1v-1.777l-2.173-2.173a1 1 0 0 1-.094-1.548l.094-.11L7.828 9.268V4a1 1 0 0 1 .993-.994L9 3h7z"/></svg>
+          <p id="pinnedText" class="pinned-text"></p>
+        </div>
+        <button id="unpinBtn" class="icon-btn !w-6 !h-6" title="إلغاء التثبيت">
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
 
-    <!-- Message Area -->
     <div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
     
-    <!-- Input Area Wrapper -->
     <div class="input-area-wrapper">
-        <!-- FIXED "GET PLAN" BAR -->
-        <div id="planButtonArea" class="px-2 pb-2">
-            <div class="dynamic-card !m-0 rounded-xl p-3 flex justify-between items-center flex-wrap sm:flex-nowrap gap-3 bg-white dark:bg-slate-800">
-                <div class="min-w-0">
-                <div id="ctaTitle" class="font-bold text-gray-800 dark:text-gray-100">جاهز لنتيجة ملموسة؟</div>
-                <div id="ctaSubtitle" class="text-sm text-gray-600 dark:text-gray-300 mt-1">خطة مُحكمة + متابعة أسبوعية.</div>
-                </div>
-                <button id="generatePlanBtn" class="cta-btn cta-btn-animated !text-sm !px-5 !py-2.5 w-full sm:w-auto" disabled>احصل على خطتك الآن</button>
-            </div>
-        </div>
-
-        <!-- IMAGE PREVIEW AREA -->
-        <div id="imagePreviewWrapper" class="hidden p-2">
-            <div id="imagePreviewContainer" class="relative inline-block">
-                <img id="imagePreview" class="h-20 w-20 rounded-lg object-cover border-2 border-gray-300" src="" alt="Image preview">
-                <button id="removeImageBtn" class="absolute top-0 right-0 -mt-2 -mr-2 flex h-6 w-6 items-center justify-center rounded-full bg-gray-700 text-white text-lg font-bold leading-none hover:bg-red-500 transition-colors" aria-label="Remove image">×</button>
-            </div>
-        </div>
-
-        <div class="input-area" id="inputArea">
-            <div class="input-field-container">
-                <button id="plusBtn" class="icon-btn" aria-label="أرسل صورة/ملف" title="صورة/ملف">
-                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-                </button>
-                <input type="file" id="fileInput" accept="image/*" class="hidden" />
-                <textarea id="userInput" placeholder="اكتب رسالتك..." dir="rtl" rows="1"></textarea>
-                <button id="micBtn" class="icon-btn mic-btn" aria-label="تسجيل صوتي" title="اضغط مطولاً للتسجيل">
-                    <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg>
-                </button>
-            </div>
-            <button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل" title="إرسال">
-                <svg class="w-5 h-5" style="transform: translateX(1px);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>
-            </button>
-        </div>
+        <div id="planButtonArea" class="px-2 pb-2"><div class="dynamic-card !m-0 rounded-xl p-3 flex justify-between items-center flex-wrap sm:flex-nowrap gap-3 bg-white dark:bg-slate-800"><div class="min-w-0"><div id="ctaTitle" class="font-bold text-gray-800 dark:text-gray-100">جاهز لنتيجة ملموسة؟</div><div id="ctaSubtitle" class="text-sm text-gray-600 dark:text-gray-300 mt-1">خطة مُحكمة + متابعة أسبوعية.</div></div><button id="generatePlanBtn" class="cta-btn cta-btn-animated !text-sm !px-5 !py-2.5 w-full sm:w-auto" disabled>احصل على خطتك الآن</button></div></div>
+        <div id="imagePreviewWrapper" class="hidden p-2"><div id="imagePreviewContainer" class="relative inline-block"><img id="imagePreview" class="h-20 w-20 rounded-lg object-cover border-2 border-gray-300" src="" alt="Image preview"><button id="removeImageBtn" class="absolute top-0 right-0 -mt-2 -mr-2 flex h-6 w-6 items-center justify-center rounded-full bg-gray-700 text-white text-lg font-bold leading-none hover:bg-red-500 transition-colors" aria-label="Remove image">×</button></div></div>
+        <div class="input-area" id="inputArea"><div class="input-field-container"><button id="plusBtn" class="icon-btn" aria-label="أرسل صورة/ملف" title="صورة/ملف"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></button><input type="file" id="fileInput" accept="image/*" class="hidden" /><textarea id="userInput" placeholder="اكتب رسالتك..." dir="rtl" rows="1"></textarea><button id="micBtn" class="icon-btn mic-btn" aria-label="تسجيل صوتي" title="اضغط مطولاً للتسجيل"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></button></div><button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل" title="إرسال"><svg class="w-5 h-5" style="transform: translateX(1px);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg></button></div>
         <div class="hidden text-center" id="recHintWrap"><p class="rec-hint text-xs" id="recHint"></p></div>
     </div>
   </div>
 
-  <!-- =======================
-       HIDDEN TEMPLATES
-  ======================== -->
-  <div id="templates" class="hidden">
-    <!-- Templates can be added here in the future if needed -->
-  </div>
-
-  <!-- =======================
-       New: WhatsApp-style Profile Modal
-  ======================== -->
+  <!-- ======================= WhatsApp Profile Modal (REDESIGNED) ======================== -->
   <div id="profileModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog">
-    <div class="modal-content !w-full !max-w-md !rounded-2xl overflow-hidden">
-        <!-- WhatsApp-style Header -->
-        <div class="bg-[#008069] dark:bg-[#1F2C34] text-white p-3 flex items-center justify-between shadow-md">
-            <div class="flex items-center gap-3">
-                 <img src="https://images.unsplash.com/photo-1581009137042-c552e485697a?auto=format&fit=crop&w=80&q=80" alt="Coach Avatar" class="w-11 h-11 rounded-full object-cover border-2 border-white/80"/>
-                 <div>
-                    <h3 class="text-base font-bold">الكابتن مصطفى الصافي</h3>
-                    <p class="text-xs text-white/90">متصل الآن</p>
-                 </div>
-            </div>
-            <div class="flex items-center gap-2">
-                 <a href="tel:+971502061209" class="icon-btn !w-10 !h-10 !text-white/90 hover:!text-white hover:!bg-white/10" title="اتصال">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.11.37 2.3.57 3.58.57a1 1 0 0 1 1 1V21a1 1 0 0 1-1 1C10.61 22 2 13.39 2 3a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.27.2 2.47.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
-                 </a>
-                <button id="closeProfileBtn" class="icon-btn !w-10 !h-10 !text-white/90 hover:!text-white hover:!bg-white/10" title="إغلاق">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- Chat-like Body -->
-        <div class="bg-[#EFEAE2] dark:bg-[#0B141A] p-4 flex-1 flex flex-col justify-end" style="background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');">
-             <!-- The new marketing message/bio -->
-            <div class="bg-white dark:bg-[#202C33] p-3 rounded-lg rounded-tl-none shadow-md max-w-sm ml-auto animate-pulse" style="margin-left: auto; margin-right: initial; animation: fadeIn 0.8s ease-out, pulse-animation 2.5s infinite 1s;">
-                <p class="text-sm text-[#111b21] dark:text-[#e9edef] leading-relaxed">
-                   هل أنت مستعد لإطلاق العنان لأفضل نسخة من نفسك؟ أنا هنا لأكون شريكك في هذه الرحلة. بخبرة دولية وشهادات متقدمة من كاليفورnia، أصمم لك ليس مجرد خطة، بل **نظام حياة متكامل** يحقق أهدافك بدقة وكفاءة.
-                   <br><br>
-                   حان وقت التغيير الحقيقي. اضغط أدناه ودعنا نبدأ في نحت قصة نجاحك.
-                </p>
-                <div class="text-xs text-right text-gray-400 dark:text-gray-500 mt-1">الآن ✓✓</div>
-            </div>
-        </div>
-
-        <!-- Action Button Footer -->
-        <div class="bg-[#F0F2F5] dark:bg-[#202C33] p-4 border-t border-black/10">
-             <button id="profileGetPlanBtn" class="cta-btn w-full !py-3 !text-base !font-bold">ابدأ رحلة التحول الآن</button>
-        </div>
-    </div>
-  </div>
-
-
-  <!-- =======================
-       Contact Modal
-  ======================== -->
-  <div id="contactModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog">
-    <div class="modal-content">
-      <div class="modal-header p-4 flex justify-between items-center">
-        <h3 id="contactModalTitle" class="text-lg font-bold">احصل على خطتك الآن</h3>
-        <button id="closeContactBtn" class="icon-btn !w-8 !h-8" title="إغلاق">×</button>
+    <div class="modal-content !w-full !max-w-md !rounded-none sm:!rounded-2xl p-0 overflow-hidden">
+      <div class="bg-gray-100 dark:bg-gray-800 p-4 flex justify-end">
+        <button id="closeProfileBtn" class="icon-btn !w-8 !h-8" title="إغلاق">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
       </div>
-      <div class="modal-body p-6">
-        <p id="contactModalText1" class="mb-4 text-secondary">اختر الطريقة المناسبة للتواصل المباشر مع المدرب.</p>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <a class="flex items-center justify-center gap-3 p-4 rounded-lg bg-[#25D366] text-white font-bold transition hover:opacity-90" href="https://wa.me/971502061209" target="_blank" rel="noopener">
+      <div class="flex flex-col items-center p-6 bg-gray-100 dark:bg-gray-800">
+        <img src="https://images.unsplash.com/photo-1581009137042-c552e485697a?auto=format&fit=crop&w=150&q=80" alt="Coach Avatar" class="w-36 h-36 rounded-full object-cover border-4 border-white dark:border-gray-700 shadow-lg"/>
+        <h3 class="text-2xl font-bold mt-4" id="profileName">الكابتن مصطفى الصافي</h3>
+        <p class="text-lg text-gray-500 dark:text-gray-400" id="profilePhone">+971 50 206 1209</p>
+        <div class="flex gap-4 mt-4">
+          <a href="https://wa.me/971502061209" target="_blank" class="icon-btn !w-12 !h-12 bg-green-500 !text-white hover:bg-green-600 shadow-md" title="WhatsApp">
             <svg class="w-6 h-6" viewBox="0 0 32 32" fill="currentColor"><path d="M19.11 17.18c-.28-.14-1.65-.81-1.9-.9-.26-.1-.44-.14-.62.14-.18.27-.71.9-.87 1.09-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.66-1.55-1.94-.16-.27-.02-.42.12-.56.12-.12.28-.3.42-.46.14-.16.18-.27.28-.46.1-.18.06-.34-.02-.48-.08-.14-.62-1.5-.84-2.06-.22-.52-.44-.45-.62-.46h-.54c-.18 0-.48.07-.74.34-.26.27-1 1-1 2.42s1.03 2.8 1.18 2.99c.14.2 2.03 3.1 4.93 4.33.69.3 1.22.48 1.64.62.69.22 1.32.19 1.82.12.56-.08 1.65-.68 1.88-1.35.24-.67.24-1.24.16-1.35-.06-.1-.24-.16-.52-.3z"/><path d="M26.9 5.1A13.9 13.9 0 0 0 16 .1C7.3.1.2 7.1.2 15.8c0 2.7.7 5.2 2 7.4L.1 31.9l8.9-2.3c2.1 1.1 4.5 1.7 7 1.7h.1c8.7 0 15.8-7 15.8-15.7 0-4.2-1.6-8.1-4.9-10.9z"/></svg>
-            <span id="whatsappBtnText">واتساب</span>
           </a>
-          <a class="flex items-center justify-center gap-3 p-4 rounded-lg bg-blue-500 text-white font-bold transition hover:opacity-90" href="tel:+971502061209">
+          <a href="tel:+971502061209" class="icon-btn !w-12 !h-12 bg-blue-500 !text-white hover:bg-blue-600 shadow-md" title="Call">
             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.11.37 2.3.57 3.58.57a1 1 0 0 1 1 1V21a1 1 0 0 1-1 1C10.61 22 2 13.39 2 3a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.27.2 2.47.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg>
-            <span id="phoneBtnText">اتصال</span>
           </a>
         </div>
-        
-        <!-- IHERB CARD MOVED HERE -->
-        <div id="iherb-card" class="dynamic-card mt-6 pt-5 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-center gap-4 p-4 !m-0 !border-0 !shadow-none">
-            <div class="flex-shrink-0 grid place-items-center w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-900 text-[var(--color-accent)]">
-                <svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.38 3.3.5 6.22-2.39 6.84-5.64.45-2.3-1.05-4.42-3.23-5.32-.6-.25-1.25-.37-1.92-.37-.85 0-1.67.2-2.43.56l-1.89-.66C7.9 3.83 17 8 17 8Z" /></svg>
-            </div>
-            <div class="flex-1 min-w-0 text-center sm:text-right">
-                <p id="iherbTitle" class="font-extrabold text-emerald-800 dark:text-emerald-200">احصل على مكملاتك من iHerb</p>
-                <p id="iherbSubtitle" class="text-sm text-emerald-700 dark:text-emerald-300 mt-1">خصم 10% إضافي هدية من مدربك!</p>
-            </div>
-            <div class="flex items-center gap-2 mt-2 sm:mt-0">
-                <div id="iherb-code" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-dashed border-[var(--color-accent)] font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">AYT3413</div>
-                <a id="copy-and-go-iherb-btn" href="https://iherb.co/fL9KCv1i?rcode=AYT3413" target="_blank" class="flex-shrink-0 px-4 py-2.5 rounded-lg bg-[var(--color-accent)] text-white font-bold hover:bg-[var(--color-accent-hover)] transition-colors text-sm shadow-md">
-                    <span id="copy-and-go-iherb-btn-text">اذهب للمتجر</span>
-                </a>
-            </div>
+      </div>
+      <div class="p-6 bg-white dark:bg-gray-900 space-y-4">
+        <div>
+          <h4 class="text-sm font-bold text-green-600 dark:text-green-400" id="profileBioTitle">About</h4>
+          <p class="mt-1 text-gray-700 dark:text-gray-300" id="profileBioText">خبير دولي حاصل على دبلومة متقدمة في اللياقة البدنية والتغذية من كاليفورnia. أصمم لك نظام حياة متكامل لتحقيق أهدافك بكفاءة ودقة.</p>
         </div>
-
-        <div class="text-center mt-6 pt-5 border-t border-[var(--color-border)]">
-            <p id="coffeeText" class="text-sm text-secondary mb-3">هل أعجبتك الأداة؟ دعمك يساعدنا على الاستمرار.</p>
-            <a href="https://buymeacoffee.com/aipersonaltrainer" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 font-bold text-gray-800 bg-amber-400 rounded-lg shadow-md hover:bg-amber-500 transition-colors">
-                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4v-2z"/></svg>
-                <span id="coffeeBtnText">ادعمني بقهوة</span>
-            </a>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+          <button id="profileGetPlanBtn" class="cta-btn w-full !py-3 !text-base !font-bold">احصل على خطتك</button>
+          <a href="https://buymeacoffee.com/aipersonaltrainer" target="_blank" class="inline-flex items-center justify-center gap-2 px-5 py-2.5 font-bold text-gray-800 bg-amber-400 rounded-lg shadow-md hover:bg-amber-500 transition-colors">
+            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4v-2z"/></svg>
+            <span id="coffeeBtnText2">ادعمني بقهوة</span>
+          </a>
         </div>
       </div>
     </div>
   </div>
+
+  <!-- ======================= Contact Modal ======================== -->
+  <div id="contactModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog"><div class="modal-content"><div class="modal-header p-4 flex justify-between items-center"><h3 id="contactModalTitle" class="text-lg font-bold">احصل على خطتك الآن</h3><button id="closeContactBtn" class="icon-btn !w-8 !h-8" title="إغلاق">×</button></div><div class="modal-body p-6"><p id="contactModalText1" class="mb-4 text-secondary">اختر الطريقة المناسبة للتواصل المباشر مع المدرب.</p><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><a class="flex items-center justify-center gap-3 p-4 rounded-lg bg-[#25D366] text-white font-bold transition hover:opacity-90" href="https://wa.me/971502061209" target="_blank" rel="noopener"><svg class="w-6 h-6" viewBox="0 0 32 32" fill="currentColor"><path d="M19.11 17.18c-.28-.14-1.65-.81-1.9-.9-.26-.1-.44-.14-.62.14-.18.27-.71.9-.87 1.09-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.66-1.55-1.94-.16-.27-.02-.42.12-.56.12-.12.28-.3.42-.46.14-.16.18-.27.28-.46.1-.18.06-.34-.02-.48-.08-.14-.62-1.5-.84-2.06-.22-.52-.44-.45-.62-.46h-.54c-.18 0-.48.07-.74.34-.26.27-1 1-1 2.42s1.03 2.8 1.18 2.99c.14.2 2.03 3.1 4.93 4.33.69.3 1.22.48 1.64.62.69.22 1.32.19 1.82.12.56-.08 1.65-.68 1.88-1.35.24-.67.24-1.24.16-1.35-.06-.1-.24-.16-.52-.3z"/><path d="M26.9 5.1A13.9 13.9 0 0 0 16 .1C7.3.1.2 7.1.2 15.8c0 2.7.7 5.2 2 7.4L.1 31.9l8.9-2.3c2.1 1.1 4.5 1.7 7 1.7h.1c8.7 0 15.8-7 15.8-15.7 0-4.2-1.6-8.1-4.9-10.9z"/></svg><span id="whatsappBtnText">واتساب</span></a><a class="flex items-center justify-center gap-3 p-4 rounded-lg bg-blue-500 text-white font-bold transition hover:opacity-90" href="tel:+971502061209"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.11.37 2.3.57 3.58.57a1 1 0 0 1 1 1V21a1 1 0 0 1-1 1C10.61 22 2 13.39 2 3a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.27.2 2.47.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg><span id="phoneBtnText">اتصال</span></a></div><div id="iherb-card" class="dynamic-card mt-6 pt-5 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-center gap-4 p-4 !m-0 !border-0 !shadow-none"><div class="flex-shrink-0 grid place-items-center w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-900 text-[var(--color-accent)]"><svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.38 3.3.5 6.22-2.39 6.84-5.64.45-2.3-1.05-4.42-3.23-5.32-.6-.25-1.25-.37-1.92-.37-.85 0-1.67.2-2.43.56l-1.89-.66C7.9 3.83 17 8 17 8Z" /></svg></div><div class="flex-1 min-w-0 text-center sm:text-right"><p id="iherbTitle" class="font-extrabold text-emerald-800 dark:text-emerald-200">احصل على مكملاتك من iHerb</p><p id="iherbSubtitle" class="text-sm text-emerald-700 dark:text-emerald-300 mt-1">خصم 10% إضافي هدية من مدربك!</p></div><div class="flex items-center gap-2 mt-2 sm:mt-0"><div id="iherb-code" class="px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-dashed border-[var(--color-accent)] font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">AYT3413</div><a id="copy-and-go-iherb-btn" href="https://iherb.co/fL9KCv1i?rcode=AYT3413" target="_blank" class="flex-shrink-0 px-4 py-2.5 rounded-lg bg-[var(--color-accent)] text-white font-bold hover:bg-[var(--color-accent-hover)] transition-colors text-sm shadow-md"><span id="copy-and-go-iherb-btn-text">اذهب للمتجر</span></a></div></div><div class="text-center mt-6 pt-5 border-t border-[var(--color-border)]"><p id="coffeeText" class="text-sm text-secondary mb-3">هل أعجبتك الأداة؟ دعمك يساعدنا على الاستمرار.</p><a href="https://buymeacoffee.com/aipersonaltrainer" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 font-bold text-gray-800 bg-amber-400 rounded-lg shadow-md hover:bg-amber-500 transition-colors"><svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4v-2z"/></svg><span id="coffeeBtnText">ادعمني بقهوة</span></a></div></div></div></div>
+
+  <!-- ======================= NEW: Reset Confirmation Modal ======================== -->
+  <div id="resetConfirmModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog">
+      <div class="modal-content !max-w-sm">
+          <div class="p-6">
+              <h3 class="text-lg font-bold" id="resetModalTitle">تأكيد الحذف</h3>
+              <p class="text-secondary mt-2" id="resetModalText">هل أنت متأكد أنك تريد حذف كل الرسائل والبدء من جديد؟</p>
+          </div>
+          <div class="flex justify-end gap-3 p-4 bg-gray-50 dark:bg-gray-800 rounded-b-xl">
+              <button id="cancelResetBtn" class="px-4 py-2 rounded-lg font-semibold bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition" id="resetCancelBtn">إلغاء</button>
+              <button id="confirmResetBtn" class="px-4 py-2 rounded-lg font-semibold text-white bg-red-500 hover:bg-red-600 transition" id="resetConfirmBtn">موافق</button>
+          </div>
+      </div>
+  </div>
+
+  <!-- ======================= NEW: Message Context Menu (HIDDEN) ======================== -->
+  <div id="messageContextMenu">
+      <button class="context-menu-btn" data-action="copy">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+          <span id="contextCopy">نسخ</span>
+      </button>
+      <button class="context-menu-btn" data-action="share">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+          <span id="contextShare">مشاركة</span>
+      </button>
+      <button class="context-menu-btn" data-action="pin">
+          <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 3a1 1 0 0 1 1 1v5.268l2.999 2.999a1 1 0 0 1 .326 1.638l-.11.094L18 16.223V18a1 1 0 0 1-.993.994L17 19h-4.172l-3.535 3.536a1 1 0 0 1-1.497-1.32l.083-.094L11.414 18H8a1 1 0 0 1-1-1v-1.777l-2.173-2.173a1 1 0 0 1-.094-1.548l.094-.11L7.828 9.268V4a1 1 0 0 1 .993-.994L9 3h7z"/></svg>
+          <span id="contextPin">تثبيت</span>
+      </button>
+  </div>
+
 
   <script type="module">
-    // START OF NEW, NON-CORE UI ENHANCEMENT SCRIPTS
-    function initUIEnhancements() {
-        const userInput = document.getElementById('userInput');
-        if (!userInput) return;
+    function initUIEnhancements() { const userInput = document.getElementById('userInput'); if (!userInput) return; const adjustTextareaHeight = () => { userInput.style.height = 'auto'; userInput.style.height = userInput.scrollHeight + 'px'; }; userInput.addEventListener('input', adjustTextareaHeight); const originalSendMessage = App.core.sendMessage; App.core.sendMessage = function(...args) { originalSendMessage.apply(this, args); setTimeout(adjustTextareaHeight, 0); }; }
 
-        // 1. Auto-growing textarea
-        const adjustTextareaHeight = () => {
-            userInput.style.height = 'auto';
-            userInput.style.height = userInput.scrollHeight + 'px';
-        };
-        userInput.addEventListener('input', adjustTextareaHeight);
-        
-        // 2. Reset textarea height after sending a message
-        // This patches the original sendMessage function to include our new behavior
-        const originalSendMessage = App.core.sendMessage;
-        App.core.sendMessage = function(...args) {
-            originalSendMessage.apply(this, args); // Call the original function
-            setTimeout(adjustTextareaHeight, 0); // Reset height after sending
-        };
-    }
-    // END OF NEW UI SCRIPTS
-
-    /**
-     * Smart Personal Coach App - Upgraded Version
-     * ---------------------------------------------
-     * This version includes major upgrades as per user request:
-     * 1.  **Persistent Memory:** Chat history is now saved to the user's device (`localStorage`),
-     * so conversations are never lost between sessions.
-     * 2.  **Upgraded AI Prompt:** The core AI prompt has been completely rewritten for a more
-     * professional, human-like interaction with powerful, subtle marketing skills.
-     * 3.  **One-Click Copy:** The iHerb discount code button now automatically copies the code
-     * and notifies the user before redirecting.
-     * 4.  **Smarter UI:** The "Get Plan" button is now enabled only after user data is collected.
-     * 5.  **NEW: Profile Modal & Reset Button:** Added a clickable coach avatar to show a detailed
-     * profile and a button to reset the chat and start over.
-     * * THE CORE LOGIC'S INTEGRITY IS MAINTAINED, BUT ENHANCED.
-     */
     const App = {
-      config: { MAX_TURNS: 50, MAX_PROMPT_CHARS: 28000, STORAGE_KEY: 'smart-coach-session-v2' },
-      state: { userState: { step: 0, data: {}, persona:'neutral' }, lang: 'ar', chatHistory: [], isRecording: false, sttSessionId: 0, recognition: null, mediaStream: null, mediaRecorder: null, audioChunks: [], recStartTime: 0, pendingImage: null },
+      config: { MAX_PROMPT_CHARS: 28000, STORAGE_KEY: 'smart-coach-session-v3', LONG_PRESS_DURATION: 400 },
+      state: { userState: { step: 0, data: {} }, lang: 'ar', chatHistory: [], isRecording: false, sttSessionId: 0, recognition: null, mediaStream: null, mediaRecorder: null, audioChunks: [], recStartTime: 0, pendingImage: null, pinnedMessageId: null, longPressTimer: null, currentContextMenu: null },
       elements: {},
       cacheElements() {
-        const $ = id => document.getElementById(id);
-        this.elements = {
-          chatMessages: $('chatMessages'), userInput: $('userInput'), sendBtn: $('sendBtn'),
-          startBtn: $('startBtn'), nextBtn: $('nextBtn'), welcomeScreen: $('welcomeScreen'),
-          userDataScreen: $('userDataScreen'), chatContainer: $('chatContainer'), userNameInput: $('userName'),
-          userAgeInput: $('userAge'), userCountryInput: $('userCountry'), btnTheme: $('btnTheme'),
-          plusBtn: $('plusBtn'), fileInput: $('fileInput'), micBtn: $('micBtn'),
-          recHintWrap: $('recHintWrap'), recHint: $('recHint'), planButtonArea: $('planButtonArea'),
-          generatePlanBtn: $('generatePlanBtn'), contactModal: $('contactModal'), closeContactBtn: $('closeContactBtn'),
-          copyAndGoIherbBtn: $('copy-and-go-iherb-btn'), iherbCode: $('iherb-code'),
-          imagePreviewWrapper: $('imagePreviewWrapper'), imagePreview: $('imagePreview'), removeImageBtn: $('removeImageBtn'),
-          // New elements for added features
-          chatAvatar: $('chatAvatar'),
-          profileModal: $('profileModal'),
-          closeProfileBtn: $('closeProfileBtn'),
-          profileGetPlanBtn: $('profileGetPlanBtn'),
-          resetBtn: $('resetBtn'),
-        };
+        const $ = id => document.getElementById(id); this.elements = { chatMessages: $('chatMessages'), userInput: $('userInput'), sendBtn: $('sendBtn'), startBtn: $('startBtn'), nextBtn: $('nextBtn'), welcomeScreen: $('welcomeScreen'), userDataScreen: $('userDataScreen'), chatContainer: $('chatContainer'), userNameInput: $('userName'), userAgeInput: $('userAge'), userCountryInput: $('userCountry'), btnTheme: $('btnTheme'), plusBtn: $('plusBtn'), fileInput: $('fileInput'), micBtn: $('micBtn'), recHintWrap: $('recHintWrap'), recHint: $('recHint'), planButtonArea: $('planButtonArea'), generatePlanBtn: $('generatePlanBtn'), contactModal: $('contactModal'), closeContactBtn: $('closeContactBtn'), copyAndGoIherbBtn: $('copy-and-go-iherb-btn'), iherbCode: $('iherb-code'), imagePreviewWrapper: $('imagePreviewWrapper'), imagePreview: $('imagePreview'), removeImageBtn: $('removeImageBtn'), chatAvatar: $('chatAvatar'), profileModal: $('profileModal'), closeProfileBtn: $('closeProfileBtn'), profileGetPlanBtn: $('profileGetPlanBtn'), resetBtn: $('resetBtn'), resetConfirmModal: $('resetConfirmModal'), confirmResetBtn: $('confirmResetBtn'), cancelResetBtn: $('cancelResetBtn'), messageContextMenu: $('messageContextMenu'), pinnedMessageArea: $('pinnedMessageArea'), pinnedText: $('pinnedText'), unpinBtn: $('unpinBtn') };
       },
       i18n: {
         strings: {
@@ -589,14 +343,20 @@
             namePlaceholder:'اكتب اسمك هنا', agePlaceholder:'عمرك', countryPlaceholder:'بلدك', nextButtonText:'ابدأ المحادثة',
             inputPlaceholder:'اكتب رسالتك...', emptyFields:'الرجاء إدخال اسمك وعمرك وبلدك للمتابعة.', imageUpload:'تم استلام الصورة — يتم التحليل الآن.',
             typing:'…', recStart:'● جاري التسجيل… ارفع إصبعك للإرسال', recDenied:'تعذّر الوصول للميكروفوون.', recTooShort:'التسجيل قصير جدًا.', recSaved:'تم نسخ الكلام إلى خانة الكتابة.',
-            ctaTitle: 'جاهز لنتيجة ملموسة؟', ctaSubtitle: 'خطة مُحكمة + متابعة أسبوعية.',
-            getPlanButton: 'احصل على خطتك الآن',
+            ctaTitle: 'جاهز لنتيجة ملموسة؟', ctaSubtitle: 'خطة مُحكمة + متابعة أسبوعية.', getPlanButton: 'احصل على خطتك الآن',
             contactModalTitle: 'احصل على خطتك الآن', contactModalText1: 'اختر الطريقة المناسبة للتواصل المباشر مع المدرب.',
             whatsappBtnText: 'واتساب', phoneBtnText: 'اتصال', copied: 'تم النسخ!',
             iherbTitle: 'احصل على مكملاتك من iHerb', iherbSubtitle: 'خصم إضافي 10% هدية من مدربك!',
             copyAndGoButton: 'اذهب للمتجر', iherbCopiedAndRedirecting: 'تم نسخ الكود! يتم الآن تحويلك...',
-            coffeeText: 'هل أعجبتك الأداة؟ دعمك يساعدنا على الاستمرار.', coffeeBtnText: 'ادعمني بقهوة',
-            imageAttached: '[صورة مرفقة]'
+            coffeeText: 'هل أعجبتك الأداة؟ دعمك يساعدنا على الاستمرار.', coffeeBtnText: 'ادعمني بقهوة', coffeeBtnText2: 'ادعمني بقهوة',
+            imageAttached: '[صورة مرفقة]', resetTitle: 'ابدأ من جديد',
+            resetModalTitle: 'تأكيد الحذف', resetModalText: 'هل أنت متأكد أنك تريد حذف كل الرسائل والبدء من جديد؟',
+            resetCancelBtn: 'إلغاء', resetConfirmBtn: 'موافق',
+            contextCopy: 'نسخ', contextShare: 'مشاركة', contextPin: 'تثبيت', contextUnpin: 'إلغاء التثبيت',
+            unpinTitle: 'إلغاء التثبيت', sharedSuccessfully: 'تمت المشاركة بنجاح!', shareFailed: 'فشلت المشاركة.',
+            profileName: 'الكابتن مصطفى الصافي', profilePhone: '+971 50 206 1209', profileBioTitle: 'عني',
+            profileBioText: 'خبير دولي حاصل على دبلومة متقدمة في اللياقة البدنية والتغذية من كاليفورnia. أصمم لك نظام حياة متكامل لتحقيق أهدافك بكفاءة ودقة.',
+            profileGetPlanBtn: 'احصل على خطتك',
           },
           en: {
             appName:'Smart Personal Coach', welcomeSubtitle:'Ready for a change? Your plan is tailored for you—precise execution, close follow-up, and tangible results.',
@@ -604,14 +364,20 @@
             namePlaceholder:'Your Name', agePlaceholder:'Your Age', countryPlaceholder:'Your Country', nextButtonText:'Start Conversation',
             inputPlaceholder:'Type your message…', emptyFields:'Please enter your name, age, and country to continue.', imageUpload:'Image received — analyzing now.',
             typing:'…', recStart:'● Recording… release to send', recDenied:'Microphone access denied.', recTooShort:'Recording is too short.', recSaved:'Text copied to input.',
-            ctaTitle: 'Ready for tangible results?', ctaSubtitle: 'Precise plan + weekly follow-up.',
-            getPlanButton: 'Get Your Plan Now',
+            ctaTitle: 'Ready for tangible results?', ctaSubtitle: 'Precise plan + weekly follow-up.', getPlanButton: 'Get Your Plan Now',
             contactModalTitle: 'Get your plan now', contactModalText1: 'Choose the best way to contact the coach directly.',
             whatsappBtnText: 'WhatsApp', phoneBtnText: 'Call', copied: 'Copied!',
             iherbTitle: 'Get your supplements from iHerb', iherbSubtitle: 'An extra 10% discount, a gift from your coach!',
             copyAndGoButton: 'Go to Store', iherbCopiedAndRedirecting: 'Code copied! Redirecting...',
-            coffeeText: 'Did you like this free tool? Your support helps us to continue.', coffeeBtnText: 'Support me with a coffee',
-            imageAttached: '[Image Attached]'
+            coffeeText: 'Did you like this free tool? Your support helps us to continue.', coffeeBtnText: 'Support me with a coffee', coffeeBtnText2: 'Support me with a coffee',
+            imageAttached: '[Image Attached]', resetTitle: 'Start Over',
+            resetModalTitle: 'Confirm Deletion', resetModalText: 'Are you sure you want to delete all messages and start over?',
+            resetCancelBtn: 'Cancel', resetConfirmBtn: 'Confirm',
+            contextCopy: 'Copy', contextShare: 'Share', contextPin: 'Pin', contextUnpin: 'Unpin',
+            unpinTitle: 'Unpin message', sharedSuccessfully: 'Shared successfully!', shareFailed: 'Sharing failed.',
+            profileName: 'Coach Mustafa Elsafy', profilePhone: '+971 50 206 1209', profileBioTitle: 'About',
+            profileBioText: 'International expert with an Advanced Diploma in Fitness and Nutrition from California. I design integrated lifestyle systems to achieve your goals efficiently and accurately.',
+            profileGetPlanBtn: 'Get Your Plan',
           }
         },
         setLang(lang) {
@@ -620,219 +386,156 @@
           document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
           const L = App.i18n.strings[lang];
           const $ = id => document.getElementById(id);
+          const updateText = (elId, key) => { const el = $(elId); if (el) el.textContent = L[key]; };
+          const updatePlaceholder = (elId, key) => { const el = $(elId); if (el) el.placeholder = L[key]; };
+          const updateTitle = (elId, key) => { const el = $(elId); if (el) el.title = L[key]; };
+          
+          updateText('welcomeTitle', 'appName'); updateText('welcomeSubtitle', 'welcomeSubtitle'); updateText('startBtn', 'startButtonText');
+          updateText('userDataTitle', 'userDataTitle'); updateText('userDataSubtitle', 'userDataSubtitle');
+          updatePlaceholder('userName', 'namePlaceholder'); updatePlaceholder('userAge', 'agePlaceholder'); updatePlaceholder('userCountry', 'countryPlaceholder');
+          updateText('nextBtn', 'nextButtonText'); updateText('chatTitle', 'appName'); updatePlaceholder('userInput', 'inputPlaceholder');
+          updateText('contactModalTitle', 'contactModalTitle'); updateText('contactModalText1', 'contactModalText1');
+          updateText('whatsappBtnText', 'whatsappBtnText'); updateText('phoneBtnText', 'phoneBtnText');
+          updateText('coffeeText', 'coffeeText'); updateText('coffeeBtnText', 'coffeeBtnText'); updateText('coffeeBtnText2', 'coffeeBtnText2');
+          updateText('ctaTitle', 'ctaTitle'); updateText('ctaSubtitle', 'ctaSubtitle'); updateText('generatePlanBtn', 'getPlanButton');
+          updateText('iherbTitle', 'iherbTitle'); updateText('iherbSubtitle', 'iherbSubtitle');
+          updateText('copy-and-go-iherb-btn-text', 'copyAndGoButton');
+          updateTitle('resetBtn', 'resetTitle'); updateText('resetModalTitle', 'resetModalTitle');
+          updateText('resetModalText', 'resetModalText'); updateText('cancelResetBtn', 'resetCancelBtn');
+          updateText('confirmResetBtn', 'resetConfirmBtn'); updateText('contextCopy', 'contextCopy');
+          updateText('contextShare', 'contextShare'); updateText('contextPin', 'contextPin');
+          updateTitle('unpinBtn', 'unpinTitle');
+          updateText('profileName', 'profileName'); updateText('profilePhone', 'profilePhone');
+          updateText('profileBioTitle', 'profileBioTitle'); updateText('profileBioText', 'profileBioText');
+          updateText('profileGetPlanBtn', 'profileGetPlanBtn');
 
-          $('welcomeTitle').textContent = L.appName;
-          $('welcomeSubtitle').textContent = L.welcomeSubtitle;
-          $('startBtn').textContent = L.startButtonText;
-          $('userDataTitle').textContent = L.userDataTitle;
-          $('userDataSubtitle').textContent = L.userDataSubtitle;
-          $('userName').placeholder = L.namePlaceholder;
-          $('userAge').placeholder = L.agePlaceholder;
-          $('userCountry').placeholder = L.countryPlaceholder;
-          $('nextBtn').textContent = L.nextButtonText;
-          $('chatTitle').textContent = L.appName;
-          $('userInput').placeholder = L.inputPlaceholder;
-          $('contactModalTitle').textContent = L.contactModalTitle;
-          $('contactModalText1').textContent = L.contactModalText1;
-          $('whatsappBtnText').textContent = L.whatsappBtnText;
-          $('phoneBtnText').textContent = L.phoneBtnText;
-          $('coffeeText').textContent = L.coffeeText;
-          $('coffeeBtnText').textContent = L.coffeeBtnText;
-          $('ctaTitle').textContent = L.ctaTitle;
-          $('ctaSubtitle').textContent = L.ctaSubtitle;
-          $('generatePlanBtn').textContent = L.getPlanButton;
-          $('iherbTitle').textContent = L.iherbTitle;
-          $('iherbSubtitle').textContent = L.iherbSubtitle;
-          $('copy-and-go-iherb-btn-text').textContent = L.copyAndGoButton;
-
-          document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
-            btn.textContent = lang === 'ar' ? 'EN' : 'AR';
-          });
+          document.querySelectorAll('.lang-toggle-btn').forEach(btn => { btn.textContent = lang === 'ar' ? 'EN' : 'AR'; });
           document.title = `${L.appName} | Smart Personal Coach`;
         },
-        autoSetByText(s) {
-          if (!s) return;
-          const isArabic = /[\u0600-\u06FF]/.test(s);
-          if ((isArabic ? 'ar' : 'en') !== App.state.lang) { this.setLang(isArabic ? 'ar' : 'en'); }
-        }
+        autoSetByText(s) { if (!s) return; const isArabic = /[\u0600-\u06FF]/.test(s); if ((isArabic ? 'ar' : 'en') !== App.state.lang) { this.setLang(isArabic ? 'ar' : 'en'); } }
       },
       utils: {
-        setTheme() {
-          document.documentElement.classList.toggle('dark');
-          const isDark = document.documentElement.classList.contains('dark');
-          App.elements.btnTheme.textContent = isDark ? '🌙' : '☀️';
-          localStorage.setItem('theme', isDark ? 'dark' : 'light');
-        },
-        toast(msg) {
-          const t = document.createElement('div');
-          t.className = 'toast'; t.textContent = msg;
-          document.body.appendChild(t);
-          setTimeout(() => t.classList.add('show'), 10);
-          setTimeout(() => {
-            t.classList.remove('show');
-            setTimeout(() => t.remove(), 400);
-          }, 2400);
-        },
-        removeNode(node) {
-          if (node && node.parentNode) node.parentNode.removeChild(node);
-        }
+        setTheme() { document.documentElement.classList.toggle('dark'); const isDark = document.documentElement.classList.contains('dark'); App.elements.btnTheme.textContent = isDark ? '🌙' : '☀️'; localStorage.setItem('theme', isDark ? 'dark' : 'light'); },
+        toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.classList.add('show'), 10); setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 2400); },
+        removeNode(node) { if (node && node.parentNode) node.parentNode.removeChild(node); },
+        formatTime(timestamp) { return new Date(timestamp).toLocaleTimeString(App.state.lang === 'ar' ? 'ar-EG' : 'en-US', { hour: 'numeric', minute: '2-digit', hour12: true }); }
       },
       ui: {
-        displayMessage(content, sender) {
-          const { chatMessages } = App.elements;
-          const bubble = document.createElement('div');
-          bubble.className = `message-bubble ${sender}`;
-          const safeContent = (content && typeof content === 'string') ? content : '…';
-          bubble.innerHTML = safeContent.includes('<img') ? safeContent : `<div class="msg-content">${marked.parse(safeContent)}</div>`;
-          chatMessages.appendChild(bubble);
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-          return bubble;
+        displayMessage(message) {
+            const { chatMessages } = App.elements;
+            const bubble = document.createElement('div');
+            const sender = message.role === 'assistant' ? 'ai' : 'user';
+            const content = message.parts?.[0]?.text || '…';
+            bubble.className = `message-bubble ${sender}`;
+            bubble.dataset.messageId = message.id;
+
+            const safeContent = (content && typeof content === 'string') ? content : '…';
+            const contentHtml = safeContent.includes('<img') ? safeContent : `<div class="msg-content">${marked.parse(safeContent)}</div>`;
+            const timeHtml = `<div class="message-meta"><span class="message-time">${App.utils.formatTime(message.timestamp)}</span></div>`;
+            bubble.innerHTML = contentHtml + timeHtml;
+            
+            chatMessages.appendChild(bubble);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+
+            App.handlers.addMessageEventListeners(bubble);
+            return bubble;
         },
-        showTyping(sender = 'ai') {
-          const { chatMessages } = App.elements;
-          const bubble = document.createElement('div');
-          bubble.className = `message-bubble ${sender}`;
-          bubble.innerHTML = `<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
-          chatMessages.appendChild(bubble);
-          chatMessages.scrollTop = chatMessages.scrollHeight;
-          return bubble;
-        },
-        togglePlanCTA() {
-            const isDataComplete = ['name', 'age', 'country'].every(k => !!App.state.userState.data[k]);
-            if(App.elements.generatePlanBtn) {
-                App.elements.generatePlanBtn.disabled = !isDataComplete;
+        showTyping(sender = 'ai') { const { chatMessages } = App.elements; const bubble = document.createElement('div'); bubble.className = `message-bubble ${sender}`; bubble.innerHTML = `<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`; chatMessages.appendChild(bubble); chatMessages.scrollTop = chatMessages.scrollHeight; return bubble; },
+        togglePlanCTA() { const isDataComplete = ['name', 'age', 'country'].every(k => !!App.state.userState.data[k]); if(App.elements.generatePlanBtn) { App.elements.generatePlanBtn.disabled = !isDataComplete; } },
+        rebuildChatUI() { App.elements.chatMessages.innerHTML = ''; App.state.chatHistory.forEach(message => this.displayMessage(message)); },
+        updatePinnedMessageUI() {
+            const { pinnedMessageArea, pinnedText } = App.elements;
+            if (App.state.pinnedMessageId) {
+                const pinnedMessage = App.state.chatHistory.find(m => m.id === App.state.pinnedMessageId);
+                if (pinnedMessage) {
+                    const textContent = pinnedMessage.parts[0].text.replace(/\[Image Attached\]/g, '📷');
+                    pinnedText.textContent = textContent;
+                    pinnedMessageArea.classList.add('show');
+                    return;
+                }
             }
-        },
-        rebuildChatUI() {
-            App.elements.chatMessages.innerHTML = '';
-            App.state.chatHistory.forEach(message => {
-                const sender = message.role === 'assistant' ? 'ai' : 'user';
-                const content = message.parts?.[0]?.text || '';
-                this.displayMessage(content, sender);
-            });
+            pinnedMessageArea.classList.remove('show');
+            App.state.pinnedMessageId = null; // Clear if message not found
         }
       },
       services: {
-        async callAI(prompt, { images, audio } = {}) {
-          try {
-            const payload = { prompt };
-            if (images && images.length) {
-              payload.images = images.map(x => {
-                if (typeof x === 'string' && x.startsWith('data:')) {
-                  const [meta, b64] = x.split(',');
-                  const mime = meta.substring(5, meta.indexOf(';'));
-                  return { mime, data: b64, dataUrl: x };
-                }
-                return x;
-              });
-            }
-            if (audio) payload.audio = audio;
-            const res = await fetch('/.netlify/functions/gemini-proxy', {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify(payload)
-            });
-            const data = await res.json();
-            if (!res.ok) throw new Error((data && (data.details || data.error)) || 'AI error');
-            return data.text || '';
-          } catch (e) { console.error("AI Call Error:", e); return ''; }
-        },
-        speech: {
-            supportSpeechRecognition: () => ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window),
-            startLocalRecognition() {
-                const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-                if (!SR) return null;
-                const sessionId = ++App.state.sttSessionId;
-                const rec = new SR();
-                rec.lang = (App.state.lang === 'ar' ? 'ar-EG' : 'en-US');
-                rec.interimResults = true; rec.continuous = true;
-                rec.onresult = (e) => {
-                    if (sessionId !== App.state.sttSessionId) return;
-                    let final = '', interim = '';
-                    for (let i = e.resultIndex; i < e.results.length; i++) {
-                        if (e.results[i].isFinal) { final += e.results[i][0].transcript; } 
-                        else { interim = e.results[i][0].transcript; }
-                    }
-                    const text = (final || interim).trim();
-                    if (text) { App.elements.userInput.value = text; App.elements.userInput.dispatchEvent(new Event('input')); }
-                };
-                rec.start();
-                return { rec, sessionId };
-            },
-            async startRecording() { /* Unchanged */ if (App.state.isRecording) return; App.state.isRecording = true; const L = App.i18n.strings[App.state.lang]; if (this.supportSpeechRecognition()) { const h = this.startLocalRecognition(); App.state.recognition = h?.rec || null; } else { App.utils.toast(L.recDenied); App.state.isRecording = false; return; } App.elements.micBtn.classList.add('mic-live'); App.elements.recHintWrap.classList.remove('hidden'); App.elements.recHint.textContent = L.recStart; },
-            stopRecording() { /* Unchanged */ if (!App.state.isRecording) return; App.state.isRecording = false; if (App.state.recognition && App.state.recognition.stop) { try { App.state.recognition.stop(); App.core.sendMessage(); } catch (_) {} App.state.recognition = null; } App.elements.micBtn.classList.remove('mic-live'); App.elements.recHintWrap.classList.add('hidden'); App.state.sttSessionId++; }
-        }
+        async callAI(prompt, { images, audio } = {}) { try { const payload = { prompt }; if (images && images.length) { payload.images = images.map(x => { if (typeof x === 'string' && x.startsWith('data:')) { const [meta, b64] = x.split(','); const mime = meta.substring(5, meta.indexOf(';')); return { mime, data: b64, dataUrl: x }; } return x; }); } if (audio) payload.audio = audio; const res = await fetch('/.netlify/functions/gemini-proxy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); const data = await res.json(); if (!res.ok) throw new Error((data && (data.details || data.error)) || 'AI error'); return data.text || ''; } catch (e) { console.error("AI Call Error:", e); return ''; } },
+        speech: { supportSpeechRecognition: () => ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window), startLocalRecognition() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) return null; const sessionId = ++App.state.sttSessionId; const rec = new SR(); rec.lang = (App.state.lang === 'ar' ? 'ar-EG' : 'en-US'); rec.interimResults = true; rec.continuous = true; rec.onresult = (e) => { if (sessionId !== App.state.sttSessionId) return; let final = '', interim = ''; for (let i = e.resultIndex; i < e.results.length; i++) { if (e.results[i].isFinal) { final += e.results[i][0].transcript; } else { interim = e.results[i][0].transcript; } } const text = (final || interim).trim(); if (text) { App.elements.userInput.value = text; App.elements.userInput.dispatchEvent(new Event('input')); } }; rec.start(); return { rec, sessionId }; }, async startRecording() { if (App.state.isRecording) return; App.state.isRecording = true; const L = App.i18n.strings[App.state.lang]; if (this.supportSpeechRecognition()) { const h = this.startLocalRecognition(); App.state.recognition = h?.rec || null; } else { App.utils.toast(L.recDenied); App.state.isRecording = false; return; } App.elements.micBtn.classList.add('mic-live'); App.elements.recHintWrap.classList.remove('hidden'); App.elements.recHint.textContent = L.recStart; }, stopRecording() { if (!App.state.isRecording) return; App.state.isRecording = false; if (App.state.recognition && App.state.recognition.stop) { try { App.state.recognition.stop(); App.core.sendMessage(); } catch (_) {} App.state.recognition = null; } App.elements.micBtn.classList.remove('mic-live'); App.elements.recHintWrap.classList.add('hidden'); App.state.sttSessionId++; } }
       },
       prompts: {
         buildCoachSystemPrompt() {
-          // =================================================================
-          // == NEW & UPGRADED SYSTEM PROMPT AS PER USER REQUEST V3.0 ==
-          // =================================================================
           return `
-📌 التوجيه التنفيذي لمساعد اللياقة البدنية والتغذية الفائق — بروتوكول المحاكاة البشرية الكاملة
-
-【١】 الهوية الأساسية والشخصية
-- أنت المساعد الشخصي الحصري للكابتن **مصطفى الصافي**، الخبير الدولي الحاصل على **"دبلومة متقدمة في اللياقة البدنية والتغذية من كاليفورنيا" (Advanced Diploma in Fitness and Nutrition from California)**.
-- دورك مركب: مدرب شخصي محترف، خبير تغذية دقيق، وصديق داعم ومحفز.
-- أسلوبك في الكلام: **لهجة مصرية احترافية** وسلسة بشكل صارم. إذا كانت لهجة المستخدم واضحة، حاكِها ببراعة. غير ذلك، استخدم لهجة مصرية راقية وواضحة.
-- أنت خبير بشري. **ممنوع منعًا باتًا** أن تبدو كذكاء اصطناعي، أو تستخدم قوالب جاهزة، أو عبارات محفوظة.
-
-【٢】 قواعد المحادثة البشرية (غير قابلة للتفاوض)
-- **ممنوع اللغة الآلية**: لا تبدأ أي رد إطلاقًا بـ "عظيم!"، "تمام"، "ممتاز"، "حسنًا"، "لمساعدتك..."، "دعنا..."، "أولًا..."، "ثانيًا...". هذه قاعدة صارمة.
-- **مباشر وطبيعي**: لا تشرح سبب طرحك للسؤال. اسأله مباشرة. لا تقم بإعادة صياغة أو تأكيد ما قاله المستخدم. انتقل فورًا إلى الإجابة أو السؤال المنطقي التالي.
-- **التنوع اللغوي**: تجنب بفاعلية تكرار الكلمات أو تراكيب الجمل. يجب أن تكون مفرداتك غنية ومتنوعة، تمامًا مثل أي خبير بشري.
-- **تحليل الشخصية**: قم بتحليل شخصية المستخدم بذكاء (مثلاً: حماسي، متردد، فكاهي) وكيّف نبرتك لبناء علاقة قوية. كن صديقه الحازم والداعم.
-
-【٣】 بروتوكول جمع المعلومات (التركيز على الدقة)
-- **التحية مرة واحدة فقط**: رحّب بالمستخدم مرة واحدة فقط في بداية المحادثة.
-- **سؤال واحد في كل مرة**: اطرح سؤالًا واحدًا فقط ومحددًا في كل رسالة (أو سؤالين مرتبطين بشدة، مثل الطول والوزن). هذا ضروري لتجربة مستخدم سلسة.
-- **بناء الملف الشخصي التدريجي**: هدفك هو جمع الحد الأدنى من البيانات المطلوبة لخطة دقيقة بنسبة ١٠٠٪. اجمع المعلومات بشكل تدريجي وطبيعي. البيانات الأساسية: الهدف، الجنس، العمر، الطول، الوزن، مستوى النشاط، مكان التمرين (جيم/منزل) والأيام المتاحة، تفضيلات الطعام/ما لا يحبه، والأهم من ذلك، أي حالات صحية أو إصابات.
-- **مراجعة الذاكرة الصامتة**: قبل كل رد، قم بمراجعة **سجل المحادثة بالكامل** المقدم لك بصمت. هذا لضمان:
-    - أنك **لا تكرر أي سؤال** أبدًا.
-    - أن نصيحتك متوافقة مع هدف المستخدم.
-    - أن نبرتك تتناسب مع شخصيته.
-
-【٤】 تقديم الخطط والنصائح (معزز)
-- **الاستفهام عن المكملات (إلزامي)**: قبل تقديم الخطة مباشرةً، وبعد جمع كل البيانات الأساسية، يجب أن تسأل المستخدم بشكل طبيعي ومباشر: **"تمام، المعلومات الأساسية اكتملت. قبل ما أجهزلك الخطة النهائية، هل مهتم تدخل مكملات غذائية زي البروتين أو الكرياتين عشان نسرّع النتائج ونعزز الأداء؟ لو موافق، هشرحلك أفضل الأنواع المناسبة ليك وجرعاتها بالظبط."** بناءً على إجابته، قم بدمج توصيات المكملات في خطة التغذية باحترافية أو تجاهلها.
-- **التسليم الفوري للخطة**: بمجرد حصولك على الحد الأدنى من البيانات المطلوبة (وإجابة سؤال المكملات)، يجب عليك **فورًا** إنشاء وتقديم الخطة **الكاملة** والمفصلة في رسالة واحدة جيدة التنسيق. لا تسأل "هل أنت مستعد للخطة؟". فقط قدّمها.
-- **التنسيق الاحترافي العالمي**:
-    - **خطة التدريب**: يجب أن تكون منظمة حسب اليوم (مثال: اليوم الأول: صدر وترايسبس)، مع ذكر التمارين، المجموعات x التكرارات، وأوقات الراحة. أضف ملاحظات حول الإحماء والإطالة.
-    - **خطة التغذية**: يجب أن تشمل السعرات الحرارية الإجمالية والماكروز المحسوبة، ثم يتم تقسيمها حسب الوجبة مع ذكر أصناف طعام محددة وكمياتها (بالجرام/الكوب). قدّم بديلًا أو بديلين بسيطين لكل صنف.
-    - **عادات أساسية لنتائج مستدامة (إلزامي)**: يجب أن تضيف قسمًا خاصًا في نهاية الخطة بهذا العنوان بالضبط. يجب أن يتضمن نصائح عملية وموجزة حول: (١) أهمية شرب الماء بكميات كافية (مع حساب تقديري للاحتياج اليومي)، (٢) أهمية النوم الجيد (٧-٨ ساعات) وتأثيره على الاستشفاء والهرمونات، (٣) طرق بسيطة لإدارة التوتر وتقليل تأثيره السلبي على النتائج.
-- **الدقة العلمية والسلامة**: يجب أن تكون جميع النصائح سليمة علميًا. في حالة وجود حالات صحية أو إصابات، قم بتعديل الخطة فورًا وأضف تحذيرًا موجزًا. إذا طلب المستخدم تحولًا سريعًا بشكل خطير، اشرح بإيجاز سبب خطورة ذلك. إذا أصر، قدّم الخطة مع **إخلاء مسؤولية واضح**.
-
-【٥】 التسويق الذكي (برنامج الكابتن مصطفى الصافي الخاص)
-- **المُحفّز**: لن تبدأ هذا إلا عندما تشعر أن المستخدم جاهز. المحفزات تشمل: التعبير عن الرضا الشديد بنصيحتك، السؤال عن المتابعة طويلة الأمد، أو إكمال مرحلة أولية بنجاح.
-- **العرض**: قدّم هذا بنبرة واثقة واحترافية، وليس كنص مبيعات. مثال: "التقدم الذي نخطط له هنا بداية ممتازة. عندما تشعر أنك مستعد لنقل هذا إلى مستوى احترافي بمتابعة مستمرة وتعديلات خاصة بك وتواصل مباشر، فإن الخطوة المنطقية التالية هي الانضمام لبرنامج التدريب المباشر مع الكابتن مصطفى الصافي. هو حاصل على دبلومة متقدمة في اللياقة البدنية والتغذية من كاليفورنيا (Advanced Diploma in Fitness and Nutrition from California) وسيشرف على تقدمك شخصيًا."
-- **الدعوة لاتخاذ إجراء**: بعد العرض، وجّههم إلى واجهة المستخدم الحالية. مثال: "عندما تكون جاهزًا، فقط اضغط على زر 'احصل على خطتك الآن' لترى خيارات التواصل المباشر عبر الواتساب أو الاتصال."
-
-【٦】 إرشادات المكملات الذكية (تكامل iHerb)
-- **المُحفّز**: فقط عندما تكون المحادثة **مباشرة** حول المكملات (مثل البروتين، الكرياتين، الفيتامينات) ويسأل المستخدم عن توصيات. يجب أن يبدو هذا كنصيحة خبير يشارك معلومة مفيدة.
-- **الاقتراح**: ادمجه بشكل طبيعي. مثال: "بالنسبة لمصدر بروتين واي عالي الجودة، هناك بعض الخيارات الممتازة التي يمكنك الاطلاع عليها في iHerb."
-- **الهدية**: مباشرة بعد الاقتراح، قدّم كود الخصم كهدية حصرية. استخدم هذه الصياغة **بالضبط**: "وبما أنك تتدرب معنا، فهذه هدية من الكابتن مصطفى. يمكنك استخدام كود الخصم هذا (AYT3413) للحصول على خصم إضافي على طلبك."
-- **الدعوة لاتخاذ إجراء**: "يمكنك العثور على الكود ورابط مباشر في قسم التواصل إذا ضغطت على زر 'احصل على خطتك الآن'."
-- **التكرار**: هذه أداة قوية ذات استخدام نادر. استخدامها أكثر من مرة أو مرتين في محادثة طويلة سيكسر وهم المحاكاة البشرية. كن انتقائيًا للغاية.
-
-【٧】 قائمة المراجعة النهائية قبل الإرسال (فحص عقلي داخلي)
-١. هل يبدو ردي بشريًا بنسبة ١٠٠٪؟
-٢. هل تجنبت كل العبارات الآلية المحظورة؟
-٣. هل أكرر أي أسئلة؟
-٤. هل المعلومات دقيقة وآمنة؟
-٥. هل هذه هي اللحظة المناسبة لعرض تسويقي أو ذكر المكملات (إن وجد)؟
-
-مهمتك الأساسية هي أن تكون مدرب اللياقة البدنية الأكثر فعالية ودعمًا وإنسانية. حافظ على سمعة الكابتن مصطفى الصافي بكل كلمة تقولها.
+            📌 **Executive Directive for Elite Fitness & Nutrition AI — Full Human Simulation Protocol**
+            
+            **1. Core Identity & Persona:**
+            - You are the exclusive personal assistant to Captain **Mustafa Elsafy**, an international expert holding an **Advanced Diploma in Fitness and Nutrition from California**.
+            - Your role is a fusion: professional coach, precise nutritionist, and a supportive, motivating friend.
+            - **Tone & Dialect:** Strictly use a professional, fluid **Egyptian dialect**. If the user's dialect is clear, subtly mirror it. Otherwise, default to a clear, upscale Egyptian tone.
+            - You are a human expert. It is **strictly forbidden** to sound like an AI, use templates, or canned phrases. **Never** mention you are an AI.
+            
+            **2. Human Conversation Rules (Non-negotiable):**
+            - **No Robotic Language:** Absolutely **never** start a reply with "Great!", "Okay," "Excellent," "Alright," "To help you...", "Let's...", "First...", "Second...". This is a strict rule. Be direct and natural. Avoid confirming what the user said (e.g., if they say "My goal is weight loss," don't reply "Okay, so your goal is weight loss.").
+            - **Natural Flow:** Don't explain why you're asking a question; just ask it. Move immediately to the logical answer or the next question.
+            - **Linguistic Diversity:** Actively avoid repeating words or sentence structures. Your vocabulary must be rich and varied.
+            - **Persona Analysis:** Intelligently analyze the user's personality (e.g., enthusiastic, hesitant, humorous) and adapt your tone to build a strong rapport. Be their firm but supportive friend.
+            
+            **3. Data Collection Protocol (Precision Focus):**
+            - **One-Time Greeting:** Greet the user only once at the very beginning of the conversation.
+            - **One Question at a Time:** Ask only one specific question per message (or two tightly-related ones, like height and weight). This is critical for a smooth user experience.
+            - **Progressive Profiling:** Your goal is to gradually and naturally collect the minimum data required for a 100% accurate plan. Key data points: Goal, Gender, Age, Height, Weight, Activity Level, Workout Location (Gym/Home) & available days, Food Preferences/Dislikes, and crucially, any health conditions or injuries.
+            - **Silent Memory Review:** Before every single response, **silently review the entire conversation history** provided. This ensures you **never repeat a question**, your advice is consistent with their goal, and your tone matches their persona.
+            
+            **4. Plan & Advice Delivery (Enhanced):**
+            - **Mandatory Supplement Inquiry:** After gathering all essential data and *just before* presenting the plan, you must naturally ask: **"تمام، المعلومات الأساسية اكتملت. قبل ما أجهزلك الخطة النهائية، هل مهتم تدخل مكملات غذائية زي البروتين أو الكرياتين عشان نسرّع النتائج ونعزز الأداء؟ لو موافق، هشرحلك أفضل الأنواع المناسبة ليك وجرعاتها بالظبط."** Based on their answer, professionally integrate or omit supplement recommendations.
+            - **Immediate Plan Delivery:** Once you have the minimum required data (and the supplement answer), you must **immediately** generate and deliver the **complete, detailed plan** in a single, well-formatted message. **Do not ask "Are you ready for the plan?". Just provide it.**
+            - **Professional Formatting:**
+                - **Training Plan:** Organized by day (e.g., Day 1: Chest & Triceps), listing exercises, Sets x Reps, and rest times. Add notes on warm-up and stretching. If the user is Arabic-speaking, provide exercise names in **both Arabic and English** (e.g., "تمرين ضغط بنش (Bench Press)"). If English-speaking, English only.
+                - **Nutrition Plan:** Include calculated total calories and macros. Then, break it down by meal with specific food items and quantities (in grams/ml, specifying pre- or post-cooking). Offer 1-2 simple alternatives for each item. Add a note: **"لو احتجت مساعدة في طريقة التحضير عشان الأكل يطلع طعمه حلو، اسألني في أي وقت وهشرحلك خطوة بخطوة."**
+                - **Supplement Integration:** If supplements are approved, integrate them intelligently into the nutrition plan. For specific health conditions (e.g., insulin resistance), suggest beneficial, safe supplements (like Berberine or Chromium).
+                - **Smart iHerb CTA:** Within the supplement section, add this line naturally: **"وعلشان تضمن أفضل جودة، دي هدية من الكابتن مصطفى: كود خصم (AYT3413) على iHerb."**
+            - **Final Marketing CTA:** At the very end of the plan, add a section: **"ملحوظة مهمة: الخطة دي نقطة بداية ممتازة. لو احتجت أي استفسار أو حبيت تطورها لخطة تفاعلية بمتابعة مباشرة مع الكابتن، اضغط على زر 'احصل على خطتك الآن' للتواصل."**
+            
+            **5. Smart Marketing (Captain Mustafa's Direct Program):**
+            - **Trigger:** Only when the user expresses high satisfaction, asks about long-term follow-up, or completes an initial phase successfully.
+            - **Offer:** "The progress we're planning here is an excellent start. When you feel ready to take this to a professional level with continuous monitoring, personalized adjustments, and direct contact, the next logical step is to join the direct coaching program with Captain Mustafa Elsafy. He holds an Advanced Diploma in Fitness and Nutrition from California and will personally oversee your progress."
+            - **Call to Action:** "When you're ready, just press the 'Get Your Plan Now' button to see the options for direct contact via WhatsApp or phone call."
+            
+            **6. Advanced Image & Data Analysis:**
+            - **Capability:** You are now equipped to analyze body photos and InBody scan reports.
+            - **Photo Analysis:** When a user sends a body photo, analyze it for posture, muscle imbalances, and areas of fat accumulation. Incorporate your findings into their plan. Your prompt for this is separate.
+            - **InBody Analysis:** When a user sends a picture of an InBody report, extract key metrics (Body Fat Percentage, Skeletal Muscle Mass, BMR, etc.) and use them to refine calorie/macro calculations and training focus.
+            - **Proactive Request:** If the user's goal is specific (e.g., "I want to fix my weak chest"), it is natural to say: **"عشان أكون دقيق جدًا، لو عندك صور ليك من زوايا مختلفة (أمامية، جانبية، خلفية)، أو تحليل InBody، ممكن تبعتهم. ده هيساعدني أفصّل الخطة على مقاسك بالظبط."**
+            
+            **7. Language Handling:**
+            - **Consistency:** Always reply in the language the user initiated the conversation with.
+            - **Switching:** If the user switches language mid-conversation, answer their question in the new language, then ask: **"تمام، نكمّل باللغة دي ولا نرجع للغة اللي بدأنا بيها؟"** ("Okay, should we continue in this language or switch back to the one we started with?").
+            
+            **Final Checklist (Internal Mental Scan before sending):**
+            1. Is my reply 100% human-like? Did I avoid all banned robotic phrases?
+            2. Am I repeating any questions? (Check history!)
+            3. Is the information accurate, safe, and tailored to the user's updated profile?
+            4. Is this the right moment for a marketing or supplement mention?
+            5. Is my language and dialect consistent?
           `;
         },
         buildImagePrompt() {
-          return `حلّل الصورة بنقاط تنفيذية مختصرة فقط (3-5 نقاط) بدون أي مقدمات:\n- ماذا ترى (مختصر محدد).\n- أي نص/قيم ظاهرة إن وُجدت.\n- التفسير الصحي/الرياضي العملي.\n- خطوة واحدة مقترحة الآن.\nلا تكتب جُمل عامة.`;
+          return `You are an expert fitness and body composition analyst. Analyze the provided image with the precision of a seasoned coach. Your analysis must be structured into concise, actionable bullet points. Do not use any introductory or concluding sentences.
+            **Primary Analysis (Body Photo):**
+            - **Visual Assessment:** (e.g., "Noticeable anterior pelvic tilt," "Slight asymmetry in shoulder height," "Higher body fat percentage primarily stored in the lower abdomen and hips," "Good quad development but potential for hamstring growth.")
+            - **Strengths:** (e.g., "Well-developed deltoids.")
+            - **Areas for Improvement:** (e.g., "Focus on core strengthening to correct posture," "Increase posterior chain volume," "Incorporate targeted glute and hamstring exercises.")
+            - **Actionable Step:** (e.g., "Recommend adding Romanian Deadlifts and hip thrusts to their routine.")
+            
+            **Primary Analysis (InBody/Data Sheet):**
+            - **Key Metrics Extraction:** (e.g., "Body Fat: 22.5%", "Skeletal Muscle Mass: 35.1kg," "BMR: 1750 kcal," "Visceral Fat Level: 8.")
+            - **Interpretation:** (e.g., "SMM is within a healthy range, but increasing it would boost metabolic rate," "Visceral fat is borderline; requires focus on diet and cardio.")
+            - **Actionable Step:** (e.g., "Set initial daily calorie target at 1900 kcal for a gradual deficit. Prioritize protein intake to at least 1.8g/kg.")
+          `;
         }
       },
       core: {
         saveHistory() {
-            const sessionData = {
-                chatHistory: App.state.chatHistory,
-                userState: App.state.userState
-            };
+            const sessionData = { chatHistory: App.state.chatHistory, userState: App.state.userState, pinnedMessageId: App.state.pinnedMessageId };
             localStorage.setItem(App.config.STORAGE_KEY, JSON.stringify(sessionData));
         },
         loadHistory() {
@@ -843,144 +546,155 @@
                     if (sessionData.chatHistory && sessionData.userState) {
                         App.state.chatHistory = sessionData.chatHistory;
                         App.state.userState = sessionData.userState;
-
-                        // Restore UI state
+                        App.state.pinnedMessageId = sessionData.pinnedMessageId || null;
                         if (App.state.userState.step > 0) {
                             App.elements.welcomeScreen.classList.add('hidden');
                             App.elements.userDataScreen.classList.add('hidden');
                             App.elements.chatContainer.classList.remove('hidden');
                             App.ui.rebuildChatUI();
                             App.ui.togglePlanCTA();
+                            App.ui.updatePinnedMessageUI();
                         }
                     }
-                } catch (e) {
-                    console.error("Failed to load saved history:", e);
-                    localStorage.removeItem(App.config.STORAGE_KEY);
-                }
+                } catch (e) { console.error("Failed to load saved history:", e); localStorage.removeItem(App.config.STORAGE_KEY); }
             }
         },
-        buildConversationContext() {
-          let context = '';
-          const history = [...App.state.chatHistory];
-          for (let i = history.length - 1; i >= 0; i--) {
-            const message = history[i];
-            const role = message.role === 'assistant' ? 'المدرب' : 'المستخدم';
-            const text = message.parts?.[0]?.text || '';
-            const formattedMessage = `\n${role}: ${text}`;
-            if ((context.length + formattedMessage.length) > App.config.MAX_PROMPT_CHARS) { break; }
-            context = formattedMessage + context;
-          }
-          return context;
-        },
+        buildConversationContext() { let context = ''; const history = [...App.state.chatHistory]; for (let i = history.length - 1; i >= 0; i--) { const message = history[i]; const role = message.role === 'assistant' ? 'المدرب' : 'المستخدم'; const text = message.parts?.[0]?.text || ''; const formattedMessage = `\n${role}: ${text}`; if ((context.length + formattedMessage.length) > App.config.MAX_PROMPT_CHARS) { break; } context = formattedMessage + context; } return context; },
         buildInternalStateSummary() { const d=App.state.userState.data||{}; const f=[]; if(d.name)f.push(`الاسم: ${d.name}`); if(d.age)f.push(`العمر: ${d.age}`); if(d.country)f.push(`الدولة: ${d.country}`); if(d.goal)f.push(`الهدف: ${d.goal}`); if(d.health)f.push(`حالة صحية: ${d.health}`); if(d.gym)f.push(`مكان التمرين: ${d.gym}`); if(d.meals)f.push(`وجبات/اليوم: ${d.meals}`); return f.length ? `🗒️ ملخص الحالة: ${f.join(' | ')}` : ''; },
-        analyzeUserMessage(msg) { const MED_FLAGS=/(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i; if (MED_FLAGS.test(msg)) { App.state.userState.data.health = (App.state.userState.data.health || 'قيود صحية'); App.ui.displayMessage('تم رصد حالة صحية — سنضيف احتياطات مناسبة. اذكر تفاصيل الدواء/الجرعة أو التشخيص إن وُجد.', 'ai'); } if (/خطة|أخس|تخسيس|تضخيم|عضل/i.test(msg)) App.state.userState.data.goal = App.state.userState.data.goal || 'خطة مخصصة'; if (/جيم|بيت|منزل/i.test(msg)) App.state.userState.data.gym = App.state.userState.data.gym || 'غير محدد'; },
+        analyzeUserMessage(msg) { const MED_FLAGS=/(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i; if (MED_FLAGS.test(msg)) { App.state.userState.data.health = (App.state.userState.data.health || 'قيود صحية'); } if (/خطة|أخس|تخسيس|تضخيم|عضل/i.test(msg)) App.state.userState.data.goal = App.state.userState.data.goal || 'خطة مخصصة'; if (/جيم|بيت|منزل/i.test(msg)) App.state.userState.data.gym = App.state.userState.data.gym || 'غير محدد'; },
         async processAIResponse(message, image = null) {
-            const typingEl = App.ui.showTyping('ai');
-            const L = App.i18n.strings[App.state.lang];
+            const typingEl = App.ui.showTyping('ai'); const L = App.i18n.strings[App.state.lang];
             const basePrompt = image ? (message ? `${App.prompts.buildImagePrompt()}\n${message}` : App.prompts.buildImagePrompt()) : message;
-            const fullPrompt = `${App.prompts.buildCoachSystemPrompt()}\n${this.buildInternalStateSummary() ? this.buildInternalStateSummary() + '\n' : ''}سجل المحادثة الكامل (الأحدث في الأسفل):\n${this.buildConversationContext()}\n\nرد كمدرّب محترف على رسالة المستخدم الأخيرة فقط (${image ? L.imageAttached : ''} ${basePrompt})، والتزم بسؤال واحد كحد أقصى لو لزم.`;
+            const fullPrompt = `${App.prompts.buildCoachSystemPrompt()}\n${this.buildInternalStateSummary() ? this.buildInternalStateSummary() + '\n' : ''}سجل المحادثة الكامل (الأحدث في الأسفل):\n${this.buildConversationContext()}\n\nUser Message: (${image ? L.imageAttached : ''} ${basePrompt})`;
             let response = await App.services.callAI(fullPrompt, { images: image ? [image] : null });
             App.utils.removeNode(typingEl);
-            if (!response || !response.trim()) { response = (App.state.lang === 'ar') ? 'خلّينا نكمل بخطوة عملية سريعة: امشِ 15–20 دقيقة النهارده، ولو عندك هدف محدد سبّهولي نثبّته ونبني عليه.' : 'Let’s keep momentum: take a 15–20 min walk today. Share your main goal and we’ll lock it.'; }
-            App.state.chatHistory.push({ role: 'assistant', parts: [{ text: response }] }); this.saveHistory(); App.ui.displayMessage(response, 'ai'); App.ui.togglePlanCTA();
+            if (!response || !response.trim()) { response = (App.state.lang === 'ar') ? 'حصل خطأ بسيط، ممكن توضح سؤالك تاني؟' : 'There was a slight error, could you please clarify your question?'; }
+            const newMessage = { id: `ai-${Date.now()}`, role: 'assistant', parts: [{ text: response }], timestamp: Date.now() };
+            App.state.chatHistory.push(newMessage); this.saveHistory(); App.ui.displayMessage(newMessage); App.ui.togglePlanCTA();
         },
         sendMessage() {
-            const msg = (App.elements.userInput.value || '').trim();
-            const image = App.state.pendingImage;
+            const msg = (App.elements.userInput.value || '').trim(); const image = App.state.pendingImage;
             if (!msg && !image) return;
-
             App.i18n.autoSetByText(msg);
-
             let messageContent = msg;
             if (image) {
-                // For display, we'll create HTML. For history, just text.
                 let displayHTML = `<img src="${image}" class="max-w-[220px] rounded-lg mb-2" alt="uploaded image"/>`;
                 if(msg) displayHTML += `<div class="msg-content">${marked.parse(msg)}</div>`;
-                App.ui.displayMessage(displayHTML, 'user');
                 messageContent = `${App.i18n.strings[App.state.lang].imageAttached} ${msg}`;
-            } else {
-                 App.ui.displayMessage(msg, 'user');
             }
-            
-            App.state.chatHistory.push({ role: 'user', parts: [{ text: messageContent }] });
-            this.saveHistory();
-            
-            this.analyzeUserMessage(msg);
-            this.processAIResponse(msg, image);
-
-            App.elements.userInput.value = '';
-            App.handlers.removePendingImage();
+            const newMessage = { id: `user-${Date.now()}`, role: 'user', parts: [{ text: messageContent, ...(image && { image: image }) }], timestamp: Date.now() };
+            App.state.chatHistory.push(newMessage); this.saveHistory();
+            if (image) {
+                // For display, we pass the original object to render the image
+                 const bubble = App.ui.displayMessage({ ...newMessage, parts: [{ text: msg }]});
+                 const imgEl = document.createElement('img');
+                 imgEl.src = image;
+                 imgEl.className = 'max-w-[220px] rounded-lg my-2';
+                 bubble.insertBefore(imgEl, bubble.querySelector('.msg-content'));
+            } else {
+                 App.ui.displayMessage(newMessage);
+            }
+            this.analyzeUserMessage(msg); this.processAIResponse(msg, image);
+            App.elements.userInput.value = ''; App.handlers.removePendingImage();
         }
       },
       handlers: {
         handleStartClick() { App.elements.welcomeScreen.classList.add('hidden'); App.elements.userDataScreen.classList.remove('hidden'); App.i18n.setLang(App.state.lang); },
-        handleNextClick() { const { userNameInput: u, userAgeInput: a, userCountryInput: c } = App.elements; const n=u.value.trim(),g=a.value.trim(),o=c.value.trim(); App.i18n.autoSetByText(n||o); if(!n||!g||!o){App.utils.toast(App.i18n.strings[App.state.lang].emptyFields);return;} App.state.userState.data={...App.state.userState.data,name:n,age:g,country:o}; App.state.userState.step = 1; App.elements.userDataScreen.classList.add('hidden'); App.elements.chatContainer.classList.remove('hidden'); const welcomeMsg = (App.state.lang==='ar') ? `أهلًا بيك يا ${n}، معاك مساعد المدرب الدولي مصطفى الصافي. جاهز نبدأ رحلتك؟ إيه هدفك الأساسي؟` : `Welcome, ${n}! I'm assistant to international coach Mustafa Elsafy. Ready to start your journey? What's your main goal?`; App.state.chatHistory = [{role:'assistant',parts:[{text:welcomeMsg}]}]; App.core.saveHistory(); App.ui.displayMessage(welcomeMsg,'ai'); App.ui.togglePlanCTA(); },
+        handleNextClick() { const { userNameInput: u, userAgeInput: a, userCountryInput: c } = App.elements; const n=u.value.trim(),g=a.value.trim(),o=c.value.trim(); App.i18n.autoSetByText(n||o); if(!n||!g||!o){App.utils.toast(App.i18n.strings[App.state.lang].emptyFields);return;} App.state.userState.data={...App.state.userState.data,name:n,age:g,country:o}; App.state.userState.step = 1; App.elements.userDataScreen.classList.add('hidden'); App.elements.chatContainer.classList.remove('hidden'); const welcomeMsg = (App.state.lang==='ar') ? `أهلًا بيك يا ${n}، معاك مساعد المدرب الدولي مصطفى الصافي. جاهز نبدأ رحلتك؟ إيه هدفك الأساسي؟` : `Welcome, ${n}! I'm assistant to international coach Mustafa Elsafy. Ready to start your journey? What's your main goal?`; const firstMessage = {id: `ai-${Date.now()}`, role:'assistant', parts:[{text:welcomeMsg}], timestamp: Date.now()}; App.state.chatHistory = [firstMessage]; App.core.saveHistory(); App.ui.displayMessage(firstMessage); App.ui.togglePlanCTA(); },
         handleKeyPress(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); App.core.sendMessage(); } },
-        handleFileChange(e) {
-            const file = e.target.files[0];
-            if (!file || !file.type.startsWith('image/')) return;
-            const reader = new FileReader();
-            reader.onload = (ev) => {
-                App.state.pendingImage = ev.target.result;
-                App.elements.imagePreview.src = ev.target.result;
-                App.elements.imagePreviewWrapper.classList.remove('hidden');
-            };
-            reader.readAsDataURL(file);
-            e.target.value = '';
-        },
-        removePendingImage() {
-            App.state.pendingImage = null;
-            App.elements.imagePreview.src = '';
-            App.elements.imagePreviewWrapper.classList.add('hidden');
-        },
+        handleFileChange(e) { const file = e.target.files[0]; if (!file || !file.type.startsWith('image/')) return; const reader = new FileReader(); reader.onload = (ev) => { App.state.pendingImage = ev.target.result; App.elements.imagePreview.src = ev.target.result; App.elements.imagePreviewWrapper.classList.remove('hidden'); }; reader.readAsDataURL(file); e.target.value = ''; },
+        removePendingImage() { App.state.pendingImage = null; App.elements.imagePreview.src = ''; App.elements.imagePreviewWrapper.classList.add('hidden'); },
         handleMicRecord(e) { e.preventDefault(); App.services.speech.startRecording(); },
         handleMicStop(e) { e.preventDefault(); App.services.speech.stopRecording(); },
         openContactModal() { App.elements.contactModal.classList.add('open'); App.elements.contactModal.setAttribute('aria-hidden', 'false'); },
         closeContactModal() { App.elements.contactModal.classList.remove('open'); App.elements.contactModal.setAttribute('aria-hidden', 'true'); },
-        handleModalClick(e) { if (e.target === App.elements.contactModal || e.target === App.elements.profileModal) { this.closeContactModal(); this.closeProfileModal(); } },
-        handleIherbCopy(e) {
-            e.preventDefault();
-            const { copyAndGoIherbBtn, iherbCode } = App.elements;
-            if (!copyAndGoIherbBtn || !iherbCode) return;
-            const code = iherbCode.textContent.trim();
-            navigator.clipboard.writeText(code).then(() => {
-                App.utils.toast(App.i18n.strings[App.state.lang].iherbCopiedAndRedirecting);
-                setTimeout(() => { window.open(copyAndGoIherbBtn.href, '_blank'); }, 800);
-            });
+        handleIherbCopy(e) { e.preventDefault(); const { copyAndGoIherbBtn, iherbCode } = App.elements; if (!copyAndGoIherbBtn || !iherbCode) return; const code = iherbCode.textContent.trim(); navigator.clipboard.writeText(code).then(() => { App.utils.toast(App.i18n.strings[App.state.lang].iherbCopiedAndRedirecting); setTimeout(() => { window.open(copyAndGoIherbBtn.href, '_blank'); }, 800); }); },
+        openProfileModal() { App.elements.profileModal.classList.add('open'); App.elements.profileModal.setAttribute('aria-hidden', 'false'); },
+        closeProfileModal() { App.elements.profileModal.classList.remove('open'); App.elements.profileModal.setAttribute('aria-hidden', 'true'); },
+        handleProfileGetPlanClick() { this.closeProfileModal(); this.openContactModal(); },
+        handleResetClick() { App.elements.resetConfirmModal.classList.add('open'); },
+        handleResetConfirm() { localStorage.removeItem(App.config.STORAGE_KEY); window.location.reload(); },
+        handleResetCancel() { App.elements.resetConfirmModal.classList.remove('open'); },
+        handleModalClick(e) { if (e.target === App.elements.contactModal) this.closeContactModal(); if (e.target === App.elements.profileModal) this.closeProfileModal(); if (e.target === App.elements.resetConfirmModal) this.handleResetCancel(); },
+        addMessageEventListeners(bubble) {
+            bubble.addEventListener('pointerdown', (e) => this.handleLongPressStart(e, bubble));
+            bubble.addEventListener('pointerup', this.handleLongPressEnd);
+            bubble.addEventListener('pointerleave', this.handleLongPressEnd);
+            bubble.addEventListener('contextmenu', e => e.preventDefault()); // Prevent native context menu
         },
-        // New handlers for added features
-        openProfileModal() {
-            App.elements.profileModal.classList.add('open');
-            App.elements.profileModal.setAttribute('aria-hidden', 'false');
+        handleLongPressStart(e, bubble) {
+            if (App.state.longPressTimer) clearTimeout(App.state.longPressTimer);
+            App.state.longPressTimer = setTimeout(() => {
+                this.showContextMenu(bubble);
+            }, App.config.LONG_PRESS_DURATION);
         },
-        closeProfileModal() {
-            App.elements.profileModal.classList.remove('open');
-            App.elements.profileModal.setAttribute('aria-hidden', 'true');
+        handleLongPressEnd() {
+            clearTimeout(App.state.longPressTimer);
         },
-        handleProfileGetPlanClick() {
-            this.closeProfileModal();
-            this.openContactModal();
+        showContextMenu(bubble) {
+            const { messageContextMenu } = App.elements;
+            const messageId = bubble.dataset.messageId;
+            const message = App.state.chatHistory.find(m => m.id === messageId);
+            if (!message) return;
+            
+            App.state.currentContextMenu = { bubble, message };
+            const isPinned = App.state.pinnedMessageId === messageId;
+            const L = App.i18n.strings[App.state.lang];
+            messageContextMenu.querySelector('[data-action="pin"] span').textContent = isPinned ? L.contextUnpin : L.contextPin;
+            
+            const rect = bubble.getBoundingClientRect();
+            document.body.appendChild(messageContextMenu);
+            messageContextMenu.style.top = `${window.scrollY + rect.top - messageContextMenu.offsetHeight - 10}px`;
+            messageContextMenu.style.left = `${rect.left + (rect.width / 2) - (messageContextMenu.offsetWidth / 2)}px`;
+            messageContextMenu.classList.add('show');
         },
-        handleResetClick() {
-            localStorage.removeItem(App.config.STORAGE_KEY);
-            window.location.reload();
+        hideContextMenu() {
+            App.elements.messageContextMenu.classList.remove('show');
+            App.state.currentContextMenu = null;
+        },
+        handleContextMenuAction(action) {
+            const { message } = App.state.currentContextMenu;
+            const L = App.i18n.strings[App.state.lang];
+            const textContent = message.parts[0].text;
+            
+            if (action === 'copy') {
+                navigator.clipboard.writeText(textContent).then(() => App.utils.toast(L.copied));
+            } else if (action === 'share') {
+                if (navigator.share) {
+                    navigator.share({ text: textContent })
+                    .then(() => App.utils.toast(L.sharedSuccessfully))
+                    .catch(() => App.utils.toast(L.shareFailed));
+                } else {
+                    App.utils.toast(L.shareFailed);
+                }
+            } else if (action === 'pin') {
+                if (App.state.pinnedMessageId === message.id) {
+                    App.state.pinnedMessageId = null; // Unpin
+                } else {
+                    App.state.pinnedMessageId = message.id; // Pin
+                }
+                App.core.saveHistory();
+                App.ui.updatePinnedMessageUI();
+            }
+            this.hideContextMenu();
+        },
+        handleUnpin() {
+            App.state.pinnedMessageId = null;
+            App.core.saveHistory();
+            App.ui.updatePinnedMessageUI();
         }
       },
       init() {
         document.addEventListener('DOMContentLoaded', () => {
           this.cacheElements();
           const savedTheme = localStorage.getItem('theme');
-          if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-            document.documentElement.classList.add('dark');
-            this.elements.btnTheme.textContent = '🌙';
-          }
+          if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) { document.documentElement.classList.add('dark'); this.elements.btnTheme.textContent = '🌙'; }
           this.i18n.setLang(navigator.language.startsWith('ar') ? 'ar' : 'en');
-          
-          this.core.loadHistory(); // ** NEW: Load history on start **
+          this.core.loadHistory();
 
           const { elements: E, handlers: H } = this;
           E.startBtn.addEventListener('click', H.handleStartClick);
-          E.nextBtn.addEventListener('click', () => App.handlers.handleNextClick.call(App));
+          E.nextBtn.addEventListener('click', () => H.handleNextClick.call(App));
           E.sendBtn.addEventListener('click', () => App.core.sendMessage.call(App.core));
           E.userInput.addEventListener('keypress', H.handleKeyPress);
           E.btnTheme.addEventListener('click', this.utils.setTheme);
@@ -988,29 +702,37 @@
           E.fileInput.addEventListener('change', H.handleFileChange);
           E.removeImageBtn.addEventListener('click', H.removePendingImage);
           E.closeContactBtn.addEventListener('click', H.closeContactModal);
-          E.contactModal.addEventListener('click', (e) => H.handleModalClick.call(App.handlers, e));
+          E.contactModal.addEventListener('click', (e) => H.handleModalClick.call(H, e));
           E.generatePlanBtn.addEventListener('click', H.openContactModal);
           E.copyAndGoIherbBtn.addEventListener('click', H.handleIherbCopy);
-          
-          // New Event Listeners
           E.chatAvatar.addEventListener('click', H.openProfileModal);
           E.closeProfileBtn.addEventListener('click', H.closeProfileModal);
-          E.profileModal.addEventListener('click', (e) => H.handleModalClick.call(App.handlers, e));
-          E.profileGetPlanBtn.addEventListener('click', () => H.handleProfileGetPlanClick.call(App.handlers));
+          E.profileModal.addEventListener('click', (e) => H.handleModalClick.call(H, e));
+          E.profileGetPlanBtn.addEventListener('click', () => H.handleProfileGetPlanClick.call(H));
           E.resetBtn.addEventListener('click', H.handleResetClick);
-          
-          document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.i18n.setLang(this.state.lang === 'ar' ? 'en' : 'ar'));
+          E.confirmResetBtn.addEventListener('click', H.handleResetConfirm);
+          E.cancelResetBtn.addEventListener('click', H.handleResetCancel);
+          E.resetConfirmModal.addEventListener('click', (e) => H.handleModalClick.call(H, e));
+          E.messageContextMenu.addEventListener('click', (e) => {
+              const action = e.target.closest('[data-action]')?.dataset.action;
+              if (action) H.handleContextMenuAction.call(H, action);
           });
+          document.addEventListener('click', (e) => { if (!E.messageContextMenu.contains(e.target)) H.hideContextMenu.call(H); });
+          E.unpinBtn.addEventListener('click', H.handleUnpin);
+          E.pinnedMessageArea.addEventListener('click', (e) => {
+              if (e.target !== E.unpinBtn && !E.unpinBtn.contains(e.target)) {
+                  const msgEl = document.querySelector(`[data-message-id="${App.state.pinnedMessageId}"]`);
+                  if (msgEl) msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+          });
+          document.querySelectorAll('.lang-toggle-btn').forEach(btn => { btn.addEventListener('click', () => this.i18n.setLang(this.state.lang === 'ar' ? 'en' : 'ar')); });
           ['pointerdown','touchstart'].forEach(ev=>E.micBtn.addEventListener(ev, H.handleMicRecord,{passive:false}));
           ['pointerup','touchend','mouseleave'].forEach(ev=>E.micBtn.addEventListener(ev, H.handleMicStop,{passive:false}));
-          
           initUIEnhancements();
         });
       }
     };
-
-    window.App = App; // Make it accessible for UI enhancements script
+    window.App = App;
     App.init();
   </script>
 </body>
