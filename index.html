@@ -138,6 +138,16 @@
     .typing .dot { width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-text-secondary); animation: typing-blink 1.4s infinite both; }
     .dot:nth-child(2) { animation-delay: 0.2s; } .dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes typing-blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
+    
+    /* ADDED: Styles for the resend button */
+    .resend-btn {
+        background: none; border: none; cursor: pointer;
+        color: #ef4444; /* red-500 */
+        margin-left: 8px;
+        html[dir="rtl"] & { margin-left: 0; margin-right: 8px; }
+    }
+    .resend-btn svg { width: 1rem; height: 1rem; }
+
 
     /* =================================================================
         -- 6. DYNAMIC CARDS (CTA & iHerb) --
@@ -666,8 +676,26 @@
                 finalHtml += `<div class="msg-content">${marked.parse(safeContent)}</div>`;
             }
 
-            const timeHtml = `<div class="message-meta"><span class="message-time">${App.utils.formatTime(message.timestamp)}</span></div>`;
-            bubble.innerHTML = finalHtml + timeHtml;
+            const metaContainer = document.createElement('div');
+            metaContainer.className = 'message-meta';
+            
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'message-time';
+            timeSpan.textContent = App.utils.formatTime(message.timestamp);
+            metaContainer.appendChild(timeSpan);
+            
+            // ADDED: Logic to display resend button on failure
+            if (message.status === 'failed') {
+                const resendBtn = document.createElement('button');
+                resendBtn.className = 'resend-btn';
+                resendBtn.title = 'إعادة الإرسال';
+                resendBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"></path></svg>`;
+                resendBtn.onclick = () => App.handlers.handleResend(message.id);
+                metaContainer.appendChild(resendBtn);
+            }
+
+            bubble.innerHTML = finalHtml;
+            bubble.appendChild(metaContainer);
             
             chatMessages.appendChild(bubble);
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -749,7 +777,29 @@
         }
       },
       services: {
-        async callAI(prompt, { images, audio } = {}) { try { const payload = { prompt }; if (images && images.length) { payload.images = images.map(x => { if (typeof x === 'string' && x.startsWith('data:')) { const [meta, b64] = x.split(','); const mime = meta.substring(5, meta.indexOf(';')); return { mime, data: b64, dataUrl: x }; } return x; }); } if (audio) payload.audio = audio; const res = await fetch('/.netlify/functions/gemini-proxy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); const data = await res.json(); if (!res.ok) throw new Error((data && (data.details || data.error)) || 'AI error'); return data.text || ''; } catch (e) { console.error("AI Call Error:", e); return ''; } },
+        async callAI(prompt, { images, audio } = {}) { 
+            try { 
+                const payload = { prompt }; 
+                if (images && images.length) { 
+                    payload.images = images.map(x => { 
+                        if (typeof x === 'string' && x.startsWith('data:')) { 
+                            const [meta, b64] = x.split(','); 
+                            const mime = meta.substring(5, meta.indexOf(';')); 
+                            return { mime, data: b64, dataUrl: x }; 
+                        } 
+                        return x; 
+                    }); 
+                } 
+                if (audio) payload.audio = audio; 
+                const res = await fetch('/.netlify/functions/gemini-proxy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); 
+                const data = await res.json(); 
+                if (!res.ok) throw new Error((data && (data.details || data.error)) || 'AI error'); 
+                return data.text || ''; 
+            } catch (e) { 
+                console.error("AI Call Error:", e); 
+                throw e; // MODIFIED: Throw error instead of returning empty
+            } 
+        },
         speech: { supportSpeechRecognition: () => ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window), startLocalRecognition() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) return null; const sessionId = ++App.state.sttSessionId; const rec = new SR(); rec.lang = (App.state.lang === 'ar' ? 'ar-EG' : 'en-US'); rec.interimResults = true; rec.continuous = true; rec.onresult = (e) => { if (sessionId !== App.state.sttSessionId) return; let final = '', interim = ''; for (let i = e.resultIndex; i < e.results.length; i++) { if (e.results[i].isFinal) { final += e.results[i][0].transcript; } else { interim = e.results[i][0].transcript; } } const text = (final || interim).trim(); if (text) { App.elements.userInput.value = text; App.elements.userInput.dispatchEvent(new Event('input')); } }; rec.start(); return { rec, sessionId }; }, async startRecording() { if (App.state.isRecording) return; App.state.isRecording = true; const L = App.i18n.strings[App.state.lang]; if (this.supportSpeechRecognition()) { const h = this.startLocalRecognition(); App.state.recognition = h?.rec || null; } else { App.utils.toast(L.recDenied); App.state.isRecording = false; return; } App.elements.micBtn.classList.add('mic-live'); App.elements.recHintWrap.classList.remove('hidden'); App.elements.recHint.textContent = L.recStart; }, stopRecording() { if (!App.state.isRecording) return; App.state.isRecording = false; if (App.state.recognition && App.state.recognition.stop) { try { App.state.recognition.stop(); App.core.sendMessage(); } catch (_) {} App.state.recognition = null; } App.elements.micBtn.classList.remove('mic-live'); App.elements.recHintWrap.classList.add('hidden'); App.state.sttSessionId++; } }
       },
       prompts: {
@@ -901,69 +951,96 @@
                 } catch (e) { console.error("Failed to load saved history:", e); localStorage.removeItem(App.config.STORAGE_KEY); }
             }
         },
-        buildConversationContext() { let context = ''; const history = [...App.state.chatHistory]; for (let i = history.length - 1; i >= 0; i--) { const message = history[i]; const role = message.role === 'assistant' ? 'المدرب' : 'المستخدم'; const text = message.parts?.[0]?.text || ''; const formattedMessage = `\n${role}: ${text}`; if ((context.length + formattedMessage.length) > App.config.MAX_PROMPT_CHARS) { break; } context = formattedMessage + context; } return context; },
+        buildConversationContext() { 
+            let context = ''; 
+            const history = [...App.state.chatHistory]; 
+            for (let i = history.length - 1; i >= 0; i--) { 
+                const message = history[i]; 
+                // MODIFIED: Skip failed messages when building context for AI
+                if (message.status === 'failed') continue;
+
+                const role = message.role === 'assistant' ? 'المدرب' : 'المستخدم'; 
+                
+                // MODIFIED: Construct text for AI context correctly, including images placeholder
+                let text = message.parts?.[0]?.text || '';
+                if (message.role === 'user' && message.images && message.images.length > 0) {
+                    text = `${App.i18n.strings[App.state.lang].imageAttached} ${text}`.trim();
+                }
+
+                const formattedMessage = `\n${role}: ${text}`; 
+                if ((context.length + formattedMessage.length) > App.config.MAX_PROMPT_CHARS) { 
+                    break; 
+                } 
+                context = formattedMessage + context; 
+            } 
+            return context; 
+        },
         buildInternalStateSummary() { const d=App.state.userState.data||{}; const f=[]; if(d.name)f.push(`الاسم: ${d.name}`); if(d.age)f.push(`العمر: ${d.age}`); if(d.country)f.push(`الدولة: ${d.country}`); if(d.goal)f.push(`الهدف: ${d.goal}`); if(d.health)f.push(`حالة صحية: ${d.health}`); if(d.gym)f.push(`مكان التمرين: ${d.gym}`); if(d.meals)f.push(`وجبات/اليوم: ${d.meals}`); return f.length ? `🗒️ ملخص الحالة: ${f.join(' | ')}` : ''; },
         analyzeUserMessage(msg) { const MED_FLAGS=/(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i; if (MED_FLAGS.test(msg)) { App.state.userState.data.health = (App.state.userState.data.health || 'قيود صحية'); } if (/خطة|أخس|تخسيس|تضخيم|عضل/i.test(msg)) App.state.userState.data.goal = App.state.userState.data.goal || 'خطة مخصصة'; if (/جيم|بيت|منزل/i.test(msg)) App.state.userState.data.gym = App.state.userState.data.gym || 'غير محدد'; },
         async processAIResponse(images = []) {
             const typingEl = App.ui.showTyping('ai');
-            
             const fullPrompt = `${App.prompts.buildCoachSystemPrompt()}\n${this.buildInternalStateSummary() ? this.buildInternalStateSummary() + '\n' : ''}سجل المحادثة الكامل (الأحدث في الأسفل):\n${this.buildConversationContext()}`;
             
-            let response = await App.services.callAI(fullPrompt, { images });
-            App.utils.removeNode(typingEl);
-            if (!response || !response.trim()) { response = (App.state.lang === 'ar') ? 'حصل خطأ بسيط، ممكن توضح سؤالك تاني؟' : 'There was a slight error, could you please clarify your question?'; }
-            const newMessage = { id: `ai-${Date.now()}`, role: 'assistant', parts: [{ text: response }], timestamp: Date.now() };
-            App.state.chatHistory.push(newMessage); 
-            this.saveHistory(); 
-            App.ui.displayMessage(newMessage); 
-            App.ui.togglePlanCTA();
-            App.ui.setLoading(false);
+            try {
+                let response = await App.services.callAI(fullPrompt, { images });
+                App.utils.removeNode(typingEl);
+                if (!response || !response.trim()) { 
+                    response = (App.state.lang === 'ar') ? 'حصل خطأ بسيط، ممكن توضح سؤالك تاني؟' : 'There was a slight error, could you please clarify your question?'; 
+                }
+                const newMessage = { id: `ai-${Date.now()}`, role: 'assistant', parts: [{ text: response }], timestamp: Date.now(), status: 'sent' };
+                App.state.chatHistory.push(newMessage); 
+                this.saveHistory(); 
+                App.ui.displayMessage(newMessage); 
+            } catch (error) {
+                // ADDED: Error handling for AI call
+                App.utils.removeNode(typingEl);
+                const lastUserMessage = App.state.chatHistory.filter(m => m.role === 'user').pop();
+                if (lastUserMessage) {
+                    lastUserMessage.status = 'failed';
+                    this.saveHistory();
+                    App.ui.rebuildChatUI();
+                }
+            } finally {
+                App.ui.togglePlanCTA();
+                App.ui.setLoading(false);
+            }
         },
         sendMessage() {
             const msg = (App.elements.userInput.value || '').trim(); 
             const images = App.state.pendingImages;
 
-            // Handle message editing
             if (App.state.isEditing) {
                 const editIndex = App.state.chatHistory.findIndex(m => m.id === App.state.editingMessageId);
                 if (editIndex > -1) {
-                    // Remove all messages from the edited message onwards
                     App.state.chatHistory.splice(editIndex); 
                 }
                 App.state.isEditing = false;
                 App.state.editingMessageId = null;
-                App.ui.setEditing(false); // Reset send button icon
+                App.ui.setEditing(false);
             }
 
             if (!msg && images.length === 0) return;
             
             App.ui.setLoading(true);
-
             App.i18n.autoSetByText(msg);
             
-            const messageContent = images.length > 0 ? `${App.i18n.strings[App.state.lang].imageAttached} ${msg}`.trim() : msg;
-            
-            const newMessageForUI = { 
+            // MODIFIED: The message object now holds all data for both UI and context building.
+            const newMessage = { 
                 id: `user-${Date.now()}`, 
                 role: 'user', 
-                parts: [{ text: msg }], // UI part only has text
-                images: images.map(img => img.dataUrl), // UI part has images for display
-                timestamp: Date.now() 
+                parts: [{ text: msg }],
+                images: images.map(img => img.dataUrl),
+                timestamp: Date.now(),
+                status: 'sent' // Assume sent initially
             };
             
-            // Push a clean version to history for the AI context
-            App.state.chatHistory.push({
-                id: newMessageForUI.id,
-                role: 'user',
-                parts: [{ text: messageContent }], // AI context has combined text
-                timestamp: newMessageForUI.timestamp
-            });
-
+            App.state.chatHistory.push(newMessage);
             this.saveHistory();
-            App.ui.rebuildChatUI(); // Use rebuild to handle both new messages and edits cleanly
+            App.ui.rebuildChatUI(); 
             
             this.analyzeUserMessage(msg); 
-            this.processAIResponse(images.map(img => img.dataUrl));
+            // Pass the data URLs directly from the new message object
+            this.processAIResponse(newMessage.images);
             
             App.elements.userInput.value = ''; 
             App.handlers.clearPendingImages();
@@ -984,7 +1061,7 @@
             const L = App.i18n.strings[App.state.lang];
             const welcomeMsg = L.welcomeMessage.replace('{name}', n);
             
-            const firstMessage = {id: `ai-${Date.now()}`, role:'assistant', parts:[{text:welcomeMsg}], timestamp: Date.now()}; 
+            const firstMessage = {id: `ai-${Date.now()}`, role:'assistant', parts:[{text:welcomeMsg}], timestamp: Date.now(), status: 'sent' }; 
             App.state.chatHistory = [firstMessage]; 
             App.core.saveHistory(); 
             App.ui.displayMessage(firstMessage); 
@@ -1122,7 +1199,6 @@
             userInput.focus();
             userInput.dispatchEvent(new Event('input')); // To trigger textarea resize
         },
-        // ADDED: The missing handleDelete function with the correct logic.
         handleDelete(message) {
             const deleteIndex = App.state.chatHistory.findIndex(m => m.id === message.id);
             if (deleteIndex > -1) {
@@ -1132,6 +1208,24 @@
                 App.core.saveHistory();
                 App.utils.toast(App.i18n.strings[App.state.lang].messageDeleted);
             }
+        },
+        // ADDED: Handler for the resend button
+        handleResend(messageId) {
+            const messageIndex = App.state.chatHistory.findIndex(m => m.id === messageId);
+            if (messageIndex === -1) return;
+
+            const messageToResend = App.state.chatHistory[messageIndex];
+            
+            // Remove any AI responses that might have come after (unlikely, but safe)
+            App.state.chatHistory.splice(messageIndex + 1);
+
+            messageToResend.status = 'sent';
+            App.core.saveHistory();
+            App.ui.rebuildChatUI(); // Update UI to remove the error icon
+            App.ui.setLoading(true);
+
+            // Resend the message for processing
+            App.core.processAIResponse(messageToResend.images || []);
         }
       },
       init() {
