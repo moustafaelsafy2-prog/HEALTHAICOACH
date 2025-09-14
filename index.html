@@ -273,7 +273,7 @@
   <div class="user-data-screen hidden" id="userDataScreen">
     <div class="absolute top-4 right-4 z-10" style="inset-inline-end: 1rem; inset-inline-start: auto;"><button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-4 !h-10 !rounded-full !border-white/20 hover:!border-accent !text-white bg-white/10 backdrop-blur-sm">AR</button></div>
     <div class="w-full max-w-sm p-6 sm:p-8 space-y-6 rounded-2xl shadow-xl border border-white/20"><div class="text-center"><h2 class="text-2xl sm:text-3xl font-extrabold" id="userDataTitle">لنبني ملفك السريع</h2><p class="text-white/80 mt-2" id="userDataSubtitle">نحتاج بعض المعلومات للبدء</p></div>
-        <!-- ### START: MODIFIED USER DATA INPUTS ### -->
+        <!-- ### START: USER DATA INPUTS ### -->
         <div class="space-y-4">
             <div class="relative">
                 <span class="absolute inset-y-0 end-0 flex items-center pe-5 pointer-events-none">
@@ -294,7 +294,7 @@
                 <input type="text" id="userCountry" class="block w-full rounded-full py-3.5 ps-4 pe-12 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="بلدك">
             </div>
         </div>
-        <!-- ### END: MODIFIED USER DATA INPUTS ### -->
+        <!-- ### END: USER DATA INPUTS ### -->
     <button id="nextBtn" class="cta-btn w-full mt-4 !py-3 !text-lg !font-bold">ابدأ المحادثة</button></div>
   </div>
 
@@ -440,9 +440,7 @@
             startButtonText: 'ابدأ الآن', userDataTitle: 'لنبني ملفك السريع', userDataSubtitle: 'نحتاج بعض المعلومات للبدء',
             namePlaceholder:'اكتب اسمك هنا', agePlaceholder:'عمرك', countryPlaceholder:'بلدك', nextButtonText:'ابدأ المحادثة',
             inputPlaceholder:'اكتب رسالتك...', emptyFields:'الرجاء إدخال اسمك وعمرك وبلدك للمتابعة.', imageUpload:'تم استلام الصورة — يتم التحليل الآن.',
-            // START: MODIFICATION - Added translation for image limit
             maxImagesReached: 'يا بطل، تقدر ترفع 5 صور بس في المرة الواحدة.',
-            // END: MODIFICATION
             typing:'…', recStart:'● جاري التسجيل… ارفع إصبعك للإرسال', recDenied:'تعذّر الوصول للميكروفوون.', recTooShort:'التسجيل قصير جدًا.', recSaved:'تم نسخ الكلام إلى خانة الكتابة.',
             ctaTitle: 'جاهز لنتيجة ملموسة؟', ctaSubtitle: 'خطة مُحكمة + متابعة أسبوعية.', getPlanButton: 'احصل على خطتك الآن',
             contactModalTitle: 'احصل على خطتك الآن', contactModalText1: 'اختر الطريقة المناسبة للتواصل المباشر مع المدرب.',
@@ -460,15 +458,16 @@
             profileGetPlanBtn: 'احصل على خطتك',
             footerRights: '© 2024 جميع الحقوق محفوظة للكابتن مصطفى الصافي.',
             footerCoffee: 'ادعمني بقهوة',
+            // ### START: MODIFICATION - Added welcomeMessage key ###
+            welcomeMessage: 'أهلًا بيك يا {name}، معاك مساعد المدرب الدولي مصطفى الصافي. جاهز نبدأ رحلتك؟ إيه هدفك الأساسي؟',
+            // ### END: MODIFICATION ###
           },
           en: {
             appName:'Smart Personal Coach', welcomeSubtitle:'Ready for a change? Your plan is tailored for you—precise execution, close follow-up, and tangible results.',
             startButtonText:'Start Now', userDataTitle:"Let's build your quick profile", userDataSubtitle:"We need some information to get started",
             namePlaceholder:'Your Name', agePlaceholder:'Your Age', countryPlaceholder:'Your Country', nextButtonText:'Start Conversation',
             inputPlaceholder:'Type your message…', emptyFields:'Please enter your name, age, and country to continue.', imageUpload:'Image received — analyzing now.',
-            // START: MODIFICATION - Added translation for image limit
             maxImagesReached: 'Heads up! You can only upload 5 images at a time.',
-            // END: MODIFICATION
             typing:'…', recStart:'● Recording… release to send', recDenied:'Microphone access denied.', recTooShort:'Recording is too short.', recSaved:'Text copied to input.',
             ctaTitle: 'Ready for tangible results?', ctaSubtitle: 'Precise plan + weekly follow-up.', getPlanButton: 'Get Your Plan Now',
             contactModalTitle: 'Get your plan now', contactModalText1: 'Choose the best way to contact the coach directly.',
@@ -486,6 +485,9 @@
             profileGetPlanBtn: 'Get Your Plan',
             footerRights: '© 2024 All rights reserved for Coach Mustafa Elsafy.',
             footerCoffee: 'Support me with a coffee',
+            // ### START: MODIFICATION - Added welcomeMessage key ###
+            welcomeMessage: "Welcome, {name}! I'm assistant to international coach Mustafa Elsafy. Ready to start your journey? What's your main goal?",
+            // ### END: MODIFICATION ###
           }
         },
         setLang(lang) {
@@ -620,12 +622,28 @@
 
             wrapper.classList.remove('hidden');
         },
+        // ### START: MODIFICATION - Added loading state handler ###
+        setLoading(isLoading) {
+            const { userInput, sendBtn, plusBtn, micBtn } = App.elements;
+            userInput.disabled = isLoading;
+            sendBtn.disabled = isLoading;
+            plusBtn.disabled = isLoading;
+            micBtn.disabled = isLoading;
+            
+            if (isLoading) {
+                sendBtn.innerHTML = `<div class="w-5 h-5 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>`;
+            } else {
+                sendBtn.innerHTML = `<svg class="w-5 h-5" style="transform: translateX(1px);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>`;
+            }
+        }
+        // ### END: MODIFICATION ###
       },
       services: {
         async callAI(prompt, { images, audio } = {}) { try { const payload = { prompt }; if (images && images.length) { payload.images = images.map(x => { if (typeof x === 'string' && x.startsWith('data:')) { const [meta, b64] = x.split(','); const mime = meta.substring(5, meta.indexOf(';')); return { mime, data: b64, dataUrl: x }; } return x; }); } if (audio) payload.audio = audio; const res = await fetch('/.netlify/functions/gemini-proxy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); const data = await res.json(); if (!res.ok) throw new Error((data && (data.details || data.error)) || 'AI error'); return data.text || ''; } catch (e) { console.error("AI Call Error:", e); return ''; } },
         speech: { supportSpeechRecognition: () => ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window), startLocalRecognition() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) return null; const sessionId = ++App.state.sttSessionId; const rec = new SR(); rec.lang = (App.state.lang === 'ar' ? 'ar-EG' : 'en-US'); rec.interimResults = true; rec.continuous = true; rec.onresult = (e) => { if (sessionId !== App.state.sttSessionId) return; let final = '', interim = ''; for (let i = e.resultIndex; i < e.results.length; i++) { if (e.results[i].isFinal) { final += e.results[i][0].transcript; } else { interim = e.results[i][0].transcript; } } const text = (final || interim).trim(); if (text) { App.elements.userInput.value = text; App.elements.userInput.dispatchEvent(new Event('input')); } }; rec.start(); return { rec, sessionId }; }, async startRecording() { if (App.state.isRecording) return; App.state.isRecording = true; const L = App.i18n.strings[App.state.lang]; if (this.supportSpeechRecognition()) { const h = this.startLocalRecognition(); App.state.recognition = h?.rec || null; } else { App.utils.toast(L.recDenied); App.state.isRecording = false; return; } App.elements.micBtn.classList.add('mic-live'); App.elements.recHintWrap.classList.remove('hidden'); App.elements.recHint.textContent = L.recStart; }, stopRecording() { if (!App.state.isRecording) return; App.state.isRecording = false; if (App.state.recognition && App.state.recognition.stop) { try { App.state.recognition.stop(); App.core.sendMessage(); } catch (_) {} App.state.recognition = null; } App.elements.micBtn.classList.remove('mic-live'); App.elements.recHintWrap.classList.add('hidden'); App.state.sttSessionId++; } }
       },
       prompts: {
+        // ### START: MODIFICATION - Updated main prompt, removed buildImagePrompt ###
         buildCoachSystemPrompt() {
           return `
             📌 التوجيه التنفيذي النهائي — مدرب عالمي × خبير تغذية × خبير مكملات
@@ -645,7 +663,7 @@
 
             🧑‍🤝‍🧑 الهوية والشخصية
                 •	الأسلوب: مدرب عالمي + أخصائي تغذية + خبير مكملات + صديق محفز.
-                •	اللهجة: عامية مصرية سلسة إحترافية مع مرونة في التكيف حسب أسلوب العميل.
+                •	اللهجة:مصريةإحترافية مع مرونة في التكيف حسب أسلوب العميل.
                 •	الممنوعات:
                 •	عدم إظهار أنك ذكاء اصطناعي تحت أي ظرف.
                 •	عدم البدء بردود عامة أو سطحية.
@@ -727,9 +745,11 @@
             ⸻
 
             🔬 تحليل البيانات والصور
-                •	تحليل صور متعددة أو InBody للكشف عن الاختلالات العضلية، توزيع الدهون، ووضعية الجسم. يجب دمج التحليل من كل الصور المقدمة لتقديم رؤية شاملة ومتكاملة.
-                •	عرض النتائج بأسلوب عملي وبشري. مثال: “محتاجين نزود شغل على الكتف الخلفي عشان التوازن.”
-                •   **[قاعدة جديدة]** عند تحليل الصور، يجب دمج الملاحظات في صلب المحادثة بشكل طبيعي وسلس، وتجنب تمامًا إلقاء النتائج على شكل قائمة نقاط أو تقرير جاف. يجب أن يبدو التحليل كأنه ملاحظة من مدرب حقيقي يحلل الصور أمامه.
+                •	عندما يرسل المستخدم صورة (أو صورًا متعددة)، قم بتحليلها بدقة كمدرب خبير.
+                •	الهدف: استخلاص ملاحظات عملية حول تكوين الجسم، الوضعية، التوزيع العضلي والدهني، وتحديد نقاط القوة والمجالات التي تحتاج إلى تحسين.
+                •	إذا كانت هناك بيانات (مثل InBody)، استخرج المقاييس الرئيسية وفسرها.
+                •	**الأهم:** لا تقدم التحليل على شكل تقرير أو قائمة نقاط منفصلة. يجب دمج ملاحظاتك بسلاسة وطبيعية في صلب ردك الحواري. اجعل الأمر يبدو وكأنك مدرب حقيقي يعلق على الصور التي أمامه.
+                •	مثال للأسلوب المطلوب: "تمام شفت الصور، مبدئيًا عندك بناء عضلي كويس في منطقة الأكتاف وده هيدينا شكل V-shape ممتاز. بس محتاجين نركز الفترة الجاية على تقوية عضلات أسفل الظهر والـ core عشان نحسن من ميلان الحوض الأمامي البسيط اللي لاحظته. ده هيفرق معانا جدًا في الأداء والأمان في تمارين زي السكوات والديدلفت."
 
             ⸻
 
@@ -744,19 +764,7 @@
                 •	تسويق ذكي غير مزعج: الكود AYT3413 يُذكر مرة واحدة فقط في التوقيت المناسب.
           `;
         },
-        buildImagePrompt() {
-          return `You are an expert fitness and body composition analyst. Analyze the provided image(s) with the precision of a seasoned coach. Your analysis must be structured into concise, actionable bullet points. Do not use any introductory or concluding sentences. If multiple images are provided (e.g., front, side, back views, or multiple InBody scans), provide a cohesive, integrated analysis. Synthesize the information from all images to build a comprehensive understanding of the user's physique, posture, and body composition.
-            **Primary Analysis (Body Photo):**
-            - **Visual Assessment:** (e.g., "Noticeable anterior pelvic tilt," "Slight asymmetry in shoulder height," "Higher body fat percentage primarily stored in the lower abdomen and hips," "Good quad development but potential for hamstring growth.")
-            - **Strengths:** (e.g., "Well-developed deltoids.")
-            - **Areas for Improvement:** (e.g., "Focus on core strengthening to correct posture," "Increase posterior chain volume," "Incorporate targeted glute and hamstring exercises.")
-            - **Actionable Step:** (e.g., "Recommend adding Romanian Deadlifts and hip thrusts to their routine.")
-            **Primary Analysis (InBody/Data Sheet):**
-            - **Key Metrics Extraction:** (e.g., "Body Fat: 22.5%", "Skeletal Muscle Mass: 35.1kg," "BMR: 1750 kcal," "Visceral Fat Level: 8.")
-            - **Interpretation:** (e.g., "SMM is within a healthy range, but increasing it would boost metabolic rate," "Visceral fat is borderline; requires focus on diet and cardio.")
-            - **Actionable Step:** (e.g., "Set initial daily calorie target at 1900 kcal for a gradual deficit. Prioritize protein intake to at least 1.8g/kg.")
-          `;
-        }
+        // ### END: MODIFICATION ###
       },
       core: {
         saveHistory() {
@@ -788,20 +796,34 @@
         buildInternalStateSummary() { const d=App.state.userState.data||{}; const f=[]; if(d.name)f.push(`الاسم: ${d.name}`); if(d.age)f.push(`العمر: ${d.age}`); if(d.country)f.push(`الدولة: ${d.country}`); if(d.goal)f.push(`الهدف: ${d.goal}`); if(d.health)f.push(`حالة صحية: ${d.health}`); if(d.gym)f.push(`مكان التمرين: ${d.gym}`); if(d.meals)f.push(`وجبات/اليوم: ${d.meals}`); return f.length ? `🗒️ ملخص الحالة: ${f.join(' | ')}` : ''; },
         analyzeUserMessage(msg) { const MED_FLAGS=/(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i; if (MED_FLAGS.test(msg)) { App.state.userState.data.health = (App.state.userState.data.health || 'قيود صحية'); } if (/خطة|أخس|تخسيس|تضخيم|عضل/i.test(msg)) App.state.userState.data.goal = App.state.userState.data.goal || 'خطة مخصصة'; if (/جيم|بيت|منزل/i.test(msg)) App.state.userState.data.gym = App.state.userState.data.gym || 'غير محدد'; },
         async processAIResponse(message, images = []) {
-            const typingEl = App.ui.showTyping('ai'); const L = App.i18n.strings[App.state.lang];
-            const imagePromptPart = images.length > 0 ? App.prompts.buildImagePrompt() : '';
-            const fullPrompt = `${App.prompts.buildCoachSystemPrompt()}\n${this.buildInternalStateSummary() ? this.buildInternalStateSummary() + '\n' : ''}سجل المحادثة الكامل (الأحدث في الأسفل):\n${this.buildConversationContext()}\n\nUser Message: (${images.length > 0 ? L.imageAttached : ''} ${message})\n${imagePromptPart}`;
+            const typingEl = App.ui.showTyping('ai'); 
+            const L = App.i18n.strings[App.state.lang];
+            // ### START: MODIFICATION - Simplified prompt construction ###
+            const imageTextPart = images.length > 0 ? L.imageAttached + ' ' : '';
+            const fullPrompt = `${App.prompts.buildCoachSystemPrompt()}\n${this.buildInternalStateSummary() ? this.buildInternalStateSummary() + '\n' : ''}سجل المحادثة الكامل (الأحدث في الأسفل):\n${this.buildConversationContext()}\n\nUser Message: (${imageTextPart}${message})`;
+            // ### END: MODIFICATION ###
+            
             let response = await App.services.callAI(fullPrompt, { images });
             App.utils.removeNode(typingEl);
             if (!response || !response.trim()) { response = (App.state.lang === 'ar') ? 'حصل خطأ بسيط، ممكن توضح سؤالك تاني؟' : 'There was a slight error, could you please clarify your question?'; }
             const newMessage = { id: `ai-${Date.now()}`, role: 'assistant', parts: [{ text: response }], timestamp: Date.now() };
-            App.state.chatHistory.push(newMessage); this.saveHistory(); App.ui.displayMessage(newMessage); App.ui.togglePlanCTA();
+            App.state.chatHistory.push(newMessage); 
+            this.saveHistory(); 
+            App.ui.displayMessage(newMessage); 
+            App.ui.togglePlanCTA();
+            // ### START: MODIFICATION - Set loading state to false ###
+            App.ui.setLoading(false);
+            // ### END: MODIFICATION ###
         },
         sendMessage() {
             const msg = (App.elements.userInput.value || '').trim(); 
             const images = App.state.pendingImages;
             if (!msg && images.length === 0) return;
             
+            // ### START: MODIFICATION - Set loading state to true ###
+            App.ui.setLoading(true);
+            // ### END: MODIFICATION ###
+
             App.i18n.autoSetByText(msg);
             
             const messageContent = images.length > 0 ? `${App.i18n.strings[App.state.lang].imageAttached} ${msg}`.trim() : msg;
@@ -833,9 +855,28 @@
       },
       handlers: {
         handleStartClick() { App.elements.welcomeScreen.classList.add('hidden'); App.elements.userDataScreen.classList.remove('hidden'); App.i18n.setLang(App.state.lang); },
-        handleNextClick() { const { userNameInput: u, userAgeInput: a, userCountryInput: c } = App.elements; const n=u.value.trim(),g=a.value.trim(),o=c.value.trim(); App.i18n.autoSetByText(n||o); if(!n||!g||!o){App.utils.toast(App.i18n.strings[App.state.lang].emptyFields);return;} App.state.userState.data={...App.state.userState.data,name:n,age:g,country:o}; App.state.userState.step = 1; App.elements.userDataScreen.classList.add('hidden'); App.elements.chatContainer.classList.remove('hidden'); const welcomeMsg = (App.state.lang==='ar') ? `أهلًا بيك يا ${n}، معاك مساعد المدرب الدولي مصطفى الصافي. جاهز نبدأ رحلتك؟ إيه هدفك الأساسي؟` : `Welcome, ${n}! I'm assistant to international coach Mustafa Elsafy. Ready to start your journey? What's your main goal?`; const firstMessage = {id: `ai-${Date.now()}`, role:'assistant', parts:[{text:welcomeMsg}], timestamp: Date.now()}; App.state.chatHistory = [firstMessage]; App.core.saveHistory(); App.ui.displayMessage(firstMessage); App.ui.togglePlanCTA(); },
+        handleNextClick() { 
+            const { userNameInput: u, userAgeInput: a, userCountryInput: c } = App.elements; 
+            const n=u.value.trim(),g=a.value.trim(),o=c.value.trim(); 
+            App.i18n.autoSetByText(n||o); 
+            if(!n||!g||!o){ App.utils.toast(App.i18n.strings[App.state.lang].emptyFields); return; } 
+            App.state.userState.data={...App.state.userState.data,name:n,age:g,country:o}; 
+            App.state.userState.step = 1; 
+            App.elements.userDataScreen.classList.add('hidden'); 
+            App.elements.chatContainer.classList.remove('hidden'); 
+            
+            // ### START: MODIFICATION - Use i18n for welcome message ###
+            const L = App.i18n.strings[App.state.lang];
+            const welcomeMsg = L.welcomeMessage.replace('{name}', n);
+            // ### END: MODIFICATION ###
+            
+            const firstMessage = {id: `ai-${Date.now()}`, role:'assistant', parts:[{text:welcomeMsg}], timestamp: Date.now()}; 
+            App.state.chatHistory = [firstMessage]; 
+            App.core.saveHistory(); 
+            App.ui.displayMessage(firstMessage); 
+            App.ui.togglePlanCTA(); 
+        },
         handleKeyPress(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); App.core.sendMessage(); } },
-        // START: MODIFICATION - Added logic to limit the number of images
         handleFileChange(e) {
             const L = App.i18n.strings[App.state.lang];
             const limit = App.config.MAX_IMAGES;
@@ -876,7 +917,6 @@
 
             e.target.value = '';
         },
-        // END: MODIFICATION
         clearPendingImages() { App.state.pendingImages = []; App.ui.renderImagePreviews(); },
         handleRemoveImage(id) { App.state.pendingImages = App.state.pendingImages.filter(img => img.id !== id); App.ui.renderImagePreviews(); },
         handleViewImage(dataUrl) { App.elements.fullImageView.src = dataUrl; App.elements.imageViewerModal.classList.add('open'); },
@@ -979,3 +1019,5 @@
   </script>
 </body>
 </html>
+
+
