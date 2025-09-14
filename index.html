@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     /* =================================================================
-       -- 1. FONT & THEME VARIABLES (HEALTH & FITNESS THEME) --
+        -- 1. FONT & THEME VARIABLES (HEALTH & FITNESS THEME) --
     ================================================================= */
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
 
@@ -39,7 +39,7 @@
     }
 
     /* =================================================================
-       -- 2. BASE & TYPOGRAPHY --
+        -- 2. BASE & TYPOGRAPHY --
     ================================================================= */
     *, *::before, *::after { box-sizing: border-box; }
     body {
@@ -50,7 +50,7 @@
     }
 
     /* =================================================================
-       -- 3. APP SHELL & RESPONSIVE LAYOUT --
+        -- 3. APP SHELL & RESPONSIVE LAYOUT --
     ================================================================= */
     .app-shell {
       display: flex; flex-direction: column; height: 100vh; height: 100dvh;
@@ -66,7 +66,7 @@
     @media (min-width: 1024px) { body { padding: 2rem; } .app-shell { height: calc(100dvh - 4rem); } }
 
     /* =================================================================
-       -- 4. WELCOME & PROFILE SCREENS --
+        -- 4. WELCOME & PROFILE SCREENS --
     ================================================================= */
     .welcome-screen, .user-data-screen {
       display: flex; flex-direction: column; justify-content: center;
@@ -97,7 +97,7 @@
     .cta-btn-animated { animation: pulse-animation 2.5s infinite cubic-bezier(0.66, 0, 0, 1); }
 
     /* =================================================================
-       -- 5. CHAT UI COMPONENTS (UPGRADED) --
+        -- 5. CHAT UI COMPONENTS (UPGRADED) --
     ================================================================= */
     .chat-header {
       display: flex; justify-content: space-between; align-items: center;
@@ -140,14 +140,14 @@
     @keyframes typing-blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
 
     /* =================================================================
-       -- 6. DYNAMIC CARDS (CTA & iHerb) --
+        -- 6. DYNAMIC CARDS (CTA & iHerb) --
     ================================================================= */
     .dynamic-card { border-radius: 1rem; border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); margin: 1rem 0; animation: fadeIn 0.5s ease-out; }
     #iherb-card { background: linear-gradient(100deg, var(--color-bubble-user), #fff); border-color: var(--color-accent); }
     html.dark #iherb-card { background: linear-gradient(100deg, #14532D, #1F2937); border-color: var(--color-accent); }
     
     /* =================================================================
-       -- 7. INPUT AREA (WhatsApp Style) --
+        -- 7. INPUT AREA (WhatsApp Style) --
     ================================================================= */
     .input-area-wrapper { background-color: var(--color-bg-surface); padding: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--color-border); flex-shrink: 0; }
     .input-area { display: flex; align-items: flex-end; gap: 0.5rem; }
@@ -161,7 +161,7 @@
     .mic-btn.mic-live { color: #ef4444; background-color: rgba(239, 68, 68, 0.1); }
     
     /* =================================================================
-       -- 8. MODALS & UTILITIES (UPGRADED) --
+        -- 8. MODALS & UTILITIES (UPGRADED) --
     ================================================================= */
     .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(8px); z-index: 100; }
     .modal.open { display: flex; animation: fadeIn 0.3s; }
@@ -173,7 +173,7 @@
     @keyframes modal-scale-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
     /* =================================================================
-       -- 9. NEW: CHAT ACTION MENU & PINNED MESSAGE --
+        -- 9. NEW: CHAT ACTION MENU & PINNED MESSAGE --
     ================================================================= */
     #messageContextMenu {
         position: absolute; display: none; background: var(--color-bg-surface);
@@ -201,7 +201,7 @@
     }
     
     /* =================================================================
-       -- 10. NEW: MULTI-IMAGE PREVIEW STYLES --
+        -- 10. NEW: MULTI-IMAGE PREVIEW STYLES --
     ================================================================= */
     #imagePreviewsContainer {
         display: flex;
@@ -232,8 +232,8 @@
         position: absolute;
         top: -0.375rem; /* -6px */
         right: -0.375rem;
-        html[dir="rtl"] & { right: -0.375rem; left: auto; }
-        html[dir="ltr"] & { left: -0.375rem; right: auto; }
+        html[dir="rtl"] & { right: auto; left: -0.375rem; }
+        html[dir="ltr"] & { left: auto; right: -0.375rem; }
         display: flex;
         width: 1.5rem; /* 24px */
         height: 1.5rem; /* 24px */
@@ -289,7 +289,7 @@
             </div>
             <div class="relative">
                 <span class="absolute inset-y-0 end-0 flex items-center pe-5 pointer-events-none">
-                     <svg class="w-5 h-5 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+                      <svg class="w-5 h-5 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
                 </span>
                 <input type="text" id="userCountry" class="block w-full rounded-full py-3.5 ps-4 pe-12 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="بلدك">
             </div>
@@ -421,7 +421,6 @@
     </div>
   </div>
 
-
   <script type="module">
     function initUIEnhancements() { const userInput = document.getElementById('userInput'); if (!userInput) return; const adjustTextareaHeight = () => { userInput.style.height = 'auto'; userInput.style.height = userInput.scrollHeight + 'px'; }; userInput.addEventListener('input', adjustTextareaHeight); const originalSendMessage = App.core.sendMessage; App.core.sendMessage = function(...args) { originalSendMessage.apply(this, args); setTimeout(adjustTextareaHeight, 0); }; }
 
@@ -442,7 +441,7 @@
             namePlaceholder:'اكتب اسمك هنا', agePlaceholder:'عمرك', countryPlaceholder:'بلدك', nextButtonText:'ابدأ المحادثة',
             inputPlaceholder:'اكتب رسالتك...', emptyFields:'الرجاء إدخال اسمك وعمرك وبلدك للمتابعة.', imageUpload:'تم استلام الصورة — يتم التحليل الآن.',
             // START: MODIFICATION - Added translation for image limit
-            maxImagesReached: 'لا يمكن رفع أكثر من 5 صور في المرة الواحدة.',
+            maxImagesReached: 'يا بطل، تقدر ترفع 5 صور بس في المرة الواحدة.',
             // END: MODIFICATION
             typing:'…', recStart:'● جاري التسجيل… ارفع إصبعك للإرسال', recDenied:'تعذّر الوصول للميكروفوون.', recTooShort:'التسجيل قصير جدًا.', recSaved:'تم نسخ الكلام إلى خانة الكتابة.',
             ctaTitle: 'جاهز لنتيجة ملموسة؟', ctaSubtitle: 'خطة مُحكمة + متابعة أسبوعية.', getPlanButton: 'احصل على خطتك الآن',
@@ -468,7 +467,7 @@
             namePlaceholder:'Your Name', agePlaceholder:'Your Age', countryPlaceholder:'Your Country', nextButtonText:'Start Conversation',
             inputPlaceholder:'Type your message…', emptyFields:'Please enter your name, age, and country to continue.', imageUpload:'Image received — analyzing now.',
             // START: MODIFICATION - Added translation for image limit
-            maxImagesReached: 'You can upload a maximum of 5 images at a time.',
+            maxImagesReached: 'Heads up! You can only upload 5 images at a time.',
             // END: MODIFICATION
             typing:'…', recStart:'● Recording… release to send', recDenied:'Microphone access denied.', recTooShort:'Recording is too short.', recSaved:'Text copied to input.',
             ctaTitle: 'Ready for tangible results?', ctaSubtitle: 'Precise plan + weekly follow-up.', getPlanButton: 'Get Your Plan Now',
@@ -549,8 +548,9 @@
                 message.images.forEach(imgDataUrl => {
                     const img = document.createElement('img');
                     img.src = imgDataUrl;
-                    img.className = 'max-w-[100px] h-auto rounded-lg';
+                    img.className = 'max-w-[100px] h-auto rounded-lg cursor-pointer';
                     img.alt = 'uploaded image';
+                    img.onclick = () => App.handlers.handleViewImage(imgDataUrl); // Make images in chat clickable
                     imageContainer.appendChild(img);
                 });
                 finalHtml += imageContainer.outerHTML;
@@ -559,7 +559,7 @@
             const content = message.parts?.[0]?.text || '';
             const safeContent = (content && typeof content === 'string') ? content : '';
             if (safeContent) {
-                 finalHtml += `<div class="msg-content">${marked.parse(safeContent)}</div>`;
+                finalHtml += `<div class="msg-content">${marked.parse(safeContent)}</div>`;
             }
 
             const timeHtml = `<div class="message-meta"><span class="message-time">${App.utils.formatTime(message.timestamp)}</span></div>`;
@@ -728,8 +728,8 @@
 
             🔬 تحليل البيانات والصور
                 •	تحليل صور متعددة أو InBody للكشف عن الاختلالات العضلية، توزيع الدهون، ووضعية الجسم. يجب دمج التحليل من كل الصور المقدمة لتقديم رؤية شاملة ومتكاملة.
-                •	عرض النتائج بأسلوب عملي وبشري:
-                •	“محتاجين نزود شغل على الكتف الخلفي عشان التوازن.”
+                •	عرض النتائج بأسلوب عملي وبشري. مثال: “محتاجين نزود شغل على الكتف الخلفي عشان التوازن.”
+                •   **[قاعدة جديدة]** عند تحليل الصور، يجب دمج الملاحظات في صلب المحادثة بشكل طبيعي وسلس، وتجنب تمامًا إلقاء النتائج على شكل قائمة نقاط أو تقرير جاف. يجب أن يبدو التحليل كأنه ملاحظة من مدرب حقيقي يحلل الصور أمامه.
 
             ⸻
 
@@ -815,10 +815,10 @@
             };
             
             App.state.chatHistory.push({
-                 id: newMessage.id,
-                 role: 'user',
-                 parts: [{ text: messageContent }], // Save combined text for AI context
-                 timestamp: newMessage.timestamp
+                id: newMessage.id,
+                role: 'user',
+                parts: [{ text: messageContent }], // Save combined text for AI context
+                timestamp: newMessage.timestamp
             });
 
             this.saveHistory();
@@ -979,5 +979,3 @@
   </script>
 </body>
 </html>
-
-
