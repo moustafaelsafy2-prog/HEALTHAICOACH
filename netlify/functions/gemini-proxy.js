@@ -11,6 +11,7 @@ const SAFE_TOPP_RANGE = [0.0, 1.0];
 
 // حدود الوسائط
 const MAX_INLINE_BYTES = 15 * 1024 * 1024; // 15MB/part
+const MAX_INLINE_BYTES_TOTAL = 60 * 1024 * 1024; // إجمالي 60MB للطلب (حماية لطيفة)
 const ALLOWED_IMAGE = /^image\/(png|jpe?g|webp|gif|bmp|svg\+xml)$/i;
 const ALLOWED_AUDIO = /^audio\/(webm|ogg|mp3|mpeg|wav|m4a|aac|3gpp|3gpp2|mp4)$/i;
 
@@ -28,7 +29,7 @@ exports.handler = async (event) => {
 
   const baseHeaders = {
     "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Headers": "Content-Type, X-Request-ID",
+    "Access-Control-Allow-Headers": "Content-Type, X-Request-ID, Authorization",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
     "Content-Type": "application/json",
     "X-Request-ID": requestId
@@ -81,17 +82,45 @@ exports.handler = async (event) => {
   // --------- Guardrails & Language mirroring ----------
   const contentPreview = textPreview(prompt || messages?.map(m=>m?.content||"").join("\n"));
   const lang = chooseLang(force_lang, contentPreview);
-  const hasTopImages = Array.isArray(images) && images.length > 0;
-  const hasAnyImages = hasTopImages || !!(Array.isArray(messages) && messages.some(m=>Array.isArray(m.images) && m.images.length));
+
+  // ====== Build contents + media (with strict image checks) ======
+  // نجمع كل الصور لتجميع الحجم الإجمالي ومن ثم نعيد استخدامها.
+  // نُطَبِّع الإدخالات: dataURL أو {mime,data} أو {dataUrl}
+  const normalizedTopImages = normalizeImageInputs(images);
+  const normalizedMsgImages = Array.isArray(messages)
+    ? messages.flatMap(m => normalizeImageInputs(m?.images)).filter(Boolean)
+    : [];
+  const allCandidateImages = [...normalizedTopImages, ...normalizedMsgImages];
+
+  const { acceptedParts: acceptedImageParts, totalBytes, rejected } =
+    enforceImageLimits(allCandidateImages, MAX_INLINE_BYTES, MAX_INLINE_BYTES_TOTAL);
+
+  // لو كل الصور رُفضت وكان المُدخل يحتوي صورًا => نُرجع خطأ واضح بدل “تجاهل”
+  const hadAnyImages = allCandidateImages.length > 0;
+  const hasAcceptedImages = acceptedImageParts.length > 0;
+  if (hadAnyImages && !hasAcceptedImages) {
+    return resp(413, baseHeaders, {
+      error: "All images were rejected",
+      reason: "Unsupported type or size exceeds limits",
+      per_image_limit_mb: Math.round(MAX_INLINE_BYTES / 1024 / 1024),
+      total_limit_mb: Math.round(MAX_INLINE_BYTES_TOTAL / 1024 / 1024),
+      rejected: rejected.map(r => ({ mime: r.mime, approx_bytes: r.bytes }))
+    });
+  }
+
+  const hasAnyImages = hasAcceptedImages;
   const useImageBrief = concise_image === true || mode === "image_brief" || hasAnyImages;
 
-  // حقن تعليمات حراسة قصيرة (بدون إطالة) — تُضاف قبل محتوى المستخدم
+  // حقن تعليمات حراسة قصيرة — تُضاف قبل محتوى المستخدم
   const guard = buildGuardrails({ lang, useImageBrief, level: guard_level });
 
-  // Build contents + media
+  // Build contents from messages or single prompt
   const contents = Array.isArray(messages)
-    ? normalizeMessagesWithMedia(messages, guard)
-    : [{ role: "user", parts: buildParts(wrapPrompt(prompt, lang, useImageBrief, guard), images, audio) }];
+    ? normalizeMessagesWithMedia(messages, guard, acceptedImageParts)
+    : [{
+        role: "user",
+        parts: [{ text: wrapPrompt(prompt, lang, useImageBrief, guard) }, ...acceptedImageParts, ...coerceAudioPart(audio)]
+      }];
 
   const generationConfig = { temperature, topP: top_p, maxOutputTokens: max_output_tokens };
   const systemInstruction = (system && typeof system === "string")
@@ -129,7 +158,7 @@ exports.handler = async (event) => {
           statusCode: 200,
           headers,
           body: await streamBody(async function* () {
-            yield encoder.encode(`event: meta\ndata: ${JSON.stringify({ requestId, model: m, lang })}\n\n`);
+            yield encoder.encode(`event: meta\ndata: ${JSON.stringify({ requestId, model: m, lang, total_image_bytes: totalBytes })}\n\n`);
             let buffer = "";
             while (true) {
               const { value, done } = await reader.read();
@@ -209,11 +238,9 @@ function chooseLang(force, sample){
   return hasArabic(sample) ? "ar" : "en";
 }
 function mirrorLanguage(text, lang){
-  // لا نغيّر النص إن كان فارغًا أو النموذج أعاد اللغة المطلوبة.
   if(!text) return text;
   if(lang === "ar" && hasArabic(text)) return text;
   if(lang === "en" && !hasArabic(text)) return text;
-  // عند اللزوم: نضيف سطرًا تمهيديًا قصيرًا بلغة الهدف لتجنب تداخل اللغات من بعض النماذج.
   return (lang === "ar")
     ? `**ملاحظة:** الرد باللغة العربية.\n\n${text}`
     : `**Note:** Response in English.\n\n${text}`;
@@ -243,7 +270,6 @@ function buildGuardrails({ lang, useImageBrief, level }){
 }
 
 function wrapPrompt(prompt, lang, useImageBrief, guard){
-  // نحقن الحراسة قبل محتوى المستخدم مع فاصل واضح
   const head = (lang === "ar")
     ? "تعليمات حراسة موجزة (اتبعها بدقة):"
     : "Concise guardrails (follow strictly):";
@@ -252,14 +278,64 @@ function wrapPrompt(prompt, lang, useImageBrief, guard){
 
 /* ---- Messages & Media ---- */
 
-function buildParts(prompt, images, audio) {
+// (1) تطبيع مدخلات الصور القادمة من الواجهة (dataURL | {mime,data}|{dataUrl})
+function normalizeImageInputs(images) {
+  if (!Array.isArray(images) || images.length === 0) return [];
+  const out = [];
+  for (const item of images) {
+    if (typeof item === "string" && item.startsWith("data:")) {
+      const { mime, data } = fromDataUrl(item);
+      out.push({ mime, data, _bytes: approxBase64Bytes(data) });
+    } else if (item && typeof item === "object") {
+      let mime = item.mime || item.mime_type;
+      let b64 = item.data || item.base64 || (item.dataUrl ? fromDataUrl(item.dataUrl).data : "");
+      if (typeof item === "object" && !mime && typeof item.dataUrl === "string") {
+        mime = fromDataUrl(item.dataUrl).mime;
+      }
+      if (mime && b64) out.push({ mime, data: b64, _bytes: approxBase64Bytes(b64) });
+    }
+  }
+  return out;
+}
+
+// (2) فرض حدود الحجم ونوع الملف — نُرجع الأجزاء المقبولة + المرفوضة
+function enforceImageLimits(normalized, perImageLimit, totalLimit) {
+  const acceptedParts = [];
+  const rejected = [];
+  let totalBytes = 0;
+  for (const img of normalized) {
+    const bytes = img._bytes ?? approxBase64Bytes(img.data || "");
+    const mime = img.mime || "";
+    const validType = ALLOWED_IMAGE.test(mime);
+    const withinPerPart = bytes > 0 && bytes <= perImageLimit;
+    const withinTotal = totalBytes + bytes <= totalLimit;
+    if (validType && withinPerPart && withinTotal) {
+      acceptedParts.push({ inline_data: { mime_type: mime, data: img.data } });
+      totalBytes += bytes;
+    } else {
+      rejected.push({ mime, bytes, reason: !validType ? "type" : (!withinPerPart ? "per-part" : "total") });
+    }
+  }
+  return { acceptedParts, rejected, totalBytes };
+}
+
+function coerceAudioPart(audio) {
   const parts = [];
-  if (typeof prompt === "string" && prompt.trim()) parts.push({ text: prompt });
-  parts.push(...coerceMediaParts(images, audio));
+  if (!audio) return parts;
+  let mime, b64;
+  if (typeof audio === "string" && audio.startsWith("data:")) {
+    ({ mime, data: b64 } = fromDataUrl(audio));
+  } else if (audio && typeof audio === "object") {
+    mime = audio.mime || audio.mime_type;
+    b64 = audio.data || audio.base64 || (audio.dataUrl ? fromDataUrl(audio.dataUrl).data : "");
+  }
+  if (mime && b64 && ALLOWED_AUDIO.test(mime) && approxBase64Bytes(b64) <= MAX_INLINE_BYTES) {
+    parts.push({ inline_data: { mime_type: mime, data: b64 } });
+  }
   return parts;
 }
 
-function normalizeMessagesWithMedia(messages, guard) {
+function normalizeMessagesWithMedia(messages, guard, acceptedImagePartsFromTop) {
   // Gemini expects: [{role:"user"|"model"|"system", parts:[{text|inline_data}...]}]
   const safeRole = (r) => (r === "user" || r === "model" || r === "system") ? r : "user";
   let injected = false;
@@ -272,50 +348,22 @@ function normalizeMessagesWithMedia(messages, guard) {
         const content = (typeof m.content === "string" && m.content.trim()) ? m.content : "";
         parts.push({ text: wrapPrompt(content, chooseLang(undefined, content), !!(m.images && m.images.length), guard) });
         injected = true;
+        // دمج الصور العليا إن وُجدت مرة واحدة في أول رسالة
+        if (Array.isArray(acceptedImagePartsFromTop) && acceptedImagePartsFromTop.length) {
+          parts.push(...acceptedImagePartsFromTop);
+        }
       } else if (typeof m.content === "string" && m.content.trim()) {
         parts.push({ text: m.content });
       }
-      parts.push(...coerceMediaParts(m.images, m.audio));
+      // صور خاصة بهذه الرسالة
+      const msgImgs = normalizeImageInputs(m.images);
+      const { acceptedParts } = enforceImageLimits(msgImgs, MAX_INLINE_BYTES, MAX_INLINE_BYTES_TOTAL);
+      parts.push(...acceptedParts);
+      // الصوت
+      parts.push(...coerceAudioPart(m.audio));
       return { role: safeRole(m.role), parts };
     })
     .filter(m => m.parts.length);
-}
-
-function coerceMediaParts(images, audio) {
-  const parts = [];
-
-  // images: [dataUrl | {mime,data}|{dataUrl}]
-  if (Array.isArray(images)) {
-    for (const item of images) {
-      let mime, b64;
-      if (typeof item === "string" && item.startsWith("data:")) {
-        ({ mime, data: b64 } = fromDataUrl(item));
-      } else if (item && typeof item === "object") {
-        mime = item.mime || item.mime_type;
-        b64 = item.data || item.base64 || (item.dataUrl ? fromDataUrl(item.dataUrl).data : "");
-      }
-      if (!mime || !b64) continue;
-      if (!ALLOWED_IMAGE.test(mime)) continue;
-      if (approxBase64Bytes(b64) > MAX_INLINE_BYTES) continue;
-      parts.push({ inline_data: { mime_type: mime, data: b64 } });
-    }
-  }
-
-  // audio: {mime,data} أو dataUrl string
-  if (audio) {
-    let mime, b64;
-    if (typeof audio === "string" && audio.startsWith("data:")) {
-      ({ mime, data: b64 } = fromDataUrl(audio));
-    } else if (typeof audio === "object") {
-      mime = audio.mime || audio.mime_type;
-      b64 = audio.data || audio.base64 || (audio.dataUrl ? fromDataUrl(audio.dataUrl).data : "");
-    }
-    if (mime && b64 && ALLOWED_AUDIO.test(mime) && approxBase64Bytes(b64) <= MAX_INLINE_BYTES) {
-      parts.push({ inline_data: { mime_type: mime, data: b64 } });
-    }
-  }
-
-  return parts;
 }
 
 function fromDataUrl(dataUrl) {
@@ -328,6 +376,7 @@ function fromDataUrl(dataUrl) {
 }
 
 function approxBase64Bytes(b64) {
+  if (!b64 || typeof b64 !== "string") return 0;
   const len = b64.length - (b64.endsWith('==') ? 2 : b64.endsWith('=') ? 1 : 0);
   return Math.floor(len * 0.75);
 }
@@ -379,7 +428,7 @@ async function tryStreamOnce(url, body, timeout_ms) {
         const upstream = collectUpstreamError(response.status, data, text);
         return { ok: false, errorResp: resp(mapStatus(response.status), {
           "Access-Control-Allow-Origin": "*",
-          "Access-Control-Allow-Headers": "Content-Type, X-Request-ID",
+          "Access-Control-Allow-Headers": "Content-Type, X-Request-ID, Authorization",
           "Access-Control-Allow-Methods": "POST, OPTIONS",
           "Content-Type": "application/json"
         }, upstream) };
@@ -390,7 +439,7 @@ async function tryStreamOnce(url, body, timeout_ms) {
       if (attempt < MAX_TRIES) { await sleepWithJitter(attempt); continue; }
       return { ok: false, errorResp: resp(500, {
         "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Headers": "Content-Type, X-Request-ID",
+        "Access-Control-Allow-Headers": "Content-Type, X-Request-ID, Authorization",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
         "Content-Type": "application/json"
       }, { error: "Network/timeout", details: String(e && e.message || e) }) };
@@ -438,6 +487,3 @@ async function tryJSONOnce(url, body, timeout_ms, include_raw) {
 }
 
 function safeParseJSON(s) { try { return JSON.parse(s); } catch { return null; } }
-
-
-
