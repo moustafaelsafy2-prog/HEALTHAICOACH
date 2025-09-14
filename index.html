@@ -426,7 +426,9 @@
     function initUIEnhancements() { const userInput = document.getElementById('userInput'); if (!userInput) return; const adjustTextareaHeight = () => { userInput.style.height = 'auto'; userInput.style.height = userInput.scrollHeight + 'px'; }; userInput.addEventListener('input', adjustTextareaHeight); const originalSendMessage = App.core.sendMessage; App.core.sendMessage = function(...args) { originalSendMessage.apply(this, args); setTimeout(adjustTextareaHeight, 0); }; }
 
     const App = {
-      config: { MAX_PROMPT_CHARS: 28000, STORAGE_KEY: 'smart-coach-session-v3', LONG_PRESS_DURATION: 400 },
+      // START: MODIFICATION - Added MAX_IMAGES to config
+      config: { MAX_PROMPT_CHARS: 28000, STORAGE_KEY: 'smart-coach-session-v3', LONG_PRESS_DURATION: 400, MAX_IMAGES: 5 },
+      // END: MODIFICATION
       state: { userState: { step: 0, data: {} }, lang: 'ar', chatHistory: [], isRecording: false, sttSessionId: 0, recognition: null, mediaStream: null, mediaRecorder: null, audioChunks: [], recStartTime: 0, pendingImages: [], pinnedMessageId: null, longPressTimer: null, currentContextMenu: null },
       elements: {},
       cacheElements() {
@@ -439,6 +441,9 @@
             startButtonText: 'ابدأ الآن', userDataTitle: 'لنبني ملفك السريع', userDataSubtitle: 'نحتاج بعض المعلومات للبدء',
             namePlaceholder:'اكتب اسمك هنا', agePlaceholder:'عمرك', countryPlaceholder:'بلدك', nextButtonText:'ابدأ المحادثة',
             inputPlaceholder:'اكتب رسالتك...', emptyFields:'الرجاء إدخال اسمك وعمرك وبلدك للمتابعة.', imageUpload:'تم استلام الصورة — يتم التحليل الآن.',
+            // START: MODIFICATION - Added translation for image limit
+            maxImagesReached: 'لا يمكن رفع أكثر من 5 صور في المرة الواحدة.',
+            // END: MODIFICATION
             typing:'…', recStart:'● جاري التسجيل… ارفع إصبعك للإرسال', recDenied:'تعذّر الوصول للميكروفوون.', recTooShort:'التسجيل قصير جدًا.', recSaved:'تم نسخ الكلام إلى خانة الكتابة.',
             ctaTitle: 'جاهز لنتيجة ملموسة؟', ctaSubtitle: 'خطة مُحكمة + متابعة أسبوعية.', getPlanButton: 'احصل على خطتك الآن',
             contactModalTitle: 'احصل على خطتك الآن', contactModalText1: 'اختر الطريقة المناسبة للتواصل المباشر مع المدرب.',
@@ -462,6 +467,9 @@
             startButtonText:'Start Now', userDataTitle:"Let's build your quick profile", userDataSubtitle:"We need some information to get started",
             namePlaceholder:'Your Name', agePlaceholder:'Your Age', countryPlaceholder:'Your Country', nextButtonText:'Start Conversation',
             inputPlaceholder:'Type your message…', emptyFields:'Please enter your name, age, and country to continue.', imageUpload:'Image received — analyzing now.',
+            // START: MODIFICATION - Added translation for image limit
+            maxImagesReached: 'You can upload a maximum of 5 images at a time.',
+            // END: MODIFICATION
             typing:'…', recStart:'● Recording… release to send', recDenied:'Microphone access denied.', recTooShort:'Recording is too short.', recSaved:'Text copied to input.',
             ctaTitle: 'Ready for tangible results?', ctaSubtitle: 'Precise plan + weekly follow-up.', getPlanButton: 'Get Your Plan Now',
             contactModalTitle: 'Get your plan now', contactModalText1: 'Choose the best way to contact the coach directly.',
@@ -827,10 +835,28 @@
         handleStartClick() { App.elements.welcomeScreen.classList.add('hidden'); App.elements.userDataScreen.classList.remove('hidden'); App.i18n.setLang(App.state.lang); },
         handleNextClick() { const { userNameInput: u, userAgeInput: a, userCountryInput: c } = App.elements; const n=u.value.trim(),g=a.value.trim(),o=c.value.trim(); App.i18n.autoSetByText(n||o); if(!n||!g||!o){App.utils.toast(App.i18n.strings[App.state.lang].emptyFields);return;} App.state.userState.data={...App.state.userState.data,name:n,age:g,country:o}; App.state.userState.step = 1; App.elements.userDataScreen.classList.add('hidden'); App.elements.chatContainer.classList.remove('hidden'); const welcomeMsg = (App.state.lang==='ar') ? `أهلًا بيك يا ${n}، معاك مساعد المدرب الدولي مصطفى الصافي. جاهز نبدأ رحلتك؟ إيه هدفك الأساسي؟` : `Welcome, ${n}! I'm assistant to international coach Mustafa Elsafy. Ready to start your journey? What's your main goal?`; const firstMessage = {id: `ai-${Date.now()}`, role:'assistant', parts:[{text:welcomeMsg}], timestamp: Date.now()}; App.state.chatHistory = [firstMessage]; App.core.saveHistory(); App.ui.displayMessage(firstMessage); App.ui.togglePlanCTA(); },
         handleKeyPress(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); App.core.sendMessage(); } },
+        // START: MODIFICATION - Added logic to limit the number of images
         handleFileChange(e) {
-            const files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
+            const L = App.i18n.strings[App.state.lang];
+            const limit = App.config.MAX_IMAGES;
+            let files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
+            
             if (!files.length) return;
 
+            const currentCount = App.state.pendingImages.length;
+            const canUploadCount = limit - currentCount;
+
+            if (canUploadCount <= 0) {
+                App.utils.toast(L.maxImagesReached);
+                e.target.value = '';
+                return;
+            }
+
+            if (files.length > canUploadCount) {
+                App.utils.toast(L.maxImagesReached);
+                files = files.slice(0, canUploadCount);
+            }
+            
             const filePromises = files.map(file => {
                 return new Promise((resolve, reject) => {
                     const reader = new FileReader();
@@ -850,6 +876,7 @@
 
             e.target.value = '';
         },
+        // END: MODIFICATION
         clearPendingImages() { App.state.pendingImages = []; App.ui.renderImagePreviews(); },
         handleRemoveImage(id) { App.state.pendingImages = App.state.pendingImages.filter(img => img.id !== id); App.ui.renderImagePreviews(); },
         handleViewImage(dataUrl) { App.elements.fullImageView.src = dataUrl; App.elements.imageViewerModal.classList.add('open'); },
