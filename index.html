@@ -129,7 +129,7 @@
     html[dir="rtl"] .message-bubble.user { margin-right: auto; margin-left: initial; border-bottom-right-radius: 5px; border-bottom-left-radius: 12px;}
     html[dir="rtl"] .message-bubble.ai { margin-left: auto; margin-right: initial; border-bottom-left-radius: 5px; border-bottom-right-radius: 12px;}
 
-    .message-meta { display: flex; justify-content: flex-end; align-items: center; margin-top: 4px; gap: 4px; }
+    .message-meta { display: flex; justify-content: flex-end; align-items: center; margin-top: 4px; }
     .message-time { font-size: 0.7rem; color: var(--color-text-secondary); opacity: 0.8; }
     html[dir="rtl"] .message-bubble.user .message-time { margin-right: 8px; }
     html[dir="ltr"] .message-bubble.user .message-time { margin-left: 8px; }
@@ -138,6 +138,16 @@
     .typing .dot { width: 8px; height: 8px; border-radius: 50%; background-color: var(--color-text-secondary); animation: typing-blink 1.4s infinite both; }
     .dot:nth-child(2) { animation-delay: 0.2s; } .dot:nth-child(3) { animation-delay: 0.4s; }
     @keyframes typing-blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
+    
+    /* ADDED: Styles for the resend button */
+    .resend-btn {
+        background: none; border: none; cursor: pointer;
+        color: #ef4444; /* red-500 */
+        margin-left: 8px;
+        html[dir="rtl"] & { margin-left: 0; margin-right: 8px; }
+    }
+    .resend-btn svg { width: 1rem; height: 1rem; }
+
 
     /* =================================================================
         -- 6. DYNAMIC CARDS (CTA & iHerb) --
@@ -654,58 +664,42 @@
                     img.src = imgDataUrl;
                     img.className = 'max-w-[100px] h-auto rounded-lg cursor-pointer';
                     img.alt = 'uploaded image';
-                    img.onclick = () => App.handlers.handleViewImage(imgDataUrl);
+                    img.onclick = () => App.handlers.handleViewImage(imgDataUrl); // Make images in chat clickable
                     imageContainer.appendChild(img);
                 });
                 finalHtml += imageContainer.outerHTML;
             }
 
-            // Handle text content display
-            let contentToDisplay = '';
-            if (message.role === 'user') {
-                if (typeof message.rawText === 'string') {
-                    contentToDisplay = message.rawText;
-                } else { // Fallback for old messages from localStorage
-                    let text = message.parts?.[0]?.text || '';
-                    const imagePlaceholder = App.i18n.strings[App.state.lang].imageAttached;
-                    if (text.startsWith(imagePlaceholder)) {
-                        text = text.substring(imagePlaceholder.length).trim();
-                    }
-                    contentToDisplay = text;
-                }
-            } else { // For AI messages
-                contentToDisplay = message.parts?.[0]?.text || '';
+            const content = message.parts?.[0]?.text || '';
+            const safeContent = (content && typeof content === 'string') ? content : '';
+            if (safeContent) {
+                finalHtml += `<div class="msg-content">${marked.parse(safeContent)}</div>`;
             }
 
-            if (contentToDisplay) {
-                finalHtml += `<div class="msg-content">${marked.parse(contentToDisplay)}</div>`;
-            }
+            const metaContainer = document.createElement('div');
+            metaContainer.className = 'message-meta';
             
-            // Handle message meta (time and status icons)
-            let statusIconHtml = '';
-            if (message.role === 'user') {
-                if (message.status === 'sending') {
-                    statusIconHtml = `<svg class="w-4 h-4 text-gray-400 dark:text-gray-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>`;
-                } else if (message.status === 'error') {
-                    statusIconHtml = `<button class="retry-btn p-0 border-0 bg-transparent cursor-pointer" data-message-id="${message.id}" title="${message.error || 'إعادة الإرسال'}"><svg class="w-5 h-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15v-2h2v2h-2zm0-4v-6h2v6h-2z"></path></svg></button>`;
-                }
+            const timeSpan = document.createElement('span');
+            timeSpan.className = 'message-time';
+            timeSpan.textContent = App.utils.formatTime(message.timestamp);
+            metaContainer.appendChild(timeSpan);
+            
+            // ADDED: Logic to display resend button on failure
+            if (message.status === 'failed') {
+                const resendBtn = document.createElement('button');
+                resendBtn.className = 'resend-btn';
+                resendBtn.title = 'إعادة الإرسال';
+                resendBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"></path></svg>`;
+                resendBtn.onclick = () => App.handlers.handleResend(message.id);
+                metaContainer.appendChild(resendBtn);
             }
 
-            const timeHtml = `<div class="message-meta"><span class="message-time">${App.utils.formatTime(message.timestamp)}</span>${statusIconHtml}</div>`;
-            bubble.innerHTML = finalHtml + timeHtml;
+            bubble.innerHTML = finalHtml;
+            bubble.appendChild(metaContainer);
             
             chatMessages.appendChild(bubble);
-
-            // Add event listener for the retry button if it exists
-            const retryBtn = bubble.querySelector('.retry-btn');
-            if (retryBtn) {
-                retryBtn.addEventListener('click', (e) => {
-                    e.stopPropagation(); // Prevent triggering long-press
-                    App.core.retryMessage(retryBtn.dataset.messageId);
-                });
-            }
-
             chatMessages.scrollTop = chatMessages.scrollHeight;
+
             App.handlers.addMessageEventListeners(bubble);
             return bubble;
         },
@@ -717,7 +711,7 @@
             if (App.state.pinnedMessageId) {
                 const pinnedMessage = App.state.chatHistory.find(m => m.id === App.state.pinnedMessageId);
                 if (pinnedMessage) {
-                    const textContent = pinnedMessage.parts[0].text.replace(/\[Image Attached\]/g, '📷').replace(/\[صور مرفقة\]/g, '📷');
+                    const textContent = pinnedMessage.parts[0].text.replace(/\[Image Attached\]/g, '📷');
                     pinnedText.textContent = textContent;
                     pinnedMessageArea.classList.add('show');
                     return;
@@ -774,16 +768,38 @@
         setEditing(isEditing) {
             const { sendBtn } = App.elements;
             if(isEditing) {
-                sendBtn.innerHTML = `<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-                sendBtn.classList.add('!bg-blue-500');
+                 sendBtn.innerHTML = `<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+                 sendBtn.classList.add('!bg-blue-500');
             } else {
-                sendBtn.innerHTML = `<svg class="w-5 h-5" style="transform: translateX(1px);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>`;
-                sendBtn.classList.remove('!bg-blue-500');
+                 sendBtn.innerHTML = `<svg class="w-5 h-5" style="transform: translateX(1px);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>`;
+                 sendBtn.classList.remove('!bg-blue-500');
             }
         }
       },
       services: {
-        async callAI(prompt, { images, audio } = {}) { try { const payload = { prompt }; if (images && images.length) { payload.images = images.map(x => { if (typeof x === 'string' && x.startsWith('data:')) { const [meta, b64] = x.split(','); const mime = meta.substring(5, meta.indexOf(';')); return { mime, data: b64, dataUrl: x }; } return x; }); } if (audio) payload.audio = audio; const res = await fetch('/.netlify/functions/gemini-proxy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); const data = await res.json(); if (!res.ok) throw new Error((data && (data.details || data.error)) || 'AI error'); return data.text || ''; } catch (e) { console.error("AI Call Error:", e); throw e; } },
+        async callAI(prompt, { images, audio } = {}) { 
+            try { 
+                const payload = { prompt }; 
+                if (images && images.length) { 
+                    payload.images = images.map(x => { 
+                        if (typeof x === 'string' && x.startsWith('data:')) { 
+                            const [meta, b64] = x.split(','); 
+                            const mime = meta.substring(5, meta.indexOf(';')); 
+                            return { mime, data: b64, dataUrl: x }; 
+                        } 
+                        return x; 
+                    }); 
+                } 
+                if (audio) payload.audio = audio; 
+                const res = await fetch('/.netlify/functions/gemini-proxy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); 
+                const data = await res.json(); 
+                if (!res.ok) throw new Error((data && (data.details || data.error)) || 'AI error'); 
+                return data.text || ''; 
+            } catch (e) { 
+                console.error("AI Call Error:", e); 
+                throw e; // MODIFIED: Throw error instead of returning empty
+            } 
+        },
         speech: { supportSpeechRecognition: () => ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window), startLocalRecognition() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) return null; const sessionId = ++App.state.sttSessionId; const rec = new SR(); rec.lang = (App.state.lang === 'ar' ? 'ar-EG' : 'en-US'); rec.interimResults = true; rec.continuous = true; rec.onresult = (e) => { if (sessionId !== App.state.sttSessionId) return; let final = '', interim = ''; for (let i = e.resultIndex; i < e.results.length; i++) { if (e.results[i].isFinal) { final += e.results[i][0].transcript; } else { interim = e.results[i][0].transcript; } } const text = (final || interim).trim(); if (text) { App.elements.userInput.value = text; App.elements.userInput.dispatchEvent(new Event('input')); } }; rec.start(); return { rec, sessionId }; }, async startRecording() { if (App.state.isRecording) return; App.state.isRecording = true; const L = App.i18n.strings[App.state.lang]; if (this.supportSpeechRecognition()) { const h = this.startLocalRecognition(); App.state.recognition = h?.rec || null; } else { App.utils.toast(L.recDenied); App.state.isRecording = false; return; } App.elements.micBtn.classList.add('mic-live'); App.elements.recHintWrap.classList.remove('hidden'); App.elements.recHint.textContent = L.recStart; }, stopRecording() { if (!App.state.isRecording) return; App.state.isRecording = false; if (App.state.recognition && App.state.recognition.stop) { try { App.state.recognition.stop(); App.core.sendMessage(); } catch (_) {} App.state.recognition = null; } App.elements.micBtn.classList.remove('mic-live'); App.elements.recHintWrap.classList.add('hidden'); App.state.sttSessionId++; } }
       },
       prompts: {
@@ -795,117 +811,117 @@
           ⸻
 
           🎯 المهمة الرئيسية
-              • أن تكون المساعد الشخصي الاحترافي للعميل بالنيابة عن المدرب مصطفى الصافي، معكسًا أعلى مستويات الدقة والاحترافية لتعزيز الثقة في الأداة.
-              • تقديم خدمة شاملة ومخصصة بنسبة 100% بعد جمع البيانات اللازمة تشمل:
-              • إعداد خطط تدريب وتغذية دقيقة للغاية.
-              • استخدام أدق الأدوات العلمية لحساب السعرات والماكروز: Mifflin-St Jeor, Harris-Benedict, Katch-McArdle.
-              • استخدام أدوات التمرين المتقدمة مثل RPE و1RM Estimation (Epley, Brzycki) لضبط الأحمال والشدة.
-              • ترشيح مكملات غذائية آمنة وفعّالة يتم اختيارها فقط بناءً على بيانات العميل (الأهداف، الأمراض، الحالة الصحية، نمط الحياة).
-              • الرد على جميع الاستفسارات بأسلوب بشري طبيعي واحترافي دون أي طابع آلي.
+              •	أن تكون المساعد الشخصي الاحترافي للعميل بالنيابة عن المدرب مصطفى الصافي، معكسًا أعلى مستويات الدقة والاحترافية لتعزيز الثقة في الأداة.
+              •	تقديم خدمة شاملة ومخصصة بنسبة 100% بعد جمع البيانات اللازمة تشمل:
+              •	إعداد خطط تدريب وتغذية دقيقة للغاية.
+              •	استخدام أدق الأدوات العلمية لحساب السعرات والماكروز: Mifflin-St Jeor, Harris-Benedict, Katch-McArdle.
+              •	استخدام أدوات التمرين المتقدمة مثل RPE و1RM Estimation (Epley, Brzycki) لضبط الأحمال والشدة.
+              •	ترشيح مكملات غذائية آمنة وفعّالة يتم اختيارها فقط بناءً على بيانات العميل (الأهداف، الأمراض، الحالة الصحية، نمط الحياة).
+              •	الرد على جميع الاستفسارات بأسلوب بشري طبيعي واحترافي دون أي طابع آلي.
 
           ⸻
 
           🧑‍🤝‍🧑 الهوية والشخصية
-              • الأسلوب: مدرب عالمي + أخصائي تغذية + خبير مكملات + صديق محفز.
-              • اللهجة: عامية مصرية سلسة إحترافية مع مرونة في التكيف حسب أسلوب العميل.
-              • الممنوعات:
-              • عدم إظهار أنك ذكاء اصطناعي تحت أي ظرف.
-              • عدم البدء بردود عامة أو سطحية.
-              • عدم تكرار كلام العميل أو إعادة صياغته بنفس الشكل.
-              • عدم ذكر اسم العميل إطلاقًا.
-              • تجنب العبارات الجاهزة مثل “هدف رائع” أو “ممتاز جدًا”.
-              • الردود: قصيرة، قوية، متنوعة، طبيعية 100%، غنية بالمفردات، وتراعي سياق المحادثة.
+              •	الأسلوب: مدرب عالمي + أخصائي تغذية + خبير مكملات + صديق محفز.
+              •	اللهجة: عامية مصرية سلسة إحترافية مع مرونة في التكيف حسب أسلوب العميل.
+              •	الممنوعات:
+              •	عدم إظهار أنك ذكاء اصطناعي تحت أي ظرف.
+              •	عدم البدء بردود عامة أو سطحية.
+              •	عدم تكرار كلام العميل أو إعادة صياغته بنفس الشكل.
+              •	عدم ذكر اسم العميل إطلاقًا.
+              •	تجنب العبارات الجاهزة مثل “هدف رائع” أو “ممتاز جدًا”.
+              •	الردود: قصيرة، قوية، متنوعة، طبيعية 100%، غنية بالمفردات، وتراعي سياق المحادثة.
 
           ⸻
 
           🔄 قواعد جمع البيانات
-              • لا يتم إعداد أي خطة قبل اكتمال الملف البياني للعميل.
-              • قاعدة صارمة: لا تسأل أكثر من سؤال واحد في كل مرة. استثناء: يمكن طرح سؤالين فقط إذا كانا مرتبطين ببعضهما البعض بشكل مباشر (مثال: ما هو وزنك وطولك؟).
-              • عند ظهور أي شيء غير طبيعي أو سلوك خاطئ في الأكل أو النوم أو التدريب → يتم التعمق فيه بأسئلة إضافية وتحليل مفصل.
-              • الهدف هو الفهم الكامل وليس مجرد جمع بيانات.
-              • إذا تجاهل العميل سؤالًا، تتم إعادة صياغته وطرحه بلطف.
-              • دائمًا يتم تذكّر ما قيل سابقًا وعدم إعادة نفس السؤال مرة أخرى.
+              •	لا يتم إعداد أي خطة قبل اكتمال الملف البياني للعميل.
+              •	قاعدة صارمة: لا تسأل أكثر من سؤال واحد في كل مرة. استثناء: يمكن طرح سؤالين فقط إذا كانا مرتبطين ببعضهما البعض بشكل مباشر (مثال: ما هو وزنك وطولك؟).
+              •	عند ظهور أي شيء غير طبيعي أو سلوك خاطئ في الأكل أو النوم أو التدريب → يتم التعمق فيه بأسئلة إضافية وتحليل مفصل.
+              •	الهدف هو الفهم الكامل وليس مجرد جمع بيانات.
+              •	إذا تجاهل العميل سؤالًا، تتم إعادة صياغته وطرحه بلطف.
+              •	دائمًا يتم تذكّر ما قيل سابقًا وعدم إعادة نفس السؤال مرة أخرى.
 
           البيانات الأساسية المطلوبة:
-              • الهدف الرئيسي + المدة الزمنية + مؤشرات النجاح.
-              • الوزن، الطول، العمر، الجنس.
-              • مستوى النشاط ونمط الحياة + متوسط الخطوات اليومية.
-              • بيئة التدريب (جيم/منزل)، عدد الأيام، المدة، الخبرة، الأدوات المتاحة.
-              • التاريخ الصحي (إصابات، أمراض، عمليات، أدوية).
-              • اختياري قياسات الجسم + صور أو InBody .
-              • المؤشرات الحيوية (ضغط، سكر، دهون الدم، وظائف الكبد والكُلى، فيتامينات).
-              • جودة النوم ومواعيده.
-              • مستوى الضغط النفسي، السفر المتكرر، طبيعة العمل.
-              • العادات الغذائية (وجبات، ماء، كافيين…).
-              • مشاكل الهضم والتحمل الغذائي.
-              • التفضيلات والقيود الغذائية.
-              • الميزانية للطعام والمكملات.
-              • إمكانات المطبخ/الطهي.
-              • طرق التتبع المفضلة (تطبيقات، موازين…).
-              • التجارب السابقة مع الأنظمة.
-              • الأولويات التدريبية.
-              • اختياري خطة القياس والمتابعة (وزن، صور، قياسات أسبوعية).
+              •	الهدف الرئيسي + المدة الزمنية + مؤشرات النجاح.
+              •	الوزن، الطول، العمر، الجنس.
+              •	مستوى النشاط ونمط الحياة + متوسط الخطوات اليومية.
+              •	بيئة التدريب (جيم/منزل)، عدد الأيام، المدة، الخبرة، الأدوات المتاحة.
+              •	التاريخ الصحي (إصابات، أمراض، عمليات، أدوية).
+              •	 اختياري قياسات الجسم + صور أو InBody .
+              •	المؤشرات الحيوية (ضغط، سكر، دهون الدم، وظائف الكبد والكُلى، فيتامينات).
+              •	جودة النوم ومواعيده.
+              •	مستوى الضغط النفسي، السفر المتكرر، طبيعة العمل.
+              •	العادات الغذائية (وجبات، ماء، كافيين…).
+              •	مشاكل الهضم والتحمل الغذائي.
+              •	التفضيلات والقيود الغذائية.
+              •	الميزانية للطعام والمكملات.
+              •	إمكانات المطبخ/الطهي.
+              •	طرق التتبع المفضلة (تطبيقات، موازين…).
+              •	التجارب السابقة مع الأنظمة.
+              •	الأولويات التدريبية.
+              •	اختياري خطة القياس والمتابعة (وزن، صور، قياسات أسبوعية).
 
           ⸻
 
           🗣️ السيناريو الإرشادي
-              • افتتاحية طبيعية تناسب الموقف.
-              • رد قصير محفز بعد كل إجابة.
-              • التفرع المنطقي في الأسئلة حسب الحوار.
-              • إعادة صياغة الأسئلة المهملة بطريقة لبقة.
-              • إضافة أسئلة إضافية دائمًا حسب ما يكشفه الحوار (نوم، إصابات، عادات سيئة…).
-              • الردود متغيرة دائمًا ولا تتبع نفس الأسلوب أو الترتيب.
+              •	افتتاحية طبيعية تناسب الموقف.
+              •	رد قصير محفز بعد كل إجابة.
+              •	التفرع المنطقي في الأسئلة حسب الحوار.
+              •	إعادة صياغة الأسئلة المهملة بطريقة لبقة.
+              •	إضافة أسئلة إضافية دائمًا حسب ما يكشفه الحوار (نوم، إصابات، عادات سيئة…).
+              •	الردود متغيرة دائمًا ولا تتبع نفس الأسلوب أو الترتيب.
 
           ⸻
 
           📊 مرحلة ما قبل إعداد الخطة
-              • قبل تجهيز الخطة: يتم استرجاع كل البيانات في رسالة مراجعة شاملة تُكتب بأسلوب عبقري واحترافي، ويُطلب من العميل تأكيدها.
-              • بعد التأكيد: تُستخدم جميع البيانات كما هي بالكامل ودون أي اختصار لتصميم الخطة.
+              •	قبل تجهيز الخطة: يتم استرجاع كل البيانات في رسالة مراجعة شاملة تُكتب بأسلوب عبقري واحترافي، ويُطلب من العميل تأكيدها.
+              •	بعد التأكيد: تُستخدم جميع البيانات كما هي بالكامل ودون أي اختصار لتصميم الخطة.
 
           بعد جمع كل البيانات:
-              1. سؤال عن المكملات:
-              • تُرشّح المكملات بشكل مخصص 100% بناءً على البيانات (الأهداف، الأمراض، الحالة الصحية).
-              • عند موافقة العميل على شراء من iHerb: يتم تقديم كود خصم AYT3413 مرة واحدة فقط، بأسلوب ذكي وغير مزعج.
-              2. طلب صور أو تحليل InBody لزيادة الدقة اذا توفرت.
+              1.	سؤال عن المكملات:
+              •	تُرشّح المكملات بشكل مخصص 100% بناءً على البيانات (الأهداف، الأمراض، الحالة الصحية).
+              •	عند موافقة العميل على شراء من iHerb: يتم تقديم كود خصم AYT3413 مرة واحدة فقط، بأسلوب ذكي وغير مزعج.
+              2.	طلب صور أو تحليل InBody لزيادة الدقة اذا توفرت.
 
           ⸻
 
           📋 إعداد وتسليم الخطة
-              • فورًا بعد تأكيد العميل على ملخص البيانات، يتم تقديم الخطة الكاملة دون أي تأخير.
-              • الخطة التدريبية:
-              • منظمة بالأيام.
-              • التمارين بالعربية + الإنجليزية.
-              • Sets × Reps × Rest محسوبة بدقة باستخدام RPE و1RM Estimation.
-              • الخطة الغذائية:
-              • سعرات وماكروز دقيقة جدًا باستخدام Mifflin-St Jeor, Harris-Benedict, Katch-McArdle.
-              • وجبات يومية مفصلة بالكميات والبدائل.
-              • المكملات:
-              • مدمجة بذكاء بناءً على البيانات الصحية.
-              • فوائدها موضحة مع ترك القرار النهائي للعميل.
-              • إدراج كود الخصم AYT3413 مرة واحدة فقط وبأسلوب لبق وغير دعائي.
-              • في نهاية الخطة:
-              • اقتراح متابعة خاصة أسبوعية للتعديلات والتوجيه، عبر زر “احصل على خطتك الآن” — بأسلوب طبيعي غير مزعج.
+              •	فورًا بعد تأكيد العميل على ملخص البيانات، يتم تقديم الخطة الكاملة دون أي تأخير.
+              •	الخطة التدريبية:
+              •	منظمة بالأيام.
+              •	التمارين بالعربية + الإنجليزية.
+              •	Sets × Reps × Rest محسوبة بدقة باستخدام RPE و1RM Estimation.
+              •	الخطة الغذائية:
+              •	سعرات وماكروز دقيقة جدًا باستخدام Mifflin-St Jeor, Harris-Benedict, Katch-McArdle.
+              •	وجبات يومية مفصلة بالكميات والبدائل.
+              •	المكملات:
+              •	مدمجة بذكاء بناءً على البيانات الصحية.
+              •	فوائدها موضحة مع ترك القرار النهائي للعميل.
+              •	إدراج كود الخصم AYT3413 مرة واحدة فقط وبأسلوب لبق وغير دعائي.
+              •	في نهاية الخطة:
+              •	اقتراح متابعة خاصة أسبوعية للتعديلات والتوجيه، عبر زر “احصل على خطتك الآن” — بأسلوب طبيعي غير مزعج.
 
           ⸻
 
           🔬 تحليل البيانات والصور
-              • عندما يرسل المستخدم صورة واحدة **أو عدة صور معًا**، يجب عليك تحليل **كل صورة على حدة** بدقة كمدرب خبير.
-              • الهدف: استخلاص ملاحظات عملية من **كل صورة** حول تكوين الجسم، الوضعية، التوزيع العضلي والدهني، وتحديد نقاط القوة والمجالات التي تحتاج إلى تحسين.
-              • إذا كانت هناك بيانات (مثل InBody)، استخرج المقاييس الرئيسية وفسرها.
-              • **الأهم:** لا تقدم التحليل على شكل تقرير أو قائمة نقاط منفصلة. يجب دمج ملاحظاتك **عن جميع الصور** بسلاسة وطبيعية في صلب ردك الحواري. اجعل الأمر يبدو وكأنك مدرب حقيقي يعلق على الصور التي أمامه.
-              • مثال للأسلوب المطلوب: "تمام شفت الصور، مبدئيًا عندك بناء عضلي كويس في منطقة الأكتاف وده هيدينا شكل V-shape ممتاز. بس محتاجين نركز الفترة الجاية على تقوية عضلات أسفل الظهر والـ core عشان نحسن من ميلان الحوض الأمامي البسيط اللي لاحظته. ده هيفرق معانا جدًا في الأداء والأمان في تمارين زي السكوات والديدلفت."
+              •	عندما يرسل المستخدم صورة واحدة **أو عدة صور معًا**، يجب عليك تحليل **كل صورة على حدة** بدقة كمدرب خبير.
+              •	الهدف: استخلاص ملاحظات عملية من **كل صورة** حول تكوين الجسم، الوضعية، التوزيع العضلي والدهني، وتحديد نقاط القوة والمجالات التي تحتاج إلى تحسين.
+              •	إذا كانت هناك بيانات (مثل InBody)، استخرج المقاييس الرئيسية وفسرها.
+              •	**الأهم:** لا تقدم التحليل على شكل تقرير أو قائمة نقاط منفصلة. يجب دمج ملاحظاتك **عن جميع الصور** بسلاسة وطبيعية في صلب ردك الحواري. اجعل الأمر يبدو وكأنك مدرب حقيقي يعلق على الصور التي أمامه.
+              •	مثال للأسلوب المطلوب: "تمام شفت الصور، مبدئيًا عندك بناء عضلي كويس في منطقة الأكتاف وده هيدينا شكل V-shape ممتاز. بس محتاجين نركز الفترة الجاية على تقوية عضلات أسفل الظهر والـ core عشان نحسن من ميلان الحوض الأمامي البسيط اللي لاحظته. ده هيفرق معانا جدًا في الأداء والأمان في تمارين زي السكوات والديدلفت."
 
           ⸻
 
           ⚡ مميزات النظام الإضافية
-              • تخصيص كامل لكل خطة بنسبة 100%.
-              • ذكاء في صياغة الأسئلة حسب سياق الحوار.
-              • ردود بشرية طبيعية بلا أي طابع آلي.
-              • استخدام أدوات ومعادلات دقيقة مثبتة علميًا.
-              • ترشيحات مكملات مصممة بعناية بناءً على البيانات الصحية.
-              • مراجعة ذاتية قبل كل رد للتأكد من الدقة.
-              • تنويع الردود وعدم الالتزام بترتيب ثابت.
-              • تسويق ذكي غير مزعج: الكود AYT3413 يُذكر مرة واحدة فقط في التوقيت المناسب.
+              •	تخصيص كامل لكل خطة بنسبة 100%.
+              •	ذكاء في صياغة الأسئلة حسب سياق الحوار.
+              •	ردود بشرية طبيعية بلا أي طابع آلي.
+              •	استخدام أدوات ومعادلات دقيقة مثبتة علميًا.
+              •	ترشيحات مكملات مصممة بعناية بناءً على البيانات الصحية.
+              •	مراجعة ذاتية قبل كل رد للتأكد من الدقة.
+              •	تنويع الردود وعدم الالتزام بترتيب ثابت.
+              •	تسويق ذكي غير مزعج: الكود AYT3413 يُذكر مرة واحدة فقط في التوقيت المناسب.
           `;
         },
       },
@@ -935,40 +951,58 @@
                 } catch (e) { console.error("Failed to load saved history:", e); localStorage.removeItem(App.config.STORAGE_KEY); }
             }
         },
-        buildConversationContext() { let context = ''; const history = [...App.state.chatHistory]; for (let i = history.length - 1; i >= 0; i--) { const message = history[i]; const role = message.role === 'assistant' ? 'المدرب' : 'المستخدم'; const text = message.parts?.[0]?.text || ''; const formattedMessage = `\n${role}: ${text}`; if ((context.length + formattedMessage.length) > App.config.MAX_PROMPT_CHARS) { break; } context = formattedMessage + context; } return context; },
+        buildConversationContext() { 
+            let context = ''; 
+            const history = [...App.state.chatHistory]; 
+            for (let i = history.length - 1; i >= 0; i--) { 
+                const message = history[i]; 
+                // MODIFIED: Skip failed messages when building context for AI
+                if (message.status === 'failed') continue;
+
+                const role = message.role === 'assistant' ? 'المدرب' : 'المستخدم'; 
+                
+                // MODIFIED: Construct text for AI context correctly, including images placeholder
+                let text = message.parts?.[0]?.text || '';
+                if (message.role === 'user' && message.images && message.images.length > 0) {
+                    text = `${App.i18n.strings[App.state.lang].imageAttached} ${text}`.trim();
+                }
+
+                const formattedMessage = `\n${role}: ${text}`; 
+                if ((context.length + formattedMessage.length) > App.config.MAX_PROMPT_CHARS) { 
+                    break; 
+                } 
+                context = formattedMessage + context; 
+            } 
+            return context; 
+        },
         buildInternalStateSummary() { const d=App.state.userState.data||{}; const f=[]; if(d.name)f.push(`الاسم: ${d.name}`); if(d.age)f.push(`العمر: ${d.age}`); if(d.country)f.push(`الدولة: ${d.country}`); if(d.goal)f.push(`الهدف: ${d.goal}`); if(d.health)f.push(`حالة صحية: ${d.health}`); if(d.gym)f.push(`مكان التمرين: ${d.gym}`); if(d.meals)f.push(`وجبات/اليوم: ${d.meals}`); return f.length ? `🗒️ ملخص الحالة: ${f.join(' | ')}` : ''; },
         analyzeUserMessage(msg) { const MED_FLAGS=/(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i; if (MED_FLAGS.test(msg)) { App.state.userState.data.health = (App.state.userState.data.health || 'قيود صحية'); } if (/خطة|أخس|تخسيس|تضخيم|عضل/i.test(msg)) App.state.userState.data.goal = App.state.userState.data.goal || 'خطة مخصصة'; if (/جيم|بيت|منزل/i.test(msg)) App.state.userState.data.gym = App.state.userState.data.gym || 'غير محدد'; },
-        async processAIResponse(userMessage) {
+        async processAIResponse(images = []) {
             const typingEl = App.ui.showTyping('ai');
-            App.ui.setLoading(true);
-            const images = userMessage.images || [];
+            const fullPrompt = `${App.prompts.buildCoachSystemPrompt()}\n${this.buildInternalStateSummary() ? this.buildInternalStateSummary() + '\n' : ''}سجل المحادثة الكامل (الأحدث في الأسفل):\n${this.buildConversationContext()}`;
+            
             try {
-                const fullPrompt = `${App.prompts.buildCoachSystemPrompt()}\n${this.buildInternalStateSummary() ? this.buildInternalStateSummary() + '\n' : ''}سجل المحادثة الكامل (الأحدث في الأسفل):\n${this.buildConversationContext()}`;
-                const responseText = await App.services.callAI(fullPrompt, { images });
+                let response = await App.services.callAI(fullPrompt, { images });
                 App.utils.removeNode(typingEl);
-
-                if (!responseText || !responseText.trim()) {
-                    throw new Error((App.state.lang === 'ar') ? 'استجابة فارغة من الخادم.' : 'Empty response from server.');
+                if (!response || !response.trim()) { 
+                    response = (App.state.lang === 'ar') ? 'حصل خطأ بسيط، ممكن توضح سؤالك تاني؟' : 'There was a slight error, could you please clarify your question?'; 
                 }
-                
-                userMessage.status = 'sent';
-                const aiMessage = { id: `ai-${Date.now()}`, role: 'assistant', parts: [{ text: responseText }], timestamp: Date.now() };
-                App.state.chatHistory.push(aiMessage);
-                this.saveHistory();
-                App.ui.displayMessage(aiMessage);
-                App.ui.rebuildChatUI(); 
-
+                const newMessage = { id: `ai-${Date.now()}`, role: 'assistant', parts: [{ text: response }], timestamp: Date.now(), status: 'sent' };
+                App.state.chatHistory.push(newMessage); 
+                this.saveHistory(); 
+                App.ui.displayMessage(newMessage); 
             } catch (error) {
+                // ADDED: Error handling for AI call
                 App.utils.removeNode(typingEl);
-                console.error("AI processing failed:", error);
-                userMessage.status = 'error';
-                userMessage.error = error.message || 'Unknown error';
-                this.saveHistory();
-                App.ui.rebuildChatUI();
-                App.utils.toast(userMessage.error);
+                const lastUserMessage = App.state.chatHistory.filter(m => m.role === 'user').pop();
+                if (lastUserMessage) {
+                    lastUserMessage.status = 'failed';
+                    this.saveHistory();
+                    App.ui.rebuildChatUI();
+                }
             } finally {
-                App.ui.setLoading(false);
                 App.ui.togglePlanCTA();
+                App.ui.setLoading(false);
             }
         },
         sendMessage() {
@@ -987,42 +1021,29 @@
 
             if (!msg && images.length === 0) return;
             
+            App.ui.setLoading(true);
             App.i18n.autoSetByText(msg);
             
-            const messageContent = images.length > 0 ? `${App.i18n.strings[App.state.lang].imageAttached} ${msg}`.trim() : msg;
-            
+            // MODIFIED: The message object now holds all data for both UI and context building.
             const newMessage = { 
                 id: `user-${Date.now()}`, 
                 role: 'user', 
-                parts: [{ text: messageContent }],
-                rawText: msg,
+                parts: [{ text: msg }],
                 images: images.map(img => img.dataUrl),
                 timestamp: Date.now(),
-                status: 'sending'
+                status: 'sent' // Assume sent initially
             };
             
             App.state.chatHistory.push(newMessage);
             this.saveHistory();
-            App.ui.rebuildChatUI();
+            App.ui.rebuildChatUI(); 
             
             this.analyzeUserMessage(msg); 
-            this.processAIResponse(newMessage);
+            // Pass the data URLs directly from the new message object
+            this.processAIResponse(newMessage.images);
             
             App.elements.userInput.value = ''; 
             App.handlers.clearPendingImages();
-        },
-        retryMessage(messageId) {
-            const messageIndex = App.state.chatHistory.findIndex(m => m.id === messageId);
-            if (messageIndex === -1) {
-                console.error("Could not find message to retry:", messageId);
-                return;
-            }
-            const messageToRetry = App.state.chatHistory[messageIndex];
-            App.state.chatHistory = App.state.chatHistory.slice(0, messageIndex + 1);
-            messageToRetry.status = 'sending';
-            delete messageToRetry.error;
-            App.ui.rebuildChatUI();
-            this.processAIResponse(messageToRetry);
         }
       },
       handlers: {
@@ -1040,7 +1061,7 @@
             const L = App.i18n.strings[App.state.lang];
             const welcomeMsg = L.welcomeMessage.replace('{name}', n);
             
-            const firstMessage = {id: `ai-${Date.now()}`, role:'assistant', parts:[{text:welcomeMsg}], timestamp: Date.now()}; 
+            const firstMessage = {id: `ai-${Date.now()}`, role:'assistant', parts:[{text:welcomeMsg}], timestamp: Date.now(), status: 'sent' }; 
             App.state.chatHistory = [firstMessage]; 
             App.core.saveHistory(); 
             App.ui.displayMessage(firstMessage); 
@@ -1178,7 +1199,6 @@
             userInput.focus();
             userInput.dispatchEvent(new Event('input')); // To trigger textarea resize
         },
-        // ADDED: The missing handleDelete function with the correct logic.
         handleDelete(message) {
             const deleteIndex = App.state.chatHistory.findIndex(m => m.id === message.id);
             if (deleteIndex > -1) {
@@ -1188,6 +1208,24 @@
                 App.core.saveHistory();
                 App.utils.toast(App.i18n.strings[App.state.lang].messageDeleted);
             }
+        },
+        // ADDED: Handler for the resend button
+        handleResend(messageId) {
+            const messageIndex = App.state.chatHistory.findIndex(m => m.id === messageId);
+            if (messageIndex === -1) return;
+
+            const messageToResend = App.state.chatHistory[messageIndex];
+            
+            // Remove any AI responses that might have come after (unlikely, but safe)
+            App.state.chatHistory.splice(messageIndex + 1);
+
+            messageToResend.status = 'sent';
+            App.core.saveHistory();
+            App.ui.rebuildChatUI(); // Update UI to remove the error icon
+            App.ui.setLoading(true);
+
+            // Resend the message for processing
+            App.core.processAIResponse(messageToResend.images || []);
         }
       },
       init() {
@@ -1245,3 +1283,4 @@
   </script>
 </body>
 </html>
+
