@@ -274,6 +274,16 @@
     <h1 class="text-3xl sm:text-4xl lg:text-5xl font-black mb-2" id="welcomeTitle">مدربك الشخصي الذكي</h1>
     <p class="text-base sm:text-lg lg:text-xl font-light text-white/90 mb-8 max-w-xl" id="welcomeSubtitle">جاهز للتغيير؟ خطتك مصممة خصصًا لك — تنفيذ محكم، متابعة دقيقة، ونتيجة ملموسة.</p>
     <button id="startBtn" class="cta-btn">ابدأ الآن</button>
+    
+    <!-- ADDED: Footer and Explanation for Welcome Screen -->
+    <div class="absolute bottom-0 p-4 text-center w-full z-10">
+        
+        <p class="text-xs text-white/70">
+            <span id="footerRightsWelcome"></span> | 
+            <a href="https://buymeacoffee.com/aipersonaltrainer" target="_blank" class="font-semibold text-amber-300 hover:underline">☕ <span id="footerCoffeeWelcome"></span></a> | 
+            <a href="#" id="howToUseLinkWelcome" class="font-semibold underline hover:text-amber-300 transition-colors"><span id="howToUseTextWelcome"></span></a>
+        </p>
+    </div>
   </div>
 
   <!-- ======================= User Profile Screen ======================== -->
@@ -303,6 +313,16 @@
         </div>
         <!-- ### END: USER DATA INPUTS ### -->
     <button id="nextBtn" class="cta-btn w-full mt-4 !py-3 !text-lg !font-bold">ابدأ المحادثة</button></div>
+
+    <!-- ADDED: Footer and Explanation for User Data Screen -->
+    <div class="absolute bottom-0 p-4 text-center w-full z-10">
+         
+         <p class="text-xs text-white/70">
+             <span id="footerRightsUserData"></span> | 
+             <a href="https://buymeacoffee.com/aipersonaltrainer" target="_blank" class="font-semibold text-amber-300 hover:underline">☕ <span id="footerCoffeeUserData"></span></a> | 
+             <a href="#" id="howToUseLinkUserData" class="font-semibold underline hover:text-amber-300 transition-colors"><span id="howToUseTextUserData"></span></a>
+         </p>
+    </div>
   </div>
 
   <!-- ======================= Chat UI ======================== -->
@@ -462,7 +482,7 @@
       state: { userState: { step: 0, data: {} }, lang: 'ar', chatHistory: [], isRecording: false, sttSessionId: 0, recognition: null, mediaStream: null, mediaRecorder: null, audioChunks: [], recStartTime: 0, pendingImages: [], pinnedMessageId: null, longPressTimer: null, currentContextMenu: null, isEditing: false, editingMessageId: null },
       elements: {},
       cacheElements() {
-        const $ = id => document.getElementById(id); this.elements = { chatMessages: $('chatMessages'), userInput: $('userInput'), sendBtn: $('sendBtn'), startBtn: $('startBtn'), nextBtn: $('nextBtn'), welcomeScreen: $('welcomeScreen'), userDataScreen: $('userDataScreen'), chatContainer: $('chatContainer'), userNameInput: $('userName'), userAgeInput: $('userAge'), userCountryInput: $('userCountry'), btnTheme: $('btnTheme'), plusBtn: $('plusBtn'), fileInput: $('fileInput'), micBtn: $('micBtn'), recHintWrap: $('recHintWrap'), recHint: $('recHint'), planButtonArea: $('planButtonArea'), generatePlanBtn: $('generatePlanBtn'), contactModal: $('contactModal'), closeContactBtn: $('closeContactBtn'), copyAndGoIherbBtn: $('copy-and-go-iherb-btn'), iherbCode: $('iherb-code'), imagePreviewsWrapper: $('imagePreviewsWrapper'), imagePreviewsContainer: $('imagePreviewsContainer'), chatAvatar: $('chatAvatar'), profileModal: $('profileModal'), closeProfileBtn: $('closeProfileBtn'), profileGetPlanBtn: $('profileGetPlanBtn'), resetBtn: $('resetBtn'), resetConfirmModal: $('resetConfirmModal'), confirmResetBtn: $('confirmResetBtn'), cancelResetBtn: $('cancelResetBtn'), messageContextMenu: $('messageContextMenu'), pinnedMessageArea: $('pinnedMessageArea'), pinnedText: $('pinnedText'), unpinBtn: $('unpinBtn'), footerRights: $('footerRights'), footerCoffee: $('footerCoffee'), imageViewerModal: $('imageViewerModal'), fullImageView: $('fullImageView'), closeImageViewerBtn: $('closeImageViewerBtn'), howToUseLink: $('howToUseLink'), howToUseModal: $('howToUseModal'), closeHowToUseBtn: $('closeHowToUseBtn'), howToUseTitle: $('howToUseTitle'), howToUseContent: $('howToUseContent'), howToUseText: $('howToUseText') };
+        const $ = id => document.getElementById(id); this.elements = { chatMessages: $('chatMessages'), userInput: $('userInput'), sendBtn: $('sendBtn'), startBtn: $('startBtn'), nextBtn: $('nextBtn'), welcomeScreen: $('welcomeScreen'), userDataScreen: $('userDataScreen'), chatContainer: $('chatContainer'), userNameInput: $('userName'), userAgeInput: $('userAge'), userCountryInput: $('userCountry'), btnTheme: $('btnTheme'), plusBtn: $('plusBtn'), fileInput: $('fileInput'), micBtn: $('micBtn'), recHintWrap: $('recHintWrap'), recHint: $('recHint'), planButtonArea: $('planButtonArea'), generatePlanBtn: $('generatePlanBtn'), contactModal: $('contactModal'), closeContactBtn: $('closeContactBtn'), copyAndGoIherbBtn: $('copy-and-go-iherb-btn'), iherbCode: $('iherb-code'), imagePreviewsWrapper: $('imagePreviewsWrapper'), imagePreviewsContainer: $('imagePreviewsContainer'), chatAvatar: $('chatAvatar'), profileModal: $('profileModal'), closeProfileBtn: $('closeProfileBtn'), profileGetPlanBtn: $('profileGetPlanBtn'), resetBtn: $('resetBtn'), resetConfirmModal: $('resetConfirmModal'), confirmResetBtn: $('confirmResetBtn'), cancelResetBtn: $('cancelResetBtn'), messageContextMenu: $('messageContextMenu'), pinnedMessageArea: $('pinnedMessageArea'), pinnedText: $('pinnedText'), unpinBtn: $('unpinBtn'), footerRights: $('footerRights'), footerCoffee: $('footerCoffee'), imageViewerModal: $('imageViewerModal'), fullImageView: $('fullImageView'), closeImageViewerBtn: $('closeImageViewerBtn'), howToUseLink: $('howToUseLink'), howToUseModal: $('howToUseModal'), closeHowToUseBtn: $('closeHowToUseBtn'), howToUseTitle: $('howToUseTitle'), howToUseContent: $('howToUseContent'), howToUseText: $('howToUseText'), welcomeExplanation: $('welcomeExplanation'), userDataExplanation: $('userDataExplanation'), footerRightsWelcome: $('footerRightsWelcome'), footerCoffeeWelcome: $('footerCoffeeWelcome'), howToUseLinkWelcome: $('howToUseLinkWelcome'), footerRightsUserData: $('footerRightsUserData'), footerCoffeeUserData: $('footerCoffeeUserData'), howToUseLinkUserData: $('howToUseLinkUserData') };
       },
       i18n: {
         strings: {
@@ -508,6 +528,8 @@
                 </div>
             `,
             welcomeMessage: 'أهلًا بيك يا {name}، معاك مساعد المدرب الدولي مصطفى الصافي. جاهز نبدأ رحلتك؟ إيه هدفك الأساسي؟',
+            
+            
           },
           en: {
             appName:'Smart Personal Coach', welcomeSubtitle:'Ready for a change? Your plan is tailored for you—precise execution, close follow-up, and tangible results.',
@@ -551,6 +573,8 @@
                 </div>
             `,
             welcomeMessage: "Welcome, {name}! I'm assistant to international coach Mustafa Elsafy. Ready to start your journey? What's your main goal?",
+            
+            
           }
         },
         setLang(lang) {
@@ -588,6 +612,16 @@
           updateText('howToUseText', 'howToUseText');
           updateText('howToUseTitle', 'howToUseTitle');
           updateHtml('howToUseContent', 'howToUseContent');
+          
+          // Update new footer elements
+          
+          
+          updateText('footerRightsWelcome', 'footerRights');
+          updateText('footerCoffeeWelcome', 'footerCoffee');
+          updateText('howToUseTextWelcome', 'howToUseText');
+          updateText('footerRightsUserData', 'footerRights');
+          updateText('footerCoffeeUserData', 'footerCoffee');
+          updateText('howToUseTextUserData', 'howToUseText');
 
           document.querySelectorAll('.lang-toggle-btn').forEach(btn => { btn.textContent = lang === 'ar' ? 'EN' : 'AR'; });
           document.title = `${L.appName} | Smart Personal Coach`;
@@ -720,6 +754,7 @@
       },
       prompts: {
         buildCoachSystemPrompt() {
+          // FIXED: More explicit instructions for multi-image analysis
           return `
           📌 التوجيه التنفيذي النهائي — مدرب عالمي × خبير تغذية × خبير مكملات
 
@@ -820,10 +855,10 @@
           ⸻
 
           🔬 تحليل البيانات والصور
-              •	عندما يرسل المستخدم صورة (أو صورًا متعددة)، قم بتحليلها بدقة كمدرب خبير.
-              •	الهدف: استخلاص ملاحظات عملية حول تكوين الجسم، الوضعية، التوزيع العضلي والدهني، وتحديد نقاط القوة والمجالات التي تحتاج إلى تحسين.
+              •	عندما يرسل المستخدم صورة واحدة **أو عدة صور معًا**، يجب عليك تحليل **كل صورة على حدة** بدقة كمدرب خبير.
+              •	الهدف: استخلاص ملاحظات عملية من **كل صورة** حول تكوين الجسم، الوضعية، التوزيع العضلي والدهني، وتحديد نقاط القوة والمجالات التي تحتاج إلى تحسين.
               •	إذا كانت هناك بيانات (مثل InBody)، استخرج المقاييس الرئيسية وفسرها.
-              •	**الأهم:** لا تقدم التحليل على شكل تقرير أو قائمة نقاط منفصلة. يجب دمج ملاحظاتك بسلاسة وطبيعية في صلب ردك الحواري. اجعل الأمر يبدو وكأنك مدرب حقيقي يعلق على الصور التي أمامه.
+              •	**الأهم:** لا تقدم التحليل على شكل تقرير أو قائمة نقاط منفصلة. يجب دمج ملاحظاتك **عن جميع الصور** بسلاسة وطبيعية في صلب ردك الحواري. اجعل الأمر يبدو وكأنك مدرب حقيقي يعلق على الصور التي أمامه.
               •	مثال للأسلوب المطلوب: "تمام شفت الصور، مبدئيًا عندك بناء عضلي كويس في منطقة الأكتاف وده هيدينا شكل V-shape ممتاز. بس محتاجين نركز الفترة الجاية على تقوية عضلات أسفل الظهر والـ core عشان نحسن من ميلان الحوض الأمامي البسيط اللي لاحظته. ده هيفرق معانا جدًا في الأداء والأمان في تمارين زي السكوات والديدلفت."
 
           ⸻
@@ -925,7 +960,7 @@
             });
 
             this.saveHistory();
-            App.ui.displayMessage(newMessageForUI); // Display message with images in UI
+            App.ui.rebuildChatUI(); // Use rebuild to handle both new messages and edits cleanly
             
             this.analyzeUserMessage(msg); 
             this.processAIResponse(images.map(img => img.dataUrl));
@@ -1087,11 +1122,13 @@
             userInput.focus();
             userInput.dispatchEvent(new Event('input')); // To trigger textarea resize
         },
+        // ADDED: The missing handleDelete function with the correct logic.
         handleDelete(message) {
             const deleteIndex = App.state.chatHistory.findIndex(m => m.id === message.id);
             if (deleteIndex > -1) {
-                App.state.chatHistory.splice(deleteIndex); // Remove message and all subsequent messages
-                App.ui.rebuildChatUI();
+                // As per request, remove this message and ALL subsequent messages.
+                App.state.chatHistory.splice(deleteIndex);
+                App.ui.rebuildChatUI(); // Re-render the chat interface.
                 App.core.saveHistory();
                 App.utils.toast(App.i18n.strings[App.state.lang].messageDeleted);
             }
@@ -1138,6 +1175,11 @@
           E.howToUseLink.addEventListener('click', (e) => { e.preventDefault(); H.openHowToUseModal(); });
           E.closeHowToUseBtn.addEventListener('click', H.closeHowToUseModal);
           E.howToUseModal.addEventListener('click', (e) => H.handleModalClick.call(H, e));
+          
+          // Add event listeners for new links
+          E.howToUseLinkWelcome.addEventListener('click', (e) => { e.preventDefault(); H.openHowToUseModal(); });
+          E.howToUseLinkUserData.addEventListener('click', (e) => { e.preventDefault(); H.openHowToUseModal(); });
+          
           initUIEnhancements();
         });
       }
@@ -1147,3 +1189,4 @@
   </script>
 </body>
 </html>
+
