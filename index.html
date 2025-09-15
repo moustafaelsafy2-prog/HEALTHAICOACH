@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     /* =================================================================
-       -- 1. FONT & THEME VARIABLES (HEALTH & FITNESS THEME) --
+      -- 1. FONT & THEME VARIABLES (HEALTH & FITNESS THEME) --
     ================================================================= */
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
 
@@ -39,7 +39,7 @@
     }
 
     /* =================================================================
-       -- 2. BASE & TYPOGRAPHY --
+      -- 2. BASE & TYPOGRAPHY --
     ================================================================= */
     *, *::before, *::after { box-sizing: border-box; }
     body {
@@ -50,7 +50,7 @@
     }
 
     /* =================================================================
-       -- 3. APP SHELL & RESPONSIVE LAYOUT --
+      -- 3. APP SHELL & RESPONSIVE LAYOUT --
     ================================================================= */
     .app-shell {
       display: flex; flex-direction: column; height: 100vh; height: 100dvh;
@@ -66,7 +66,7 @@
     @media (min-width: 1024px) { body { padding: 2rem; } .app-shell { height: calc(100dvh - 4rem); } }
 
     /* =================================================================
-       -- 4. WELCOME & PROFILE SCREENS --
+      -- 4. WELCOME & PROFILE SCREENS --
     ================================================================= */
     .welcome-screen, .user-data-screen {
       display: flex; flex-direction: column; justify-content: center;
@@ -97,7 +97,7 @@
     .cta-btn-animated { animation: pulse-animation 2.5s infinite cubic-bezier(0.66, 0, 0, 1); }
 
     /* =================================================================
-       -- 5. CHAT UI COMPONENTS (UPGRADED) --
+      -- 5. CHAT UI COMPONENTS (UPGRADED) --
     ================================================================= */
     .chat-header {
       display: flex; justify-content: space-between; align-items: center;
@@ -111,6 +111,7 @@
     .chat-messages {
       flex: 1; padding: 1rem; overflow-y: auto; background-color: var(--color-bg-main);
       -webkit-overflow-scrolling: touch;
+      position: relative; /* Needed for the scroll-to-bottom button */
     }
     .message-bubble {
       max-width: 80%; padding: 0.5rem 1rem; border-radius: 12px; margin-bottom: 0.25rem;
@@ -140,14 +141,14 @@
     @keyframes typing-blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
 
     /* =================================================================
-       -- 6. DYNAMIC CARDS (CTA & iHerb) --
+      -- 6. DYNAMIC CARDS (CTA & iHerb) --
     ================================================================= */
     .dynamic-card { border-radius: 1rem; border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); margin: 1rem 0; animation: fadeIn 0.5s ease-out; }
     #iherb-card { background: linear-gradient(100deg, var(--color-bubble-user), #fff); border-color: var(--color-accent); }
     html.dark #iherb-card { background: linear-gradient(100deg, #14532D, #1F2937); border-color: var(--color-accent); }
     
     /* =================================================================
-       -- 7. INPUT AREA (WhatsApp Style) --
+      -- 7. INPUT AREA (WhatsApp Style) --
     ================================================================= */
     .input-area-wrapper { background-color: var(--color-bg-surface); padding: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--color-border); flex-shrink: 0; }
     .input-area { display: flex; align-items: flex-end; gap: 0.5rem; }
@@ -161,7 +162,7 @@
     .mic-btn.mic-live { color: #ef4444; background-color: rgba(239, 68, 68, 0.1); }
     
     /* =================================================================
-       -- 8. MODALS & UTILITIES (UPGRADED) --
+      -- 8. MODALS & UTILITIES (UPGRADED) --
     ================================================================= */
     .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(8px); z-index: 100; }
     .modal.open { display: flex; animation: fadeIn 0.3s; }
@@ -173,7 +174,7 @@
     @keyframes modal-scale-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
     /* =================================================================
-       -- 9. CHAT ACTION MENU & PINNED MESSAGE --
+      -- 9. CHAT ACTION MENU & PINNED MESSAGE --
     ================================================================= */
     #messageContextMenu {
         position: absolute; display: none; flex-direction: column; background: var(--color-bg-surface);
@@ -208,7 +209,7 @@
     }
     
     /* =================================================================
-       -- 10. MULTI-IMAGE PREVIEW STYLES --
+      -- 10. MULTI-IMAGE PREVIEW STYLES --
     ================================================================= */
     #imagePreviewsContainer {
         display: flex;
@@ -263,13 +264,66 @@
         box-shadow: 0 10px 25px rgba(0,0,0,0.5);
         border-radius: 0.75rem;
     }
+
+    /* --- New Styles for Error/Resend Bubble --- */
+    .message-bubble.error {
+        background-color: #FEE2E2;
+        color: #991B1B;
+        border: 1px solid #FCA5A5;
+        margin-right: auto;
+        border-bottom-left-radius: 5px;
+    }
+    html.dark .message-bubble.error {
+        background-color: #7F1D1D;
+        color: #FEE2E2;
+        border: 1px solid #F87171;
+    }
+
+    .message-bubble.error .resend-btn {
+        background-color: #EF4444;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-top: 8px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .message-bubble.error .resend-btn:hover {
+        background-color: #DC2626;
+    }
+
+    /* --- New Styles for Scroll to Bottom Button --- */
+    #scrollToBottomBtn {
+        position: absolute;
+        bottom: 7rem; /* Adjusted to be above the input area */
+        inset-inline-end: 1rem;
+        background-color: var(--color-bg-surface);
+        border: 1px solid var(--color-border);
+        box-shadow: var(--shadow-md);
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        display: none;
+        place-content: center;
+        cursor: pointer;
+        transition: opacity 0.3s, transform 0.3s;
+        z-index: 10;
+        opacity: 0.8;
+    }
+
+    #scrollToBottomBtn.show {
+        display: grid;
+    }
+    
   </style>
 </head>
 <body class="app-shell">
 
   <!-- =================================================================
-     -- SCREENS
-     ================================================================= -->
+      -- SCREENS
+      ================================================================= -->
   <!-- Welcome Screen -->
   <div class="welcome-screen" id="welcomeScreen">
     <div class="absolute top-4 right-4 z-10" style="inset-inline-end: 1rem; inset-inline-start: auto;"><button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-4 !h-10 !rounded-full !border-white/20 hover:!border-accent !text-white bg-white/10 backdrop-blur-sm">AR</button></div>
@@ -284,24 +338,24 @@
     <div class="absolute top-4 right-4 z-10" style="inset-inline-end: 1rem; inset-inline-start: auto;"><button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-4 !h-10 !rounded-full !border-white/20 hover:!border-accent !text-white bg-white/10 backdrop-blur-sm">AR</button></div>
     <div class="w-full max-w-sm p-6 sm:p-8 space-y-6 rounded-2xl shadow-xl border border-white/20"><div class="text-center"><h2 class="text-2xl sm:text-3xl font-extrabold" id="userDataTitle">لنبني ملفك السريع</h2><p class="text-white/80 mt-2" id="userDataSubtitle">نحتاج بعض المعلومات للبدء</p></div>
         <div class="space-y-4">
-            <div class="relative">
-                <span class="absolute inset-y-0 end-0 flex items-center pe-5 pointer-events-none">
-                    <svg class="w-5 h-5 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                </span>
-                <input type="text" id="userName" class="block w-full rounded-full py-3.5 ps-4 pe-12 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="اكتب اسمك هنا">
-            </div>
-            <div class="relative">
-                <span class="absolute inset-y-0 end-0 flex items-center pe-5 pointer-events-none">
-                    <svg class="w-5 h-5 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
-                </span>
-                <input type="text" inputmode="numeric" id="userAge" class="block w-full rounded-full py-3.5 ps-4 pe-12 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="عمرك">
-            </div>
-            <div class="relative">
-                <span class="absolute inset-y-0 end-0 flex items-center pe-5 pointer-events-none">
-                    <svg class="w-5 h-5 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
-                </span>
-                <input type="text" id="userCountry" class="block w-full rounded-full py-3.5 ps-4 pe-12 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="بلدك">
-            </div>
+          <div class="relative">
+            <span class="absolute inset-y-0 end-0 flex items-center pe-5 pointer-events-none">
+              <svg class="w-5 h-5 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            </span>
+            <input type="text" id="userName" class="block w-full rounded-full py-3.5 ps-4 pe-12 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="اكتب اسمك هنا">
+          </div>
+          <div class="relative">
+            <span class="absolute inset-y-0 end-0 flex items-center pe-5 pointer-events-none">
+              <svg class="w-5 h-5 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+            </span>
+            <input type="text" inputmode="numeric" id="userAge" class="block w-full rounded-full py-3.5 ps-4 pe-12 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="عمرك">
+          </div>
+          <div class="relative">
+            <span class="absolute inset-y-0 end-0 flex items-center pe-5 pointer-events-none">
+              <svg class="w-5 h-5 text-white/70" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+            </span>
+            <input type="text" id="userCountry" class="block w-full rounded-full py-3.5 ps-4 pe-12 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="بلدك">
+          </div>
         </div>
     <button id="nextBtn" class="cta-btn w-full mt-4 !py-3 !text-lg !font-bold">ابدأ المحادثة</button></div>
   </div>
@@ -313,7 +367,7 @@
       <div class="brand flex items-center gap-3"><img id="chatAvatar" src="https://images.unsplash.com/photo-1581009137042-c552e485697a?auto=format&fit=crop&w=80&q=80" alt="Coach Avatar" class="rounded-full object-cover"/><span class="text-lg font-bold" id="chatTitle">مدربك الشخصي الذكي</span></div>
       <div class="flex items-center gap-1">
         <button id="resetBtn" class="icon-btn text-xl !w-9 !h-9" title="ابدأ من جديد">
-            <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+          <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18m-2 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
         </button>
         <button id="btnLang" class="lang-toggle-btn icon-btn text-sm font-bold !w-auto px-4 !h-9">AR</button>
         <button id="btnTheme" class="icon-btn text-xl !w-9 !h-9">☀️</button>
@@ -334,13 +388,18 @@
     </div>
 
     <!-- Chat Messages -->
-    <div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
+    <div class="chat-messages" id="chatMessages" role="log" aria-live="polite">
+      <!-- New: Scroll to bottom button -->
+      <button id="scrollToBottomBtn" class="!w-12 !h-12 text-gray-500 hover:text-[var(--color-accent)] transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8"><path d="M12 21l-7.7-7.7c-.5-.5-.7-1.3-.7-2.1V7c0-.8.2-1.6.7-2.1l7.7-7.7c.5-.5 1.3-.7 2.1-.7s1.6.2 2.1.7l7.7 7.7c.5.5.7 1.3.7 2.1V12c0 .8-.2 1.6-.7 2.1l-7.7 7.7c-.5.5-1.3.7-2.1.7s-1.6-.2-2.1-.7zM12 18.5V4h-.5V18.5L9 16l-1.5 1.5 4 4 4-4-1.5-1.5z"></path></svg>
+      </button>
+    </div>
     
     <!-- Input Area -->
     <div class="input-area-wrapper">
         <div id="planButtonArea" class="px-2 pb-2"><div class="dynamic-card !m-0 rounded-xl p-3 flex justify-between items-center flex-wrap sm:flex-nowrap gap-3 bg-white dark:bg-slate-800"><div class="min-w-0"><div id="ctaTitle" class="font-bold text-gray-800 dark:text-gray-100">جاهز لنتيجة ملموسة؟</div><div id="ctaSubtitle" class="text-sm text-gray-600 dark:text-gray-300 mt-1">خطة مُحكمة + متابعة أسبوعية.</div></div><button id="generatePlanBtn" class="cta-btn cta-btn-animated !text-sm !px-5 !py-2.5 w-full sm:w-auto" disabled>احصل على خطتك الآن</button></div></div>
         <div id="imagePreviewsWrapper" class="hidden">
-            <div id="imagePreviewsContainer"></div>
+          <div id="imagePreviewsContainer"></div>
         </div>
         <div class="input-area" id="inputArea"><div class="input-field-container"><button id="plusBtn" class="icon-btn" aria-label="أرسل صورة/ملف" title="صورة/ملف"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></button><input type="file" id="fileInput" accept="image/*" class="hidden" multiple /><textarea id="userInput" placeholder="اكتب رسالتك..." dir="rtl" rows="1"></textarea><button id="micBtn" class="icon-btn mic-btn" aria-label="تسجيل صوتي" title="اضغط مطولاً للتسجيل"><svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line></svg></button></div><button id="sendBtn" class="icon-btn send-btn" aria-label="أرسل" title="إرسال"><svg class="w-5 h-5" style="transform: translateX(1px);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg></button></div>
         <div class="hidden text-center" id="recHintWrap"><p class="rec-hint text-xs" id="recHint"></p></div>
@@ -348,27 +407,27 @@
     
     <!-- App Footer -->
     <div id="appFooter" class="p-2 text-center border-t border-[var(--color-border)] bg-[var(--color-bg-surface)] flex-shrink-0">
-        <p class="text-xs text-[var(--color-text-secondary)]">
-            <span id="footerRights"></span> |  
-            <a href="https://buymeacoffee.com/aipersonaltrainer" target="_blank" class="font-semibold text-[var(--color-accent)] hover:underline">
-                ☕ <span id="footerCoffee"></span>
-            </a> | 
-            <a href="#" id="howToUseLink" class="font-semibold underline hover:text-[var(--color-accent)] transition-colors">
-                <span id="howToUseText"></span>
-            </a>
-        </p>
+      <p class="text-xs text-[var(--color-text-secondary)]">
+        <span id="footerRights"></span> |  
+        <a href="https://buymeacoffee.com/aipersonaltrainer" target="_blank" class="font-semibold text-[var(--color-accent)] hover:underline">
+          ☕ <span id="footerCoffee"></span>
+        </a> | 
+        <a href="#" id="howToUseLink" class="font-semibold underline hover:text-[var(--color-accent)] transition-colors">
+          <span id="howToUseText"></span>
+        </a>
+      </p>
     </div>
   </div>
 
   <!-- =================================================================
-     -- MODALS & OVERLAYS
-     ================================================================= -->
+      -- MODALS & OVERLAYS
+      ================================================================= -->
   <!-- Profile Modal -->
   <div id="profileModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog">
     <div class="modal-content !w-full !max-w-md !rounded-none sm:!rounded-2xl p-0 overflow-hidden">
       <div class="bg-gray-100 dark:bg-gray-800 p-4 flex justify-end">
         <button id="closeProfileBtn" class="icon-btn !w-8 !h-8" title="إغلاق">
-            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
       </div>
       <div class="flex flex-col items-center p-6 bg-gray-100 dark:bg-gray-800">
@@ -600,6 +659,8 @@
           howToUseTitle: $('howToUseTitle'),
           howToUseContent: $('howToUseContent'),
           howToUseText: $('howToUseText'),
+          // New: Scroll to bottom button
+          scrollToBottomBtn: $('scrollToBottomBtn'),
         };
       },
 
@@ -652,6 +713,8 @@
                 </div>
             `,
             welcomeMessage: 'أهلًا بيك يا {name}، معاك مساعد المدرب الدولي مصطفى الصافي. جاهز نبدأ رحلتك؟ إيه هدفك الأساسي؟',
+            // New strings
+            resendError: 'حصل خطأ في الإرسال. الرجاء إعادة الإرسال.',
           },
           en: {
             appName:'Smart Personal Coach', welcomeSubtitle:'Ready for a change? Your plan is tailored for you—precise execution, close follow-up, and tangible results.',
@@ -695,6 +758,8 @@
                 </div>
             `,
             welcomeMessage: "Welcome, {name}! I'm assistant to international coach Mustafa Elsafy. Ready to start your journey? What's your main goal?",
+            // New strings
+            resendError: 'Sending failed. Please resend.',
           }
         },
         
@@ -806,8 +871,16 @@
         displayMessage(message) {
           const { chatMessages } = App.elements;
           const bubble = document.createElement('div');
-          const sender = message.role === 'assistant' ? 'ai' : 'user';
-          
+          let sender = message.role === 'assistant' ? 'ai' : 'user';
+
+          // Handle error messages with a distinct style
+          if (message.role === 'error') {
+            sender = 'error';
+            bubble.dataset.originalPrompt = JSON.stringify(message.originalPrompt);
+            bubble.dataset.originalImages = JSON.stringify(message.originalImages);
+            bubble.dataset.originalMessageId = message.originalMessageId;
+          }
+
           bubble.className = `message-bubble ${sender}`;
           bubble.dataset.messageId = message.id;
 
@@ -835,6 +908,15 @@
 
           const timeHtml = `<div class="message-meta"><span class="message-time">${App.utils.formatTime(message.timestamp)}</span></div>`;
           bubble.innerHTML = finalHtml + timeHtml;
+          
+          // Add a resend button for error messages
+          if (message.role === 'error') {
+            const resendBtn = document.createElement('button');
+            resendBtn.className = 'resend-btn self-end';
+            resendBtn.textContent = (App.state.lang === 'ar') ? 'إعادة الإرسال' : 'Resend';
+            resendBtn.onclick = () => App.handlers.handleResend(bubble);
+            bubble.appendChild(resendBtn);
+          }
           
           chatMessages.appendChild(bubble);
           chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -970,7 +1052,20 @@
             return data.text || '';
           } catch (e) {
             console.error("AI Call Error:", e);
-            return '';
+            // Handle error and add a dedicated error message to the history
+            const errorMsg = App.i18n.strings[App.state.lang].resendError;
+            const originalPrompt = { text: prompt, images: images };
+            const errorObject = {
+              id: `error-${Date.now()}`,
+              role: 'error',
+              parts: [{ text: errorMsg }],
+              timestamp: Date.now(),
+              originalPrompt: originalPrompt,
+            };
+            App.state.chatHistory.push(errorObject);
+            App.core.saveHistory();
+            App.ui.displayMessage(errorObject);
+            return null; // Return null to indicate failure
           }
         },
         speech: {
@@ -1101,10 +1196,10 @@
               • قبل تجهيز الخطة: يتم استرجاع كل البيانات في رسالة مراجعة شاملة تُكتب بأسلوب عبقري واحترافي، ويُطلب من العميل تأكيدها.
               • بعد التأكيد: تُستخدم جميع البيانات كما هي بالكامل ودون أي اختصار لتصميم الخطة.
           بعد جمع كل البيانات:
-              1. سؤال عن المكملات:
+              • 1. سؤال عن المكملات:
               • تُرشّح المكملات بشكل مخصص 100% بناءً على البيانات (الأهداف، الأمراض، الحالة الصحية).
               • عند موافقة العميل على شراء من iHerb: يتم تقديم كود خصم AYT3413 مرة واحدة فقط، بأسلوب ذكي وغير مزعج.
-              2. طلب صور أو تحليل InBody لزيادة الدقة اذا توفرت.
+              • 2. طلب صور أو تحليل InBody لزيادة الدقة اذا توفرت.
           ⸻
           📋 إعداد وتسليم الخطة
               • فورًا بعد تأكيد العميل على ملخص البيانات، يتم تقديم الخطة الكاملة دون أي تأخير.
@@ -1231,7 +1326,7 @@
           if (/جيم|بيت|منزل/i.test(msg)) App.state.userState.data.gym = App.state.userState.data.gym || 'غير محدد';
         },
 
-        async processAIResponse(images = []) {
+        async processAIResponse(originalPrompt, images = []) {
           const typingEl = App.ui.showTyping('ai');
           
           const fullPrompt = `${App.prompts.buildCoachSystemPrompt()}\n${this.buildInternalStateSummary() ? this.buildInternalStateSummary() + '\n' : ''}سجل المحادثة الكامل (الأحدث في الأسفل):\n${this.buildConversationContext()}`;
@@ -1239,8 +1334,9 @@
           let response = await App.services.callAI(fullPrompt, { images });
           App.utils.removeNode(typingEl);
           
-          if (!response || !response.trim()) {
-            response = (App.state.lang === 'ar') ? 'حصل خطأ بسيط، ممكن توضح سؤالك تاني؟' : 'There was a slight error, could you please clarify your question?';
+          if (!response) {
+            App.ui.setLoading(false);
+            return;
           }
           const newMessage = { id: `ai-${Date.now()}`, role: 'assistant', parts: [{ text: response }], timestamp: Date.now() };
           
@@ -1284,17 +1380,17 @@
           
           // Push a clean version to history for the AI context
           App.state.chatHistory.push({
-              id: newMessageForUI.id,
-              role: 'user',
-              parts: [{ text: messageContent }], // AI context has combined text
-              timestamp: newMessageForUI.timestamp
+            id: newMessageForUI.id,
+            role: 'user',
+            parts: [{ text: messageContent }], // AI context has combined text
+            timestamp: newMessageForUI.timestamp
           });
 
           this.saveHistory();
           App.ui.displayMessage(newMessageForUI);
           
           this.analyzeUserMessage(msg);  
-          this.processAIResponse(images.map(img => img.dataUrl));
+          this.processAIResponse(msg, images.map(img => img.dataUrl));
           
           App.elements.userInput.value = '';  
           App.handlers.clearPendingImages();
@@ -1541,6 +1637,40 @@
           App.core.saveHistory();
           App.ui.updatePinnedMessageUI();
         },
+        // New: Resend Handler
+        handleResend(errorBubble) {
+            const originalPrompt = JSON.parse(errorBubble.dataset.originalPrompt);
+            const originalImages = JSON.parse(errorBubble.dataset.originalImages);
+            const originalMessageId = errorBubble.dataset.originalMessageId;
+
+            // Remove the error message from the UI and history
+            const errorIndex = App.state.chatHistory.findIndex(m => m.id === errorBubble.dataset.messageId);
+            if (errorIndex > -1) {
+                App.state.chatHistory.splice(errorIndex, 1);
+            }
+            errorBubble.remove();
+            
+            // Call processAIResponse again with the original data
+            App.ui.setLoading(true);
+            App.core.processAIResponse(originalPrompt.text, originalImages);
+        },
+
+        // New: Scroll to bottom handler
+        handleScrollToBottom() {
+          App.elements.chatMessages.scrollTop = App.elements.chatMessages.scrollHeight;
+        },
+
+        // New: Show/Hide scroll button
+        handleChatScroll() {
+          const chat = App.elements.chatMessages;
+          const isAtBottom = chat.scrollHeight - chat.scrollTop <= chat.clientHeight + 50;
+          if (isAtBottom) {
+            App.elements.scrollToBottomBtn.style.display = 'none';
+          } else {
+            App.elements.scrollToBottomBtn.style.display = 'grid';
+          }
+        },
+
 
         // --- Misc Handlers ---
         handleIherbCopy(e) {
@@ -1633,6 +1763,10 @@
               if (msgEl) msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
           });
+
+          // New Event Listener for the scroll button
+          E.scrollToBottomBtn.addEventListener('click', H.handleScrollToBottom);
+          E.chatMessages.addEventListener('scroll', H.handleChatScroll);
 
           // Misc
           E.copyAndGoIherbBtn.addEventListener('click', H.handleIherbCopy);
