@@ -8,7 +8,7 @@
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
     /* =================================================================
-        -- 1. FONT & THEME VARIABLES (HEALTH & FITNESS THEME) --
+       -- 1. FONT & THEME VARIABLES (HEALTH & FITNESS THEME) --
     ================================================================= */
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800&display=swap');
 
@@ -39,7 +39,7 @@
     }
 
     /* =================================================================
-        -- 2. BASE & TYPOGRAPHY --
+       -- 2. BASE & TYPOGRAPHY --
     ================================================================= */
     *, *::before, *::after { box-sizing: border-box; }
     body {
@@ -50,7 +50,7 @@
     }
 
     /* =================================================================
-        -- 3. APP SHELL & RESPONSIVE LAYOUT --
+       -- 3. APP SHELL & RESPONSIVE LAYOUT --
     ================================================================= */
     .app-shell {
       display: flex; flex-direction: column; height: 100vh; height: 100dvh;
@@ -66,7 +66,7 @@
     @media (min-width: 1024px) { body { padding: 2rem; } .app-shell { height: calc(100dvh - 4rem); } }
 
     /* =================================================================
-        -- 4. WELCOME & PROFILE SCREENS --
+       -- 4. WELCOME & PROFILE SCREENS --
     ================================================================= */
     .welcome-screen, .user-data-screen {
       display: flex; flex-direction: column; justify-content: center;
@@ -97,7 +97,7 @@
     .cta-btn-animated { animation: pulse-animation 2.5s infinite cubic-bezier(0.66, 0, 0, 1); }
 
     /* =================================================================
-        -- 5. CHAT UI COMPONENTS (UPGRADED) --
+       -- 5. CHAT UI COMPONENTS (UPGRADED) --
     ================================================================= */
     .chat-header {
       display: flex; justify-content: space-between; align-items: center;
@@ -140,14 +140,14 @@
     @keyframes typing-blink { 0% { opacity: 0.2; } 20% { opacity: 1; } 100% { opacity: 0.2; } }
 
     /* =================================================================
-        -- 6. DYNAMIC CARDS (CTA & iHerb) --
+       -- 6. DYNAMIC CARDS (CTA & iHerb) --
     ================================================================= */
     .dynamic-card { border-radius: 1rem; border: 1px solid var(--color-border); box-shadow: var(--shadow-sm); margin: 1rem 0; animation: fadeIn 0.5s ease-out; }
     #iherb-card { background: linear-gradient(100deg, var(--color-bubble-user), #fff); border-color: var(--color-accent); }
     html.dark #iherb-card { background: linear-gradient(100deg, #14532D, #1F2937); border-color: var(--color-accent); }
     
     /* =================================================================
-        -- 7. INPUT AREA (WhatsApp Style) --
+       -- 7. INPUT AREA (WhatsApp Style) --
     ================================================================= */
     .input-area-wrapper { background-color: var(--color-bg-surface); padding: 0.5rem; padding-bottom: calc(0.5rem + env(safe-area-inset-bottom)); border-top: 1px solid var(--color-border); flex-shrink: 0; }
     .input-area { display: flex; align-items: flex-end; gap: 0.5rem; }
@@ -161,7 +161,7 @@
     .mic-btn.mic-live { color: #ef4444; background-color: rgba(239, 68, 68, 0.1); }
     
     /* =================================================================
-        -- 8. MODALS & UTILITIES (UPGRADED) --
+       -- 8. MODALS & UTILITIES (UPGRADED) --
     ================================================================= */
     .modal { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(17, 24, 39, 0.6); backdrop-filter: blur(8px); z-index: 100; }
     .modal.open { display: flex; animation: fadeIn 0.3s; }
@@ -173,7 +173,7 @@
     @keyframes modal-scale-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
     /* =================================================================
-        -- 9. CHAT ACTION MENU & PINNED MESSAGE --
+       -- 9. CHAT ACTION MENU & PINNED MESSAGE --
     ================================================================= */
     #messageContextMenu {
         position: absolute; display: none; flex-direction: column; background: var(--color-bg-surface);
@@ -208,7 +208,7 @@
     }
     
     /* =================================================================
-        -- 10. MULTI-IMAGE PREVIEW STYLES --
+       -- 10. MULTI-IMAGE PREVIEW STYLES --
     ================================================================= */
     #imagePreviewsContainer {
         display: flex;
@@ -267,7 +267,10 @@
 </head>
 <body class="app-shell">
 
-  <!-- ======================= Welcome Screen ======================== -->
+  <!-- =================================================================
+     -- SCREENS
+     ================================================================= -->
+  <!-- Welcome Screen -->
   <div class="welcome-screen" id="welcomeScreen">
     <div class="absolute top-4 right-4 z-10" style="inset-inline-end: 1rem; inset-inline-start: auto;"><button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-4 !h-10 !rounded-full !border-white/20 hover:!border-accent !text-white bg-white/10 backdrop-blur-sm">AR</button></div>
     <img id="welcomeAvatar" src="https://images.unsplash.com/photo-1581009137042-c552e485697a?auto=format&fit=crop&w=200&q=80" alt="Coach Avatar" class="w-32 h-32 rounded-full mb-6 shadow-xl object-cover border-4 border-[var(--color-accent)]"/>
@@ -276,11 +279,10 @@
     <button id="startBtn" class="cta-btn">ابدأ الآن</button>
   </div>
 
-  <!-- ======================= User Profile Screen ======================== -->
+  <!-- User Profile Screen -->
   <div class="user-data-screen hidden" id="userDataScreen">
     <div class="absolute top-4 right-4 z-10" style="inset-inline-end: 1rem; inset-inline-start: auto;"><button class="lang-toggle-btn icon-btn text-sm font-bold border !w-auto px-4 !h-10 !rounded-full !border-white/20 hover:!border-accent !text-white bg-white/10 backdrop-blur-sm">AR</button></div>
     <div class="w-full max-w-sm p-6 sm:p-8 space-y-6 rounded-2xl shadow-xl border border-white/20"><div class="text-center"><h2 class="text-2xl sm:text-3xl font-extrabold" id="userDataTitle">لنبني ملفك السريع</h2><p class="text-white/80 mt-2" id="userDataSubtitle">نحتاج بعض المعلومات للبدء</p></div>
-        <!-- ### START: USER DATA INPUTS ### -->
         <div class="space-y-4">
             <div class="relative">
                 <span class="absolute inset-y-0 end-0 flex items-center pe-5 pointer-events-none">
@@ -301,12 +303,12 @@
                 <input type="text" id="userCountry" class="block w-full rounded-full py-3.5 ps-4 pe-12 bg-white/10 border-2 border-transparent text-white placeholder-white/70 focus:bg-white/20 focus:border-accent focus:ring-0 outline-none transition" placeholder="بلدك">
             </div>
         </div>
-        <!-- ### END: USER DATA INPUTS ### -->
     <button id="nextBtn" class="cta-btn w-full mt-4 !py-3 !text-lg !font-bold">ابدأ المحادثة</button></div>
   </div>
 
-  <!-- ======================= Chat UI ======================== -->
+  <!-- Chat UI Container -->
   <div class="flex flex-col h-full hidden" id="chatContainer">
+    <!-- Chat Header -->
     <div class="chat-header">
       <div class="brand flex items-center gap-3"><img id="chatAvatar" src="https://images.unsplash.com/photo-1581009137042-c552e485697a?auto=format&fit=crop&w=80&q=80" alt="Coach Avatar" class="rounded-full object-cover"/><span class="text-lg font-bold" id="chatTitle">مدربك الشخصي الذكي</span></div>
       <div class="flex items-center gap-1">
@@ -318,6 +320,7 @@
       </div>
     </div>
     
+    <!-- Pinned Message -->
     <div id="pinnedMessageArea">
       <div class="pinned-content">
         <div class="flex items-center gap-2 min-w-0">
@@ -330,8 +333,10 @@
       </div>
     </div>
 
+    <!-- Chat Messages -->
     <div class="chat-messages" id="chatMessages" role="log" aria-live="polite"></div>
     
+    <!-- Input Area -->
     <div class="input-area-wrapper">
         <div id="planButtonArea" class="px-2 pb-2"><div class="dynamic-card !m-0 rounded-xl p-3 flex justify-between items-center flex-wrap sm:flex-nowrap gap-3 bg-white dark:bg-slate-800"><div class="min-w-0"><div id="ctaTitle" class="font-bold text-gray-800 dark:text-gray-100">جاهز لنتيجة ملموسة؟</div><div id="ctaSubtitle" class="text-sm text-gray-600 dark:text-gray-300 mt-1">خطة مُحكمة + متابعة أسبوعية.</div></div><button id="generatePlanBtn" class="cta-btn cta-btn-animated !text-sm !px-5 !py-2.5 w-full sm:w-auto" disabled>احصل على خطتك الآن</button></div></div>
         <div id="imagePreviewsWrapper" class="hidden">
@@ -341,6 +346,7 @@
         <div class="hidden text-center" id="recHintWrap"><p class="rec-hint text-xs" id="recHint"></p></div>
     </div>
     
+    <!-- App Footer -->
     <div id="appFooter" class="p-2 text-center border-t border-[var(--color-border)] bg-[var(--color-bg-surface)] flex-shrink-0">
         <p class="text-xs text-[var(--color-text-secondary)]">
             <span id="footerRights"></span> |  
@@ -354,6 +360,10 @@
     </div>
   </div>
 
+  <!-- =================================================================
+     -- MODALS & OVERLAYS
+     ================================================================= -->
+  <!-- Profile Modal -->
   <div id="profileModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog">
     <div class="modal-content !w-full !max-w-md !rounded-none sm:!rounded-2xl p-0 overflow-hidden">
       <div class="bg-gray-100 dark:bg-gray-800 p-4 flex justify-end">
@@ -390,10 +400,12 @@
     </div>
   </div>
 
+  <!-- Contact Modal -->
   <div id="contactModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog"><div class="modal-content"><div class="modal-header p-4 flex justify-between items-center"><h3 id="contactModalTitle" class="text-lg font-bold">احصل على خطتك الآن</h3><button id="closeContactBtn" class="icon-btn !w-8 !h-8" title="إغلاق">×</button></div><div class="modal-body p-6"><p id="contactModalText1" class="mb-4 text-secondary">اختر الطريقة المناسبة للتواصل المباشر مع المدرب.</p><div class="grid grid-cols-1 sm:grid-cols-2 gap-3"><a class="flex items-center justify-center gap-3 p-4 rounded-lg bg-[#25D366] text-white font-bold transition hover:opacity-90" href="https://wa.me/971502061209" target="_blank" rel="noopener"><svg class="w-6 h-6" viewBox="0 0 32 32" fill="currentColor"><path d="M19.11 17.18c-.28-.14-1.65-.81-1.9-.9-.26-.1-.44-.14-.62.14-.18.27-.71.9-.87 1.09-.16.18-.32.2-.6.07-.28-.14-1.18-.44-2.25-1.4-.83-.74-1.39-1.66-1.55-1.94-.16-.27-.02-.42.12-.56.12-.12.28-.3.42-.46.14-.16.18-.27.28-.46.1-.18.06-.34-.02-.48-.08-.14-.62-1.5-.84-2.06-.22-.52-.44-.45-.62-.46h-.54c-.18 0-.48.07-.74.34-.26.27-1 1-1 2.42s1.03 2.8 1.18 2.99c.14.2 2.03 3.1 4.93 4.33.69.3 1.22.48 1.64.62.69.22 1.32.19 1.82.12.56-.08 1.65-.68 1.88-1.35.24-.67.24-1.24.16-1.35-.06-.1-.24-.16-.52-.3z"/><path d="M26.9 5.1A13.9 13.9 0 0 0 16 .1C7.3.1.2 7.1.2 15.8c0 2.7.7 5.2 2 7.4L.1 31.9l8.9-2.3c2.1 1.1 4.5 1.7 7 1.7h.1c8.7 0 15.8-7 15.8-15.7 0-4.2-1.6-8.1-4.9-10.9z"/></svg><span id="whatsappBtnText">واتساب</span></a><a class="flex items-center justify-center gap-3 p-4 rounded-lg bg-blue-500 text-white font-bold transition hover:opacity-90" href="tel:+971502061209"><svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.01-.24c1.11.37 2.3.57 3.58.57a1 1 0 0 1 1 1V21a1 1 0 0 1-1 1C10.61 22 2 13.39 2 3a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.27.2 2.47.57 3.58a1 1 0 0 1-.24 1.01l-2.21 2.2z"/></svg><span id="phoneBtnText">اتصال</span></a></div><div id="iherb-card" class="dynamic-card mt-6 pt-5 border-t border-[var(--color-border)] flex flex-col sm:flex-row items-center gap-4 p-4 !m-0 !border-0 !shadow-none"><div class="flex-shrink-0 grid place-items-center w-14 h-14 rounded-full bg-emerald-100 dark:bg-emerald-900 text-[var(--color-accent)]"><svg class="w-8 h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66.95-2.3c.48.17.98.3 1.5.38 3.3.5 6.22-2.39 6.84-5.64.45-2.3-1.05-4.42-3.23-5.32-.6-.25-1.25-.37-1.92-.37-.85 0-1.67.2-2.43.56l-1.89-.66C7.9 3.83 17 8 17 8Z" /></svg></div><div class="flex-1 min-w-0 text-center sm:text-right"><p id="iherbTitle" class="font-extrabold text-emerald-800 dark:text-emerald-200">احصل على مكملاتك من iHerb</p><p id="iherbSubtitle" class="text-sm text-emerald-700 dark:text-emerald-300 mt-1">خصم 10% إضافي هدية من مدربك!</p></div><div class="flex items-center gap-2 mt-2 sm:mt-0">
         <div id="iherb-code" title="اضغط للنسخ" class="cursor-pointer transition-transform hover:scale-105 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border-2 border-dashed border-[var(--color-accent)] font-mono text-base font-bold text-emerald-700 dark:text-emerald-300">AYT3413</div>
         <a id="copy-and-go-iherb-btn" href="https://iherb.co/fL9KCv1i?rcode=AYT3413" target="_blank" class="flex-shrink-0 px-4 py-2.5 rounded-lg bg-[var(--color-accent)] text-white font-bold hover:bg-[var(--color-accent-hover)] transition-colors text-sm shadow-md"><span id="copy-and-go-iherb-btn-text">اذهب للمتجر</span></a></div></div><div class="text-center mt-6 pt-5 border-t border-[var(--color-border)]"><p id="coffeeText" class="text-sm text-secondary mb-3">هل أعجبتك الأداة؟ دعمك يساعدنا على الاستمرار.</p><a href="https://buymeacoffee.com/aipersonaltrainer" target="_blank" class="inline-flex items-center gap-2 px-5 py-2.5 font-bold text-gray-800 bg-amber-400 rounded-lg shadow-md hover:bg-amber-500 transition-colors"><svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M20 3H4v10c0 2.21 1.79 4 4 4h6c2.21 0 4-1.79 4-4v-3h2c1.11 0 2-.89 2-2V5c0-1.11-.89-2-2-2zm0 5h-2V5h2v3zM4 19h16v2H4v-2z"/></svg><span id="coffeeBtnText">ادعمني بقهوة</span></a></div></div></div></div>
 
+  <!-- Reset Confirmation Modal -->
   <div id="resetConfirmModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog">
       <div class="modal-content !max-w-sm">
           <div class="p-6">
@@ -407,6 +419,7 @@
       </div>
   </div>
 
+  <!-- Message Context Menu -->
   <div id="messageContextMenu">
       <button class="context-menu-btn" data-action="copy">
           <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
@@ -431,6 +444,7 @@
       </button>
   </div>
   
+  <!-- Image Viewer Modal -->
   <div id="imageViewerModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog">
     <div class="modal-content !w-auto !max-w-[90vw] !max-h-[90vh] !p-2 !bg-transparent !shadow-none relative">
       <img id="fullImageView" src="" alt="Full size preview" class="max-w-full max-h-full object-contain">
@@ -440,7 +454,7 @@
     </div>
   </div>
 
-  <!-- HOW TO USE MODAL -->
+  <!-- "How to Use" Modal -->
   <div id="howToUseModal" class="modal" aria-modal="true" aria-hidden="true" role="dialog">
     <div class="modal-content">
         <div class="modal-header p-4 flex justify-between items-center">
@@ -455,15 +469,145 @@
 
 
   <script type="module">
-    function initUIEnhancements() { const userInput = document.getElementById('userInput'); if (!userInput) return; const adjustTextareaHeight = () => { userInput.style.height = 'auto'; userInput.style.height = userInput.scrollHeight + 'px'; }; userInput.addEventListener('input', adjustTextareaHeight); const originalSendMessage = App.core.sendMessage; App.core.sendMessage = function(...args) { originalSendMessage.apply(this, args); setTimeout(adjustTextareaHeight, 0); }; }
+    /**
+     * =================================================================
+     * Smart Personal Coach - Main Application Logic
+     * =================================================================
+     * This script encapsulates the entire functionality of the chat application.
+     * It's structured as a single 'App' object with distinct modules
+     * for configuration, state management, UI manipulation, services, etc.
+     */
 
+    // A small utility to enhance the textarea's auto-resize functionality.
+    function initUIEnhancements() {
+        const userInput = document.getElementById('userInput');
+        if (!userInput) return;
+
+        const adjustTextareaHeight = () => {
+            userInput.style.height = 'auto';
+            userInput.style.height = userInput.scrollHeight + 'px';
+        };
+
+        userInput.addEventListener('input', adjustTextareaHeight);
+
+        // Ensure textarea resizes after a message is sent and cleared.
+        const originalSendMessage = App.core.sendMessage;
+        App.core.sendMessage = function(...args) {
+            originalSendMessage.apply(this, args);
+            setTimeout(adjustTextareaHeight, 0);
+        };
+    }
+
+    // Main Application Namespace
     const App = {
-      config: { MAX_PROMPT_CHARS: 28000, STORAGE_KEY: 'smart-coach-session-v3', LONG_PRESS_DURATION: 400, MAX_IMAGES: 5 },
-      state: { userState: { step: 0, data: {} }, lang: 'ar', chatHistory: [], isRecording: false, sttSessionId: 0, recognition: null, mediaStream: null, mediaRecorder: null, audioChunks: [], recStartTime: 0, pendingImages: [], pinnedMessageId: null, longPressTimer: null, currentContextMenu: null, isEditing: false, editingMessageId: null },
-      elements: {},
-      cacheElements() {
-        const $ = id => document.getElementById(id); this.elements = { chatMessages: $('chatMessages'), userInput: $('userInput'), sendBtn: $('sendBtn'), startBtn: $('startBtn'), nextBtn: $('nextBtn'), welcomeScreen: $('welcomeScreen'), userDataScreen: $('userDataScreen'), chatContainer: $('chatContainer'), userNameInput: $('userName'), userAgeInput: $('userAge'), userCountryInput: $('userCountry'), btnTheme: $('btnTheme'), plusBtn: $('plusBtn'), fileInput: $('fileInput'), micBtn: $('micBtn'), recHintWrap: $('recHintWrap'), recHint: $('recHint'), planButtonArea: $('planButtonArea'), generatePlanBtn: $('generatePlanBtn'), contactModal: $('contactModal'), closeContactBtn: $('closeContactBtn'), copyAndGoIherbBtn: $('copy-and-go-iherb-btn'), iherbCode: $('iherb-code'), imagePreviewsWrapper: $('imagePreviewsWrapper'), imagePreviewsContainer: $('imagePreviewsContainer'), chatAvatar: $('chatAvatar'), profileModal: $('profileModal'), closeProfileBtn: $('closeProfileBtn'), profileGetPlanBtn: $('profileGetPlanBtn'), resetBtn: $('resetBtn'), resetConfirmModal: $('resetConfirmModal'), confirmResetBtn: $('confirmResetBtn'), cancelResetBtn: $('cancelResetBtn'), messageContextMenu: $('messageContextMenu'), pinnedMessageArea: $('pinnedMessageArea'), pinnedText: $('pinnedText'), unpinBtn: $('unpinBtn'), footerRights: $('footerRights'), footerCoffee: $('footerCoffee'), imageViewerModal: $('imageViewerModal'), fullImageView: $('fullImageView'), closeImageViewerBtn: $('closeImageViewerBtn'), howToUseLink: $('howToUseLink'), howToUseModal: $('howToUseModal'), closeHowToUseBtn: $('closeHowToUseBtn'), howToUseTitle: $('howToUseTitle'), howToUseContent: $('howToUseContent'), howToUseText: $('howToUseText') };
+      /**
+       * -----------------------------------------------------------------
+       * 1. CONFIGURATION & STATE
+       * -----------------------------------------------------------------
+       */
+      config: {
+        MAX_PROMPT_CHARS: 28000,
+        STORAGE_KEY: 'smart-coach-session-v3',
+        LONG_PRESS_DURATION: 400,
+        MAX_IMAGES: 5,
       },
+
+      state: {
+        userState: { step: 0, data: {} },
+        lang: 'ar',
+        chatHistory: [],
+        isRecording: false,
+        sttSessionId: 0,
+        recognition: null,
+        mediaStream: null,
+        mediaRecorder: null,
+        audioChunks: [],
+        recStartTime: 0,
+        pendingImages: [],
+        pinnedMessageId: null,
+        longPressTimer: null,
+        currentContextMenu: null,
+        isEditing: false,
+        editingMessageId: null,
+      },
+
+      // Holds cached DOM elements for performance.
+      elements: {},
+
+      /**
+       * -----------------------------------------------------------------
+       * 2. INITIALIZATION & DOM CACHING
+       * -----------------------------------------------------------------
+       */
+      cacheElements() {
+        const $ = id => document.getElementById(id);
+        this.elements = {
+          // Screens
+          welcomeScreen: $('welcomeScreen'),
+          userDataScreen: $('userDataScreen'),
+          chatContainer: $('chatContainer'),
+          // Chat Area
+          chatMessages: $('chatMessages'),
+          userInput: $('userInput'),
+          sendBtn: $('sendBtn'),
+          plusBtn: $('plusBtn'),
+          micBtn: $('micBtn'),
+          chatAvatar: $('chatAvatar'),
+          // User Data Form
+          startBtn: $('startBtn'),
+          nextBtn: $('nextBtn'),
+          userNameInput: $('userName'),
+          userAgeInput: $('userAge'),
+          userCountryInput: $('userCountry'),
+          // Controls & Buttons
+          btnTheme: $('btnTheme'),
+          fileInput: $('fileInput'),
+          planButtonArea: $('planButtonArea'),
+          generatePlanBtn: $('generatePlanBtn'),
+          resetBtn: $('resetBtn'),
+          // Modals
+          contactModal: $('contactModal'),
+          closeContactBtn: $('closeContactBtn'),
+          profileModal: $('profileModal'),
+          closeProfileBtn: $('closeProfileBtn'),
+          profileGetPlanBtn: $('profileGetPlanBtn'),
+          resetConfirmModal: $('resetConfirmModal'),
+          confirmResetBtn: $('confirmResetBtn'),
+          cancelResetBtn: $('cancelResetBtn'),
+          imageViewerModal: $('imageViewerModal'),
+          fullImageView: $('fullImageView'),
+          closeImageViewerBtn: $('closeImageViewerBtn'),
+          howToUseModal: $('howToUseModal'),
+          closeHowToUseBtn: $('closeHowToUseBtn'),
+          // iHerb & Support
+          copyAndGoIherbBtn: $('copy-and-go-iherb-btn'),
+          iherbCode: $('iherb-code'),
+          // Image Previews
+          imagePreviewsWrapper: $('imagePreviewsWrapper'),
+          imagePreviewsContainer: $('imagePreviewsContainer'),
+          // Context Menu & Pinning
+          messageContextMenu: $('messageContextMenu'),
+          pinnedMessageArea: $('pinnedMessageArea'),
+          pinnedText: $('pinnedText'),
+          unpinBtn: $('unpinBtn'),
+          // Speech Recognition
+          recHintWrap: $('recHintWrap'),
+          recHint: $('recHint'),
+          // Footer & Info
+          footerRights: $('footerRights'),
+          footerCoffee: $('footerCoffee'),
+          howToUseLink: $('howToUseLink'),
+          howToUseTitle: $('howToUseTitle'),
+          howToUseContent: $('howToUseContent'),
+          howToUseText: $('howToUseText'),
+        };
+      },
+
+      /**
+       * -----------------------------------------------------------------
+       * 3. I18N & LOCALIZATION MODULE
+       * -----------------------------------------------------------------
+       */
       i18n: {
         strings: {
           ar: {
@@ -553,10 +697,12 @@
             welcomeMessage: "Welcome, {name}! I'm assistant to international coach Mustafa Elsafy. Ready to start your journey? What's your main goal?",
           }
         },
+        
         setLang(lang) {
           App.state.lang = lang;
           document.documentElement.lang = lang;
           document.documentElement.dir = lang === 'ar' ? 'rtl' : 'ltr';
+          
           const L = App.i18n.strings[lang];
           const $ = id => document.getElementById(id);
           const updateText = (elId, key) => { const el = $(elId); if (el) el.textContent = L[key]; };
@@ -564,167 +710,338 @@
           const updateTitle = (elId, key) => { const el = $(elId); if (el) el.title = L[key]; };
           const updateHtml = (elId, key) => { const el = $(elId); if (el) el.innerHTML = L[key]; };
           
+          // --- Update Welcome Screen ---
           updateText('welcomeTitle', 'appName'); updateText('welcomeSubtitle', 'welcomeSubtitle'); updateText('startBtn', 'startButtonText');
+          
+          // --- Update User Data Screen ---
           updateText('userDataTitle', 'userDataTitle'); updateText('userDataSubtitle', 'userDataSubtitle');
           updatePlaceholder('userName', 'namePlaceholder'); updatePlaceholder('userAge', 'agePlaceholder'); updatePlaceholder('userCountry', 'countryPlaceholder');
-          updateText('nextBtn', 'nextButtonText'); updateText('chatTitle', 'appName'); updatePlaceholder('userInput', 'inputPlaceholder');
+          updateText('nextBtn', 'nextButtonText');
+          
+          // --- Update Chat UI ---
+          updateText('chatTitle', 'appName'); updatePlaceholder('userInput', 'inputPlaceholder');
+          updateText('ctaTitle', 'ctaTitle'); updateText('ctaSubtitle', 'ctaSubtitle'); updateText('generatePlanBtn', 'getPlanButton');
+          updateTitle('resetBtn', 'resetTitle');
+
+          // --- Update Modals ---
           updateText('contactModalTitle', 'contactModalTitle'); updateText('contactModalText1', 'contactModalText1');
           updateText('whatsappBtnText', 'whatsappBtnText'); updateText('phoneBtnText', 'phoneBtnText');
-          updateText('coffeeText', 'coffeeText'); updateText('coffeeBtnText', 'coffeeBtnText'); updateText('coffeeBtnText2', 'coffeeBtnText2');
-          updateText('ctaTitle', 'ctaTitle'); updateText('ctaSubtitle', 'ctaSubtitle'); updateText('generatePlanBtn', 'getPlanButton');
-          updateText('iherbTitle', 'iherbTitle'); updateText('iherbSubtitle', 'iherbSubtitle');
-          updateText('copy-and-go-iherb-btn-text', 'copyAndGoButton');
-          updateTitle('resetBtn', 'resetTitle'); updateText('resetModalTitle', 'resetModalTitle');
+          updateText('resetModalTitle', 'resetModalTitle');
           updateText('resetModalText', 'resetModalText'); updateText('cancelResetBtn', 'resetCancelBtn');
-          updateText('confirmResetBtn', 'resetConfirmBtn');  
-          updateText('contextCopy', 'contextCopy'); updateText('contextShare', 'contextShare'); updateText('contextPin', 'contextPin');
-          updateText('contextEdit', 'contextEdit'); updateText('contextDelete', 'contextDelete');
-          updateTitle('unpinBtn', 'unpinTitle');
+          updateText('confirmResetBtn', 'resetConfirmBtn');
           updateText('profileName', 'profileName'); updateText('profilePhone', 'profilePhone');
           updateText('profileBioTitle', 'profileBioTitle'); updateText('profileBioText', 'profileBioText');
           updateText('profileGetPlanBtn', 'profileGetPlanBtn');
+          updateText('howToUseTitle', 'howToUseTitle');
+          updateHtml('howToUseContent', 'howToUseContent');
+          
+          // --- Update Context Menu ---
+          updateText('contextCopy', 'contextCopy'); updateText('contextShare', 'contextShare'); updateText('contextPin', 'contextPin');
+          updateText('contextEdit', 'contextEdit'); updateText('contextDelete', 'contextDelete');
+          updateTitle('unpinBtn', 'unpinTitle');
+          
+          // --- Update Cards & Footer ---
+          updateText('iherbTitle', 'iherbTitle'); updateText('iherbSubtitle', 'iherbSubtitle');
+          updateText('copy-and-go-iherb-btn-text', 'copyAndGoButton');
+          updateText('coffeeText', 'coffeeText'); updateText('coffeeBtnText', 'coffeeBtnText'); updateText('coffeeBtnText2', 'coffeeBtnText2');
           updateText('footerRights', 'footerRights');
           updateText('footerCoffee', 'footerCoffee');
           updateText('howToUseText', 'howToUseText');
-          updateText('howToUseTitle', 'howToUseTitle');
-          updateHtml('howToUseContent', 'howToUseContent');
 
+          // --- Global Elements ---
           document.querySelectorAll('.lang-toggle-btn').forEach(btn => { btn.textContent = lang === 'ar' ? 'EN' : 'AR'; });
           document.title = `${L.appName} | Smart Personal Coach`;
         },
-        autoSetByText(s) { if (!s) return; const isArabic = /[\u0600-\u06FF]/.test(s); if ((isArabic ? 'ar' : 'en') !== App.state.lang) { this.setLang(isArabic ? 'ar' : 'en'); } }
-      },
-      utils: {
-        setTheme() { document.documentElement.classList.toggle('dark'); const isDark = document.documentElement.classList.contains('dark'); App.elements.btnTheme.textContent = isDark ? '🌙' : '☀️'; localStorage.setItem('theme', isDark ? 'dark' : 'light'); },
-        toast(msg) { const t = document.createElement('div'); t.className = 'toast'; t.textContent = msg; document.body.appendChild(t); setTimeout(() => t.classList.add('show'), 10); setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.remove(), 400); }, 2400); },
-        removeNode(node) { if (node && node.parentNode) node.parentNode.removeChild(node); },
-        formatTime(timestamp) { return new Date(timestamp).toLocaleTimeString(App.state.lang === 'ar' ? 'ar-EG' : 'en-US', { hour: 'numeric', minute: '2-digit', hour12: true }); }
-      },
-      ui: {
-        displayMessage(message) {
-            const { chatMessages } = App.elements;
-            const bubble = document.createElement('div');
-            const sender = message.role === 'assistant' ? 'ai' : 'user';
-            
-            bubble.className = `message-bubble ${sender}`;
-            bubble.dataset.messageId = message.id;
 
-            let finalHtml = '';
-
-            // Handle multiple images for user messages
-            if (message.role === 'user' && message.images && message.images.length > 0) {
-                const imageContainer = document.createElement('div');
-                imageContainer.className = 'flex flex-wrap gap-2 mb-2';
-                message.images.forEach(imgDataUrl => {
-                    const img = document.createElement('img');
-                    img.src = imgDataUrl;
-                    img.className = 'max-w-[100px] h-auto rounded-lg cursor-pointer';
-                    img.alt = 'uploaded image';
-                    img.onclick = () => App.handlers.handleViewImage(imgDataUrl); // Make images in chat clickable
-                    imageContainer.appendChild(img);
-                });
-                finalHtml += imageContainer.outerHTML;
-            }
-
-            const content = message.parts?.[0]?.text || '';
-            const safeContent = (content && typeof content === 'string') ? content : '';
-            if (safeContent) {
-                finalHtml += `<div class="msg-content">${marked.parse(safeContent)}</div>`;
-            }
-
-            const timeHtml = `<div class="message-meta"><span class="message-time">${App.utils.formatTime(message.timestamp)}</span></div>`;
-            bubble.innerHTML = finalHtml + timeHtml;
-            
-            chatMessages.appendChild(bubble);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-
-            App.handlers.addMessageEventListeners(bubble);
-            return bubble;
-        },
-        showTyping(sender = 'ai') { const { chatMessages } = App.elements; const bubble = document.createElement('div'); bubble.className = `message-bubble ${sender}`; bubble.innerHTML = `<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`; chatMessages.appendChild(bubble); chatMessages.scrollTop = chatMessages.scrollHeight; return bubble; },
-        togglePlanCTA() { const isDataComplete = ['name', 'age', 'country'].every(k => !!App.state.userState.data[k]); if(App.elements.generatePlanBtn) { App.elements.generatePlanBtn.disabled = !isDataComplete; } },
-        rebuildChatUI() { App.elements.chatMessages.innerHTML = ''; App.state.chatHistory.forEach(message => this.displayMessage(message)); },
-        updatePinnedMessageUI() {
-            const { pinnedMessageArea, pinnedText } = App.elements;
-            if (App.state.pinnedMessageId) {
-                const pinnedMessage = App.state.chatHistory.find(m => m.id === App.state.pinnedMessageId);
-                if (pinnedMessage) {
-                    const textContent = pinnedMessage.parts[0].text.replace(/\[Image Attached\]/g, '📷');
-                    pinnedText.textContent = textContent;
-                    pinnedMessageArea.classList.add('show');
-                    return;
-                }
-            }
-            pinnedMessageArea.classList.remove('show');
-            App.state.pinnedMessageId = null;  
-        },
-        renderImagePreviews() {
-            const container = App.elements.imagePreviewsContainer;
-            const wrapper = App.elements.imagePreviewsWrapper;
-            container.innerHTML = '';
-
-            if (App.state.pendingImages.length === 0) {
-                wrapper.classList.add('hidden');
-                return;
-            }
-
-            App.state.pendingImages.forEach(image => {
-                const thumbWrapper = document.createElement('div');
-                thumbWrapper.className = 'preview-thumbnail';
-                
-                const img = document.createElement('img');
-                img.src = image.dataUrl;
-                img.alt = 'Preview';
-                img.onclick = () => App.handlers.handleViewImage(image.dataUrl);
-
-                const removeBtn = document.createElement('button');
-                removeBtn.className = 'remove-btn';
-                removeBtn.innerHTML = '×';
-                removeBtn.setAttribute('aria-label', 'Remove image');
-                removeBtn.onclick = () => App.handlers.handleRemoveImage(image.id);
-
-                thumbWrapper.appendChild(img);
-                thumbWrapper.appendChild(removeBtn);
-                container.appendChild(thumbWrapper);
-            });
-
-            wrapper.classList.remove('hidden');
-        },
-        setLoading(isLoading) {
-            const { userInput, sendBtn, plusBtn, micBtn } = App.elements;
-            userInput.disabled = isLoading;
-            sendBtn.disabled = isLoading;
-            plusBtn.disabled = isLoading;
-            micBtn.disabled = isLoading;
-            
-            if (isLoading) {
-                sendBtn.innerHTML = `<div class="w-5 h-5 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>`;
-            } else {
-                this.setEditing(false); // Reset button on load finish
-            }
-        },
-        setEditing(isEditing) {
-            const { sendBtn } = App.elements;
-            if(isEditing) {
-                sendBtn.innerHTML = `<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-                sendBtn.classList.add('!bg-blue-500');
-            } else {
-                sendBtn.innerHTML = `<svg class="w-5 h-5" style="transform: translateX(1px);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>`;
-                sendBtn.classList.remove('!bg-blue-500');
-            }
+        autoSetByText(s) {
+          if (!s) return;
+          const isArabic = /[\u0600-\u06FF]/.test(s);
+          const newLang = isArabic ? 'ar' : 'en';
+          if (newLang !== App.state.lang) {
+            this.setLang(newLang);
+          }
         }
       },
-      services: {
-        async callAI(prompt, { images, audio } = {}) { try { const payload = { prompt }; if (images && images.length) { payload.images = images.map(x => { if (typeof x === 'string' && x.startsWith('data:')) { const [meta, b64] = x.split(','); const mime = meta.substring(5, meta.indexOf(';')); return { mime, data: b64, dataUrl: x }; } return x; }); } if (audio) payload.audio = audio; const res = await fetch('/.netlify/functions/gemini-proxy', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) }); const data = await res.json(); if (!res.ok) throw new Error((data && (data.details || data.error)) || 'AI error'); return data.text || ''; } catch (e) { console.error("AI Call Error:", e); return ''; } },
-        speech: { supportSpeechRecognition: () => ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window), startLocalRecognition() { const SR = window.SpeechRecognition || window.webkitSpeechRecognition; if (!SR) return null; const sessionId = ++App.state.sttSessionId; const rec = new SR(); rec.lang = (App.state.lang === 'ar' ? 'ar-EG' : 'en-US'); rec.interimResults = true; rec.continuous = true; rec.onresult = (e) => { if (sessionId !== App.state.sttSessionId) return; let final = '', interim = ''; for (let i = e.resultIndex; i < e.results.length; i++) { if (e.results[i].isFinal) { final += e.results[i][0].transcript; } else { interim = e.results[i][0].transcript; } } const text = (final || interim).trim(); if (text) { App.elements.userInput.value = text; App.elements.userInput.dispatchEvent(new Event('input')); } }; rec.start(); return { rec, sessionId }; }, async startRecording() { if (App.state.isRecording) return; App.state.isRecording = true; const L = App.i18n.strings[App.state.lang]; if (this.supportSpeechRecognition()) { const h = this.startLocalRecognition(); App.state.recognition = h?.rec || null; } else { App.utils.toast(L.recDenied); App.state.isRecording = false; return; } App.elements.micBtn.classList.add('mic-live'); App.elements.recHintWrap.classList.remove('hidden'); App.elements.recHint.textContent = L.recStart; }, stopRecording() { if (!App.state.isRecording) return; App.state.isRecording = false; if (App.state.recognition && App.state.recognition.stop) { try { App.state.recognition.stop(); App.core.sendMessage(); } catch (_) {} App.state.recognition = null; } App.elements.micBtn.classList.remove('mic-live'); App.elements.recHintWrap.classList.add('hidden'); App.state.sttSessionId++; } }
+
+      /**
+       * -----------------------------------------------------------------
+       * 4. UTILITIES MODULE
+       * -----------------------------------------------------------------
+       */
+      utils: {
+        setTheme() {
+          document.documentElement.classList.toggle('dark');
+          const isDark = document.documentElement.classList.contains('dark');
+          App.elements.btnTheme.textContent = isDark ? '🌙' : '☀️';
+          localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        },
+        toast(msg) {
+          const t = document.createElement('div');
+          t.className = 'toast';
+          t.textContent = msg;
+          document.body.appendChild(t);
+          setTimeout(() => t.classList.add('show'), 10);
+          setTimeout(() => {
+            t.classList.remove('show');
+            setTimeout(() => t.remove(), 400);
+          }, 2400);
+        },
+        removeNode(node) {
+          if (node && node.parentNode) node.parentNode.removeChild(node);
+        },
+        formatTime(timestamp) {
+          return new Date(timestamp).toLocaleTimeString(
+            App.state.lang === 'ar' ? 'ar-EG' : 'en-US',
+            { hour: 'numeric', minute: '2-digit', hour12: true }
+          );
+        }
       },
+
+      /**
+       * -----------------------------------------------------------------
+       * 5. UI MANIPULATION MODULE
+       * -----------------------------------------------------------------
+       */
+      ui: {
+        displayMessage(message) {
+          const { chatMessages } = App.elements;
+          const bubble = document.createElement('div');
+          const sender = message.role === 'assistant' ? 'ai' : 'user';
+          
+          bubble.className = `message-bubble ${sender}`;
+          bubble.dataset.messageId = message.id;
+
+          let finalHtml = '';
+
+          if (message.role === 'user' && message.images && message.images.length > 0) {
+              const imageContainer = document.createElement('div');
+              imageContainer.className = 'flex flex-wrap gap-2 mb-2';
+              message.images.forEach(imgDataUrl => {
+                  const img = document.createElement('img');
+                  img.src = imgDataUrl;
+                  img.className = 'max-w-[100px] h-auto rounded-lg cursor-pointer';
+                  img.alt = 'uploaded image';
+                  img.onclick = () => App.handlers.handleViewImage(imgDataUrl);
+                  imageContainer.appendChild(img);
+              });
+              finalHtml += imageContainer.outerHTML;
+          }
+
+          const content = message.parts?.[0]?.text || '';
+          const safeContent = (content && typeof content === 'string') ? content : '';
+          if (safeContent) {
+              finalHtml += `<div class="msg-content">${marked.parse(safeContent)}</div>`;
+          }
+
+          const timeHtml = `<div class="message-meta"><span class="message-time">${App.utils.formatTime(message.timestamp)}</span></div>`;
+          bubble.innerHTML = finalHtml + timeHtml;
+          
+          chatMessages.appendChild(bubble);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+
+          App.handlers.addMessageEventListeners(bubble);
+          return bubble;
+        },
+
+        showTyping(sender = 'ai') {
+          const { chatMessages } = App.elements;
+          const bubble = document.createElement('div');
+          bubble.className = `message-bubble ${sender}`;
+          bubble.innerHTML = `<div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>`;
+          chatMessages.appendChild(bubble);
+          chatMessages.scrollTop = chatMessages.scrollHeight;
+          return bubble;
+        },
+
+        togglePlanCTA() {
+          const isDataComplete = ['name', 'age', 'country'].every(k => !!App.state.userState.data[k]);
+          if(App.elements.generatePlanBtn) {
+            App.elements.generatePlanBtn.disabled = !isDataComplete;
+          }
+        },
+
+        rebuildChatUI() {
+          App.elements.chatMessages.innerHTML = '';
+          App.state.chatHistory.forEach(message => this.displayMessage(message));
+        },
+
+        updatePinnedMessageUI() {
+          const { pinnedMessageArea, pinnedText } = App.elements;
+          if (App.state.pinnedMessageId) {
+            const pinnedMessage = App.state.chatHistory.find(m => m.id === App.state.pinnedMessageId);
+            if (pinnedMessage) {
+              const textContent = pinnedMessage.parts[0].text.replace(/\[Image Attached\]/g, '📷');
+              pinnedText.textContent = textContent;
+              pinnedMessageArea.classList.add('show');
+              return;
+            }
+          }
+          pinnedMessageArea.classList.remove('show');
+          App.state.pinnedMessageId = null;  
+        },
+
+        renderImagePreviews() {
+          const container = App.elements.imagePreviewsContainer;
+          const wrapper = App.elements.imagePreviewsWrapper;
+          container.innerHTML = '';
+
+          if (App.state.pendingImages.length === 0) {
+              wrapper.classList.add('hidden');
+              return;
+          }
+
+          App.state.pendingImages.forEach(image => {
+              const thumbWrapper = document.createElement('div');
+              thumbWrapper.className = 'preview-thumbnail';
+              
+              const img = document.createElement('img');
+              img.src = image.dataUrl;
+              img.alt = 'Preview';
+              img.onclick = () => App.handlers.handleViewImage(image.dataUrl);
+
+              const removeBtn = document.createElement('button');
+              removeBtn.className = 'remove-btn';
+              removeBtn.innerHTML = '×';
+              removeBtn.setAttribute('aria-label', 'Remove image');
+              removeBtn.onclick = () => App.handlers.handleRemoveImage(image.id);
+
+              thumbWrapper.appendChild(img);
+              thumbWrapper.appendChild(removeBtn);
+              container.appendChild(thumbWrapper);
+          });
+
+          wrapper.classList.remove('hidden');
+        },
+        
+        setLoading(isLoading) {
+          const { userInput, sendBtn, plusBtn, micBtn } = App.elements;
+          userInput.disabled = isLoading;
+          sendBtn.disabled = isLoading;
+          plusBtn.disabled = isLoading;
+          micBtn.disabled = isLoading;
+          
+          if (isLoading) {
+            sendBtn.innerHTML = `<div class="w-5 h-5 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>`;
+          } else {
+            this.setEditing(false); // Reset button icon on load finish
+          }
+        },
+        
+        setEditing(isEditing) {
+          const { sendBtn } = App.elements;
+          if(isEditing) {
+            sendBtn.innerHTML = `<svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+            sendBtn.classList.add('!bg-blue-500');
+          } else {
+            sendBtn.innerHTML = `<svg class="w-5 h-5" style="transform: translateX(1px);" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"></path></svg>`;
+            sendBtn.classList.remove('!bg-blue-500');
+          }
+        }
+      },
+
+      /**
+       * -----------------------------------------------------------------
+       * 6. SERVICES MODULE (API Calls, Speech Recognition)
+       * -----------------------------------------------------------------
+       */
+      services: {
+        async callAI(prompt, { images, audio } = {}) {
+          try {
+            const payload = { prompt };
+            if (images && images.length) {
+              payload.images = images.map(x => {
+                if (typeof x === 'string' && x.startsWith('data:')) {
+                  const [meta, b64] = x.split(',');
+                  const mime = meta.substring(5, meta.indexOf(';'));
+                  return { mime, data: b64, dataUrl: x };
+                }
+                return x;
+              });
+            }
+            if (audio) payload.audio = audio;
+            
+            const res = await fetch('/.netlify/functions/gemini-proxy', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error((data && (data.details || data.error)) || 'AI error');
+            return data.text || '';
+          } catch (e) {
+            console.error("AI Call Error:", e);
+            return '';
+          }
+        },
+        speech: {
+          supportSpeechRecognition: () => ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window),
+          startLocalRecognition() {
+            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SR) return null;
+            const sessionId = ++App.state.sttSessionId;
+            const rec = new SR();
+            rec.lang = (App.state.lang === 'ar' ? 'ar-EG' : 'en-US');
+            rec.interimResults = true;
+            rec.continuous = true;
+            rec.onresult = (e) => {
+              if (sessionId !== App.state.sttSessionId) return;
+              let final = '', interim = '';
+              for (let i = e.resultIndex; i < e.results.length; i++) {
+                if (e.results[i].isFinal) { final += e.results[i][0].transcript; }
+                else { interim = e.results[i][0].transcript; }
+              }
+              const text = (final || interim).trim();
+              if (text) {
+                App.elements.userInput.value = text;
+                App.elements.userInput.dispatchEvent(new Event('input'));
+              }
+            };
+            rec.start();
+            return { rec, sessionId };
+          },
+          async startRecording() {
+            if (App.state.isRecording) return;
+            App.state.isRecording = true;
+            const L = App.i18n.strings[App.state.lang];
+            if (this.supportSpeechRecognition()) {
+              const h = this.startLocalRecognition();
+              App.state.recognition = h?.rec || null;
+            } else {
+              App.utils.toast(L.recDenied);
+              App.state.isRecording = false;
+              return;
+            }
+            App.elements.micBtn.classList.add('mic-live');
+            App.elements.recHintWrap.classList.remove('hidden');
+            App.elements.recHint.textContent = L.recStart;
+          },
+          stopRecording() {
+            if (!App.state.isRecording) return;
+            App.state.isRecording = false;
+            if (App.state.recognition && App.state.recognition.stop) {
+              try {
+                App.state.recognition.stop();
+                App.core.sendMessage();
+              } catch (_) {}
+              App.state.recognition = null;
+            }
+            App.elements.micBtn.classList.remove('mic-live');
+            App.elements.recHintWrap.classList.add('hidden');
+            App.state.sttSessionId++;
+          }
+        }
+      },
+      
+      /**
+       * -----------------------------------------------------------------
+       * 7. PROMPTS MODULE
+       * -----------------------------------------------------------------
+       */
       prompts: {
         buildCoachSystemPrompt() {
           return `
           📌 التوجيه التنفيذي النهائي — مدرب عالمي × خبير تغذية × خبير مكملات
-
           ⸻
-
           🎯 المهمة الرئيسية
               • أن تكون المساعد الشخصي الاحترافي للعميل بالنيابة عن المدرب مصطفى الصافي، معكسًا أعلى مستويات الدقة والاحترافية لتعزيز الثقة في الأداة.
               • تقديم خدمة شاملة ومخصصة بنسبة 100% بعد جمع البيانات اللازمة تشمل:
@@ -733,9 +1050,7 @@
               • استخدام أدوات التمرين المتقدمة مثل RPE و1RM Estimation (Epley, Brzycki) لضبط الأحمال والشدة.
               • ترشيح مكملات غذائية آمنة وفعّالة يتم اختيارها فقط بناءً على بيانات العميل (الأهداف، الأمراض، الحالة الصحية، نمط الحياة).
               • الرد على جميع الاستفسارات بأسلوب بشري طبيعي واحترافي دون أي طابع آلي.
-
           ⸻
-
           🧑‍🤝‍🧑 الهوية والشخصية
               • الأسلوب: مدرب عالمي + أخصائي تغذية + خبير مكملات .
               • اللهجة: مصريةإحترافية مع مرونة في التكيف حسب أسلوب.
@@ -746,9 +1061,7 @@
               •  عدم ذكر اسم العميل بشكل مستمرإطلاقًا  فقط اذا كان سياق الكلام يسمح بذلك.
               • تجنب العبارات الجاهزة مثل “هدف رائع” أو “ممتاز جدًا”.
               • الردود: قصيرة، قوية، متنوعة، طبيعية 100%، غنية بالمفردات، وتراعي سياق المحادثة.
-
           ⸻
-
           🔄 قواعد جمع البيانات
               • لا يتم إعداد أي خطة قبل اكتمال الملف البياني للعميل.
               • قاعدة صارمة: لا تسأل أكثر من سؤال واحد في كل مرة. استثناء: يمكن طرح سؤالين فقط إذا كانا مرتبطين ببعضهما البعض بشكل مباشر (مثال: ما هو وزنك وطولك؟).
@@ -756,7 +1069,6 @@
               • الهدف هو الفهم الكامل وليس مجرد جمع بيانات.
               • إذا تجاهل العميل سؤالًا، تتم إعادة صياغته وطرحه بلطف.
               • دائمًا يتم تذكّر ما قيل سابقًا وعدم إعادة نفس السؤال مرة أخرى.
-
           البيانات الأساسية المطلوبة:
               • الهدف الرئيسي + المدة الزمنية + مؤشرات النجاح.
               • الوزن، الطول، العمر، الجنس.
@@ -776,9 +1088,7 @@
               • التجارب السابقة مع الأنظمة.
               • الأولويات التدريبية.
               • اختياري خطة القياس والمتابعة (وزن، صور، قياسات أسبوعية).
-
           ⸻
-
           🗣️ السيناريو الإرشادي
               • افتتاحية طبيعية تناسب الموقف.
               • رد قصير محفز بعد كل إجابة.
@@ -786,21 +1096,16 @@
               • إعادة صياغة الأسئلة المهملة بطريقة لبقة.
               • إضافة أسئلة إضافية دائمًا حسب ما يكشفه الحوار (نوم، إصابات، عادات سيئة…).
               • الردود متغيرة دائمًا ولا تتبع نفس الأسلوب أو الترتيب.
-
           ⸻
-
           📊 مرحلة ما قبل إعداد الخطة
               • قبل تجهيز الخطة: يتم استرجاع كل البيانات في رسالة مراجعة شاملة تُكتب بأسلوب عبقري واحترافي، ويُطلب من العميل تأكيدها.
               • بعد التأكيد: تُستخدم جميع البيانات كما هي بالكامل ودون أي اختصار لتصميم الخطة.
-
           بعد جمع كل البيانات:
               1. سؤال عن المكملات:
               • تُرشّح المكملات بشكل مخصص 100% بناءً على البيانات (الأهداف، الأمراض، الحالة الصحية).
               • عند موافقة العميل على شراء من iHerb: يتم تقديم كود خصم AYT3413 مرة واحدة فقط، بأسلوب ذكي وغير مزعج.
               2. طلب صور أو تحليل InBody لزيادة الدقة اذا توفرت.
-
           ⸻
-
           📋 إعداد وتسليم الخطة
               • فورًا بعد تأكيد العميل على ملخص البيانات، يتم تقديم الخطة الكاملة دون أي تأخير.
               • الخطة التدريبية:
@@ -816,34 +1121,25 @@
               • إدراج كود الخصم AYT3413 مرة واحدة فقط وبأسلوب لبق وغير دعائي.
               • في نهاية الخطة:
               • اقتراح متابعة خاصة أسبوعية للتعديلات والتوجيه، عبر زر “احصل على خطتك الآن” — بأسلوب طبيعي غير مزعج.
-
           ⸻
-
           🔬 تحليل البيانات والصور
               • عندما يرسل المستخدم صورة (أو صورًا متعددة)، قم بتحليلها بدقة كمدرب خبير.
               • الهدف: استخلاص ملاحظات عملية حول تكوين الجسم، الوضعية، التوزيع العضلي والدهني، وتحديد نقاط القوة والمجالات التي تحتاج إلى تحسين.
               • إذا كانت هناك بيانات (مثل InBody)، استخرج المقاييس الرئيسية وفسرها.
               • **الأهم:** لا تقدم التحليل على شكل تقرير أو قائمة نقاط منفصلة. يجب دمج ملاحظاتك بسلاسة وطبيعية في صلب ردك الحواري. اجعل الأمر يبدو وكأنك مدرب حقيقي يعلق على الصور التي أمامه.
               • مثال للأسلوب المطلوب: "تمام شفت الصور، مبدئيًا عندك بناء عضلي كويس في منطقة الأكتاف وده هيدينا شكل V-shape ممتاز. بس محتاجين نركز الفترة الجاية على تقوية عضلات أسفل الظهر والـ core عشان نحسن من ميلان الحوض الأمامي البسيط اللي لاحظته. ده هيفرق معانا جدًا في الأداء والأمان في تمارين زي السكوات والديدلفت."
-
           ⸻
-
           📞 سيناريو التواصل والاشتراك
               • إذا سأل العميل عن كيفية التواصل المباشر مع المدرب مصطفى الصافي أو عن تفاصيل الاشتراك، يتم توجيه الرد كالتالي:
               • للتواصل المباشر مع الكابتن مصطفى وفريق العمل، يمكنك استخدام الرقم الموجود عند الضغط على زر 'احصل على خطتك الآن'. هذا سينقلك مباشرة للتواصل معهم."
               • لأنك مهتم فعلًا، فريقنا يقدم لك جلسة تقييم مجانية لتكتشف كيف يمكن لشراكة متكاملة مع خبراء يتابعون تقدمك ويعدّلون خطتك باستمرار ويدعمونك بلا توقف أن تحقق لك تحولًا جذريًا ومستدامًا، فلا تفوّت الفرصة ولحجز موعدك اضغط الآن على زر “احصل على خطتك .
               • إذا كان الطلب يتطلب تدخلًا بشريًا مباشرًا، وجّه المستخدم بالرد: “يُرجى التواصل مع فريق العمل لإتمام هذا الطلب.
-              
-
           ⸻
-          
           🔒 الخصوصية والتواصل مع المدرب
               • عندما يسأل المستخدم عن سرية بياناته أو هل المدرب يطلع عليها، يجب أن تكون الإجابة: "تأكد أن هذه المحادثة سرية تمامًا ولا يطلع عليها أي شخص آخر لضمان خصوصيتك الكاملة."
               • عندما يطلب المستخدم التواصل مع الفريق أو المدرب، يجب أن تكون الإجابة: "بالتأكيد، سأقوم بتجهيز كل البيانات التي زودتني بها في رسالة واحدة. يمكنك نسخها بسهولة وإرسالها مباشرة للمدرب."
               • عندما يؤكد المستخدم طلبه ("نعم، أرسلها" أو ما شابه)، قم فورًا بإرسال ملخص شامل ومنسق لجميع البيانات التي تم جمعها في رسالة واحدة. لا تسأل أي أسئلة أخرى، فقط أرسل البيانات.
-
           ⸻
-
           ⚡ مميزات النظام الإضافية
               • تخصيص كامل لكل خطة بنسبة 100%.
               • ذكاء في صياغة الأسئلة حسب سياق الحوار.
@@ -856,314 +1152,501 @@
           `;
         },
       },
+
+      /**
+       * -----------------------------------------------------------------
+       * 8. CORE LOGIC MODULE
+       * -----------------------------------------------------------------
+       */
       core: {
         saveHistory() {
-            const sessionData = { chatHistory: App.state.chatHistory, userState: App.state.userState, pinnedMessageId: App.state.pinnedMessageId };
-            localStorage.setItem(App.config.STORAGE_KEY, JSON.stringify(sessionData));
+          const sessionData = {
+            chatHistory: App.state.chatHistory,
+            userState: App.state.userState,
+            pinnedMessageId: App.state.pinnedMessageId
+          };
+          localStorage.setItem(App.config.STORAGE_KEY, JSON.stringify(sessionData));
         },
+
         loadHistory() {
-            const savedData = localStorage.getItem(App.config.STORAGE_KEY);
-            if (savedData) {
-                try {
-                    const sessionData = JSON.parse(savedData);
-                    if (sessionData.chatHistory && sessionData.userState) {
-                        App.state.chatHistory = sessionData.chatHistory;
-                        App.state.userState = sessionData.userState;
-                        App.state.pinnedMessageId = sessionData.pinnedMessageId || null;
-                        if (App.state.userState.step > 0) {
-                            App.elements.welcomeScreen.classList.add('hidden');
-                            App.elements.userDataScreen.classList.add('hidden');
-                            App.elements.chatContainer.classList.remove('hidden');
-                            App.ui.rebuildChatUI();
-                            App.ui.togglePlanCTA();
-                            App.ui.updatePinnedMessageUI();
-                        }
-                    }
-                } catch (e) { console.error("Failed to load saved history:", e); localStorage.removeItem(App.config.STORAGE_KEY); }
-            }
-        },
-        buildConversationContext() { let context = ''; const history = [...App.state.chatHistory]; for (let i = history.length - 1; i >= 0; i--) { const message = history[i]; const role = message.role === 'assistant' ? 'المدرب' : 'المستخدم'; const text = message.parts?.[0]?.text || ''; const formattedMessage = `\n${role}: ${text}`; if ((context.length + formattedMessage.length) > App.config.MAX_PROMPT_CHARS) { break; } context = formattedMessage + context; } return context; },
-        buildInternalStateSummary() { const d=App.state.userState.data||{}; const f=[]; if(d.name)f.push(`الاسم: ${d.name}`); if(d.age)f.push(`العمر: ${d.age}`); if(d.country)f.push(`الدولة: ${d.country}`); if(d.goal)f.push(`الهدف: ${d.goal}`); if(d.health)f.push(`حالة صحية: ${d.health}`); if(d.gym)f.push(`مكان التمرين: ${d.gym}`); if(d.meals)f.push(`وجبات/اليوم: ${d.meals}`); return f.length ? `🗒️ ملخص الحالة: ${f.join(' | ')}` : ''; },
-        analyzeUserMessage(msg) { const MED_FLAGS=/(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i; if (MED_FLAGS.test(msg)) { App.state.userState.data.health = (App.state.userState.data.health || 'قيود صحية'); } if (/خطة|أخس|تخسيس|تضخيم|عضل/i.test(msg)) App.state.userState.data.goal = App.state.userState.data.goal || 'خطة مخصصة'; if (/جيم|بيت|منزل/i.test(msg)) App.state.userState.data.gym = App.state.userState.data.gym || 'غير محدد'; },
-        async processAIResponse(images = []) {
-            const typingEl = App.ui.showTyping('ai');
-            
-            const fullPrompt = `${App.prompts.buildCoachSystemPrompt()}\n${this.buildInternalStateSummary() ? this.buildInternalStateSummary() + '\n' : ''}سجل المحادثة الكامل (الأحدث في الأسفل):\n${this.buildConversationContext()}`;
-            
-            let response = await App.services.callAI(fullPrompt, { images });
-            App.utils.removeNode(typingEl);
-            if (!response || !response.trim()) { response = (App.state.lang === 'ar') ? 'حصل خطأ بسيط، ممكن توضح سؤالك تاني؟' : 'There was a slight error, could you please clarify your question?'; }
-            const newMessage = { id: `ai-${Date.now()}`, role: 'assistant', parts: [{ text: response }], timestamp: Date.now() };
-            App.state.chatHistory.push(newMessage);  
-            this.saveHistory();  
-            App.ui.displayMessage(newMessage);  
-            App.ui.togglePlanCTA();
-            App.ui.setLoading(false);
-        },
-        sendMessage() {
-            const msg = (App.elements.userInput.value || '').trim();  
-            const images = App.state.pendingImages;
-
-            // Handle message editing
-            if (App.state.isEditing) {
-                const editIndex = App.state.chatHistory.findIndex(m => m.id === App.state.editingMessageId);
-                if (editIndex > -1) {
-                    // Remove all messages from the edited message onwards
-                    App.state.chatHistory.splice(editIndex);  
+          const savedData = localStorage.getItem(App.config.STORAGE_KEY);
+          if (savedData) {
+            try {
+              const sessionData = JSON.parse(savedData);
+              if (sessionData.chatHistory && sessionData.userState) {
+                App.state.chatHistory = sessionData.chatHistory;
+                App.state.userState = sessionData.userState;
+                App.state.pinnedMessageId = sessionData.pinnedMessageId || null;
+                if (App.state.userState.step > 0) {
+                  App.elements.welcomeScreen.classList.add('hidden');
+                  App.elements.userDataScreen.classList.add('hidden');
+                  App.elements.chatContainer.classList.remove('hidden');
+                  App.ui.rebuildChatUI();
+                  App.ui.togglePlanCTA();
+                  App.ui.updatePinnedMessageUI();
                 }
-                App.state.isEditing = false;
-                App.state.editingMessageId = null;
-                App.ui.setEditing(false); // Reset send button icon
+              }
+            } catch (e) {
+              console.error("Failed to load saved history:", e);
+              localStorage.removeItem(App.config.STORAGE_KEY);
             }
+          }
+        },
 
-            if (!msg && images.length === 0) return;
-            
-            App.ui.setLoading(true);
+        buildConversationContext() {
+          let context = '';
+          const history = [...App.state.chatHistory];
+          for (let i = history.length - 1; i >= 0; i--) {
+            const message = history[i];
+            const role = message.role === 'assistant' ? 'المدرب' : 'المستخدم';
+            const text = message.parts?.[0]?.text || '';
+            const formattedMessage = `\n${role}: ${text}`;
+            if ((context.length + formattedMessage.length) > App.config.MAX_PROMPT_CHARS) {
+              break;
+            }
+            context = formattedMessage + context;
+          }
+          return context;
+        },
 
-            App.i18n.autoSetByText(msg);
-            
-            const messageContent = images.length > 0 ? `${App.i18n.strings[App.state.lang].imageAttached} ${msg}`.trim() : msg;
-            
-            const newMessageForUI = {  
-                id: `user-${Date.now()}`,  
-                role: 'user',  
-                parts: [{ text: msg }], // UI part only has text
-                images: images.map(img => img.dataUrl), // UI part has images for display
-                timestamp: Date.now()  
-            };
-            
-            // Push a clean version to history for the AI context
-            App.state.chatHistory.push({
-                id: newMessageForUI.id,
-                role: 'user',
-                parts: [{ text: messageContent }], // AI context has combined text
-                timestamp: newMessageForUI.timestamp
-            });
+        buildInternalStateSummary() {
+          const d = App.state.userState.data || {};
+          const f = [];
+          if(d.name) f.push(`الاسم: ${d.name}`);
+          if(d.age) f.push(`العمر: ${d.age}`);
+          if(d.country) f.push(`الدولة: ${d.country}`);
+          if(d.goal) f.push(`الهدف: ${d.goal}`);
+          if(d.health) f.push(`حالة صحية: ${d.health}`);
+          if(d.gym) f.push(`مكان التمرين: ${d.gym}`);
+          if(d.meals) f.push(`وجبات/اليوم: ${d.meals}`);
+          return f.length ? `🗒️ ملخص الحالة: ${f.join(' | ')}` : '';
+        },
 
-            this.saveHistory();
-            App.ui.displayMessage(newMessageForUI); // Display message with images in UI
-            
-            this.analyzeUserMessage(msg);  
-            this.processAIResponse(images.map(img => img.dataUrl));
-            
-            App.elements.userInput.value = '';  
-            App.handlers.clearPendingImages();
+        analyzeUserMessage(msg) {
+          const MED_FLAGS = /(سكري|ضغط|قلب|سرطان|حامل|حمل|رضاعة|غدة|درق|كبد|كلو[ية]|kidney|liver|thyroid|injury|إصابة|عملية|دواء|أدوية|كورتيزون|ضغط الدم|سكر الدم)/i;
+          if (MED_FLAGS.test(msg)) {
+            App.state.userState.data.health = (App.state.userState.data.health || 'قيود صحية');
+          }
+          if (/خطة|أخس|تخسيس|تضخيم|عضل/i.test(msg)) App.state.userState.data.goal = App.state.userState.data.goal || 'خطة مخصصة';
+          if (/جيم|بيت|منزل/i.test(msg)) App.state.userState.data.gym = App.state.userState.data.gym || 'غير محدد';
+        },
+
+        async processAIResponse(images = []) {
+          const typingEl = App.ui.showTyping('ai');
+          
+          const fullPrompt = `${App.prompts.buildCoachSystemPrompt()}\n${this.buildInternalStateSummary() ? this.buildInternalStateSummary() + '\n' : ''}سجل المحادثة الكامل (الأحدث في الأسفل):\n${this.buildConversationContext()}`;
+          
+          let response = await App.services.callAI(fullPrompt, { images });
+          App.utils.removeNode(typingEl);
+          
+          if (!response || !response.trim()) {
+            response = (App.state.lang === 'ar') ? 'حصل خطأ بسيط، ممكن توضح سؤالك تاني؟' : 'There was a slight error, could you please clarify your question?';
+          }
+          const newMessage = { id: `ai-${Date.now()}`, role: 'assistant', parts: [{ text: response }], timestamp: Date.now() };
+          
+          App.state.chatHistory.push(newMessage);  
+          this.saveHistory();  
+          App.ui.displayMessage(newMessage);  
+          App.ui.togglePlanCTA();
+          App.ui.setLoading(false);
+        },
+
+        sendMessage() {
+          const msg = (App.elements.userInput.value || '').trim();  
+          const images = App.state.pendingImages;
+
+          // Handle message editing flow
+          if (App.state.isEditing) {
+            const editIndex = App.state.chatHistory.findIndex(m => m.id === App.state.editingMessageId);
+            if (editIndex > -1) {
+              // Remove all messages from the edited message onwards
+              App.state.chatHistory.splice(editIndex);  
+            }
+            App.state.isEditing = false;
+            App.state.editingMessageId = null;
+            App.ui.setEditing(false);
+          }
+
+          if (!msg && images.length === 0) return;
+          
+          App.ui.setLoading(true);
+          App.i18n.autoSetByText(msg);
+          
+          const messageContent = images.length > 0 ? `${App.i18n.strings[App.state.lang].imageAttached} ${msg}`.trim() : msg;
+          
+          const newMessageForUI = {  
+              id: `user-${Date.now()}`,  
+              role: 'user',  
+              parts: [{ text: msg }], // UI part only has text
+              images: images.map(img => img.dataUrl), // UI part has images for display
+              timestamp: Date.now()  
+          };
+          
+          // Push a clean version to history for the AI context
+          App.state.chatHistory.push({
+              id: newMessageForUI.id,
+              role: 'user',
+              parts: [{ text: messageContent }], // AI context has combined text
+              timestamp: newMessageForUI.timestamp
+          });
+
+          this.saveHistory();
+          App.ui.displayMessage(newMessageForUI);
+          
+          this.analyzeUserMessage(msg);  
+          this.processAIResponse(images.map(img => img.dataUrl));
+          
+          App.elements.userInput.value = '';  
+          App.handlers.clearPendingImages();
         }
       },
+
+      /**
+       * -----------------------------------------------------------------
+       * 9. EVENT HANDLERS MODULE
+       * -----------------------------------------------------------------
+       */
       handlers: {
-        handleStartClick() { App.elements.welcomeScreen.classList.add('hidden'); App.elements.userDataScreen.classList.remove('hidden'); App.i18n.setLang(App.state.lang); },
+        // --- Screen & Navigation Handlers ---
+        handleStartClick() {
+          App.elements.welcomeScreen.classList.add('hidden');
+          App.elements.userDataScreen.classList.remove('hidden');
+          App.i18n.setLang(App.state.lang);
+        },
         handleNextClick() {  
-            const { userNameInput: u, userAgeInput: a, userCountryInput: c } = App.elements;  
-            const n=u.value.trim(),g=a.value.trim(),o=c.value.trim();  
-            App.i18n.autoSetByText(n||o);  
-            if(!n||!g||!o){ App.utils.toast(App.i18n.strings[App.state.lang].emptyFields); return; }  
-            App.state.userState.data={...App.state.userState.data,name:n,age:g,country:o};  
-            App.state.userState.step = 1;  
-            App.elements.userDataScreen.classList.add('hidden');  
-            App.elements.chatContainer.classList.remove('hidden');  
-            
-            const L = App.i18n.strings[App.state.lang];
-            const welcomeMsg = L.welcomeMessage.replace('{name}', n);
-            
-            const firstMessage = {id: `ai-${Date.now()}`, role:'assistant', parts:[{text:welcomeMsg}], timestamp: Date.now()};  
-            App.state.chatHistory = [firstMessage];  
-            App.core.saveHistory();  
-            App.ui.displayMessage(firstMessage);  
-            App.ui.togglePlanCTA();  
+          const { userNameInput: u, userAgeInput: a, userCountryInput: c } = App.elements;  
+          const n=u.value.trim(),g=a.value.trim(),o=c.value.trim();  
+          App.i18n.autoSetByText(n||o);  
+          if(!n||!g||!o){ App.utils.toast(App.i18n.strings[App.state.lang].emptyFields); return; }  
+          App.state.userState.data={...App.state.userState.data,name:n,age:g,country:o};  
+          App.state.userState.step = 1;  
+          App.elements.userDataScreen.classList.add('hidden');  
+          App.elements.chatContainer.classList.remove('hidden');  
+          
+          const L = App.i18n.strings[App.state.lang];
+          const welcomeMsg = L.welcomeMessage.replace('{name}', n);
+          
+          const firstMessage = {id: `ai-${Date.now()}`, role:'assistant', parts:[{text:welcomeMsg}], timestamp: Date.now()};  
+          App.state.chatHistory = [firstMessage];  
+          App.core.saveHistory();  
+          App.ui.displayMessage(firstMessage);  
+          App.ui.togglePlanCTA();  
         },
-        handleKeyPress(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); App.core.sendMessage(); } },
+
+        // --- Input Area Handlers ---
+        handleKeyPress(e) {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            App.core.sendMessage();
+          }
+        },
         handleFileChange(e) {
-            const L = App.i18n.strings[App.state.lang];
-            const limit = App.config.MAX_IMAGES;
-            let files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
-            
-            if (!files.length) return;
+          const L = App.i18n.strings[App.state.lang];
+          const limit = App.config.MAX_IMAGES;
+          let files = Array.from(e.target.files).filter(f => f.type.startsWith('image/'));
+          
+          if (!files.length) return;
 
-            const currentCount = App.state.pendingImages.length;
-            const canUploadCount = limit - currentCount;
+          const currentCount = App.state.pendingImages.length;
+          const canUploadCount = limit - currentCount;
 
-            if (canUploadCount <= 0) {
-                App.utils.toast(L.maxImagesReached);
-                e.target.value = '';
-                return;
-            }
+          if (canUploadCount <= 0) {
+              App.utils.toast(L.maxImagesReached);
+              e.target.value = '';
+              return;
+          }
 
-            if (files.length > canUploadCount) {
-                App.utils.toast(L.maxImagesReached);
-                files = files.slice(0, canUploadCount);
-            }
-            
-            const filePromises = files.map(file => {
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.onload = (ev) => resolve({
-                        id: `${Date.now()}-${file.name}`,
-                        dataUrl: ev.target.result
-                    });
-                    reader.onerror = reject;
-                    reader.readAsDataURL(file);
-                });
-            });
+          if (files.length > canUploadCount) {
+              App.utils.toast(L.maxImagesReached);
+              files = files.slice(0, canUploadCount);
+          }
+          
+          const filePromises = files.map(file => {
+              return new Promise((resolve, reject) => {
+                  const reader = new FileReader();
+                  reader.onload = (ev) => resolve({
+                      id: `${Date.now()}-${file.name}`,
+                      dataUrl: ev.target.result
+                  });
+                  reader.onerror = reject;
+                  reader.readAsDataURL(file);
+              });
+          });
 
-            Promise.all(filePromises).then(newImages => {
-                App.state.pendingImages.push(...newImages);
-                App.ui.renderImagePreviews();
-            });
+          Promise.all(filePromises).then(newImages => {
+              App.state.pendingImages.push(...newImages);
+              App.ui.renderImagePreviews();
+          });
 
-            e.target.value = '';
+          e.target.value = '';
         },
-        clearPendingImages() { App.state.pendingImages = []; App.ui.renderImagePreviews(); },
-        handleRemoveImage(id) { App.state.pendingImages = App.state.pendingImages.filter(img => img.id !== id); App.ui.renderImagePreviews(); },
-        handleViewImage(dataUrl) { App.elements.fullImageView.src = dataUrl; App.elements.imageViewerModal.classList.add('open'); },
-        closeImageViewer() { App.elements.imageViewerModal.classList.remove('open'); },
-        handleMicRecord(e) { e.preventDefault(); App.services.speech.startRecording(); },
-        handleMicStop(e) { e.preventDefault(); App.services.speech.stopRecording(); },
-        openContactModal() { App.elements.contactModal.classList.add('open'); App.elements.contactModal.setAttribute('aria-hidden', 'false'); },
-        closeContactModal() { App.elements.contactModal.classList.remove('open'); App.elements.contactModal.setAttribute('aria-hidden', 'true'); },
-        handleIherbCopy(e) { e.preventDefault(); const { copyAndGoIherbBtn, iherbCode } = App.elements; if (!copyAndGoIherbBtn || !iherbCode) return; const code = iherbCode.textContent.trim(); navigator.clipboard.writeText(code).then(() => { App.utils.toast(App.i18n.strings[App.state.lang].iherbCopiedAndRedirecting); setTimeout(() => { window.open(copyAndGoIherbBtn.href, '_blank'); }, 800); }); },
-        handleIherbCodeClick() { const code = App.elements.iherbCode.textContent.trim(); navigator.clipboard.writeText(code).then(() => App.utils.toast(App.i18n.strings[App.state.lang].copied)); },
-        openProfileModal() { App.elements.profileModal.classList.add('open'); App.elements.profileModal.setAttribute('aria-hidden', 'false'); },
-        closeProfileModal() { App.elements.profileModal.classList.remove('open'); App.elements.profileModal.setAttribute('aria-hidden', 'true'); },
-        handleProfileGetPlanClick() { this.closeProfileModal(); this.openContactModal(); },
-        handleResetClick() { App.elements.resetConfirmModal.classList.add('open'); },
-        handleResetConfirm() { localStorage.removeItem(App.config.STORAGE_KEY); window.location.reload(); },
-        handleResetCancel() { App.elements.resetConfirmModal.classList.remove('open'); },
-        openHowToUseModal() { App.elements.howToUseModal.classList.add('open'); },
-        closeHowToUseModal() { App.elements.howToUseModal.classList.remove('open'); },
-        handleModalClick(e) { if (e.target === App.elements.contactModal) this.closeContactModal(); if (e.target === App.elements.profileModal) this.closeProfileModal(); if (e.target === App.elements.resetConfirmModal) this.handleResetCancel(); if (e.target === App.elements.imageViewerModal) this.closeImageViewer(); if (e.target === App.elements.howToUseModal) this.closeHowToUseModal();},
+        clearPendingImages() {
+          App.state.pendingImages = [];
+          App.ui.renderImagePreviews();
+        },
+        handleRemoveImage(id) {
+          App.state.pendingImages = App.state.pendingImages.filter(img => img.id !== id);
+          App.ui.renderImagePreviews();
+        },
+        handleMicRecord(e) {
+          e.preventDefault();
+          App.services.speech.startRecording();
+        },
+        handleMicStop(e) {
+          e.preventDefault();
+          App.services.speech.stopRecording();
+        },
+
+        // --- Modal Handlers ---
+        openContactModal() {
+          App.elements.contactModal.classList.add('open');
+          App.elements.contactModal.setAttribute('aria-hidden', 'false');
+        },
+        closeContactModal() {
+          App.elements.contactModal.classList.remove('open');
+          App.elements.contactModal.setAttribute('aria-hidden', 'true');
+        },
+        openProfileModal() {
+          App.elements.profileModal.classList.add('open');
+          App.elements.profileModal.setAttribute('aria-hidden', 'false');
+        },
+        closeProfileModal() {
+          App.elements.profileModal.classList.remove('open');
+          App.elements.profileModal.setAttribute('aria-hidden', 'true');
+        },
+        handleProfileGetPlanClick() {
+          this.closeProfileModal();
+          this.openContactModal();
+        },
+        handleViewImage(dataUrl) {
+          App.elements.fullImageView.src = dataUrl;
+          App.elements.imageViewerModal.classList.add('open');
+        },
+        closeImageViewer() {
+          App.elements.imageViewerModal.classList.remove('open');
+        },
+        openHowToUseModal() {
+          App.elements.howToUseModal.classList.add('open');
+        },
+        closeHowToUseModal() {
+          App.elements.howToUseModal.classList.remove('open');
+        },
+        handleModalClick(e) {
+          if (e.target === App.elements.contactModal) this.closeContactModal();
+          if (e.target === App.elements.profileModal) this.closeProfileModal();
+          if (e.target === App.elements.resetConfirmModal) this.handleResetCancel();
+          if (e.target === App.elements.imageViewerModal) this.closeImageViewer();
+          if (e.target === App.elements.howToUseModal) this.closeHowToUseModal();
+        },
+        
+        // --- Reset Handlers ---
+        handleResetClick() {
+          App.elements.resetConfirmModal.classList.add('open');
+        },
+        handleResetConfirm() {
+          localStorage.removeItem(App.config.STORAGE_KEY);
+          window.location.reload();
+        },
+        handleResetCancel() {
+          App.elements.resetConfirmModal.classList.remove('open');
+        },
+        
+        // --- Message Interaction Handlers ---
         addMessageEventListeners(bubble) {
-            bubble.addEventListener('pointerdown', (e) => this.handleLongPressStart(e, bubble));
-            bubble.addEventListener('pointerup', this.handleLongPressEnd);
-            bubble.addEventListener('pointerleave', this.handleLongPressEnd);
-            bubble.addEventListener('contextmenu', e => e.preventDefault());
+          bubble.addEventListener('pointerdown', (e) => this.handleLongPressStart(e, bubble));
+          bubble.addEventListener('pointerup', this.handleLongPressEnd);
+          bubble.addEventListener('pointerleave', this.handleLongPressEnd);
+          bubble.addEventListener('contextmenu', e => e.preventDefault());
         },
-        handleLongPressStart(e, bubble) { if (App.state.longPressTimer) clearTimeout(App.state.longPressTimer); App.state.longPressTimer = setTimeout(() => { this.showContextMenu(bubble); }, App.config.LONG_PRESS_DURATION); },
-        handleLongPressEnd() { clearTimeout(App.state.longPressTimer); },
+        handleLongPressStart(e, bubble) {
+          if (App.state.longPressTimer) clearTimeout(App.state.longPressTimer);
+          App.state.longPressTimer = setTimeout(() => { this.showContextMenu(bubble); }, App.config.LONG_PRESS_DURATION);
+        },
+        handleLongPressEnd() {
+          clearTimeout(App.state.longPressTimer);
+        },
         showContextMenu(bubble) {
-            const { messageContextMenu } = App.elements;
-            const messageId = bubble.dataset.messageId;
-            const message = App.state.chatHistory.find(m => m.id === messageId);
-            if (!message) return;
-            
-            App.state.currentContextMenu = { bubble, message };
-            const isPinned = App.state.pinnedMessageId === messageId;
-            const isUser = message.role === 'user';
-            const L = App.i18n.strings[App.state.lang];
-            
-            messageContextMenu.querySelector('[data-action="pin"] span').textContent = isPinned ? L.contextUnpin : L.contextPin;
-            
-            // Show/hide user-only actions
-            messageContextMenu.querySelectorAll('[data-role="user-only"], [data-role="separator"]').forEach(el => {
-                el.style.display = isUser ? '' : 'none';
-            });
+          const { messageContextMenu } = App.elements;
+          const messageId = bubble.dataset.messageId;
+          const message = App.state.chatHistory.find(m => m.id === messageId);
+          if (!message) return;
+          
+          App.state.currentContextMenu = { bubble, message };
+          const isPinned = App.state.pinnedMessageId === messageId;
+          const isUser = message.role === 'user';
+          const L = App.i18n.strings[App.state.lang];
+          
+          messageContextMenu.querySelector('[data-action="pin"] span').textContent = isPinned ? L.contextUnpin : L.contextPin;
+          
+          messageContextMenu.querySelectorAll('[data-role="user-only"], [data-role="separator"]').forEach(el => {
+            el.style.display = isUser ? '' : 'none';
+          });
 
-            const rect = bubble.getBoundingClientRect();
-            document.body.appendChild(messageContextMenu);
+          const rect = bubble.getBoundingClientRect();
+          document.body.appendChild(messageContextMenu);
 
-            // Position calculation
-            let top = window.scrollY + rect.top - messageContextMenu.offsetHeight - 10;
-            if (top < window.scrollY + 10) { // If it goes off-screen top
-                top = window.scrollY + rect.bottom + 10;
-            }
-            let left = rect.left + (rect.width / 2) - (messageContextMenu.offsetWidth / 2);
-            // Clamp left/right position to be within viewport
-            left = Math.max(10, Math.min(left, window.innerWidth - messageContextMenu.offsetWidth - 10));
+          let top = window.scrollY + rect.top - messageContextMenu.offsetHeight - 10;
+          if (top < window.scrollY + 10) {
+            top = window.scrollY + rect.bottom + 10;
+          }
+          let left = rect.left + (rect.width / 2) - (messageContextMenu.offsetWidth / 2);
+          left = Math.max(10, Math.min(left, window.innerWidth - messageContextMenu.offsetWidth - 10));
 
-            messageContextMenu.style.top = `${top}px`;
-            messageContextMenu.style.left = `${left}px`;
-            messageContextMenu.classList.add('show');
+          messageContextMenu.style.top = `${top}px`;
+          messageContextMenu.style.left = `${left}px`;
+          messageContextMenu.classList.add('show');
         },
-        hideContextMenu() { App.elements.messageContextMenu.classList.remove('show'); App.state.currentContextMenu = null; },
+        hideContextMenu() {
+          App.elements.messageContextMenu.classList.remove('show');
+          App.state.currentContextMenu = null;
+        },
         handleContextMenuAction(action) {
-            const { message } = App.state.currentContextMenu;
-            const L = App.i18n.strings[App.state.lang];
-            const textContent = message.parts[0].text;
-            
-            if (action === 'copy') { navigator.clipboard.writeText(textContent).then(() => App.utils.toast(L.copied)); }  
-            else if (action === 'share') { if (navigator.share) { navigator.share({ text: textContent }).then(() => App.utils.toast(L.sharedSuccessfully)).catch(() => App.utils.toast(L.shareFailed)); } else { App.utils.toast(L.shareFailed); } }
-            else if (action === 'pin') { App.state.pinnedMessageId = (App.state.pinnedMessageId === message.id) ? null : message.id; App.core.saveHistory(); App.ui.updatePinnedMessageUI(); }
-            else if (action === 'edit') { this.handleStartEdit(message); }
-            else if (action === 'delete') { this.handleDelete(message); }
+          const { message } = App.state.currentContextMenu;
+          const L = App.i18n.strings[App.state.lang];
+          const textContent = message.parts[0].text;
+          
+          if (action === 'copy') { navigator.clipboard.writeText(textContent).then(() => App.utils.toast(L.copied)); }  
+          else if (action === 'share') { if (navigator.share) { navigator.share({ text: textContent }).then(() => App.utils.toast(L.sharedSuccessfully)).catch(() => App.utils.toast(L.shareFailed)); } else { App.utils.toast(L.shareFailed); } }
+          else if (action === 'pin') { App.state.pinnedMessageId = (App.state.pinnedMessageId === message.id) ? null : message.id; App.core.saveHistory(); App.ui.updatePinnedMessageUI(); }
+          else if (action === 'edit') { this.handleStartEdit(message); }
+          else if (action === 'delete') { this.handleDelete(message); }
 
-            this.hideContextMenu();
+          this.hideContextMenu();
         },
-        handleUnpin() { App.state.pinnedMessageId = null; App.core.saveHistory(); App.ui.updatePinnedMessageUI(); },
         handleStartEdit(message) {
-            const { userInput } = App.elements;
-            const uiMessage = document.querySelector(`[data-message-id="${message.id}"]`);
-            // Find the message in the UI to get the raw text without "[Images Attached]"
-            const msgContentDiv = uiMessage.querySelector('.msg-content');
-            if (!msgContentDiv) return;
+          const { userInput } = App.elements;
+          const uiMessage = document.querySelector(`[data-message-id="${message.id}"]`);
+          const msgContentDiv = uiMessage.querySelector('.msg-content');
+          if (!msgContentDiv) return;
 
-            App.state.isEditing = true;
-            App.state.editingMessageId = message.id;
-            App.ui.setEditing(true);
+          App.state.isEditing = true;
+          App.state.editingMessageId = message.id;
+          App.ui.setEditing(true);
 
-            userInput.value = msgContentDiv.innerText;
-            userInput.focus();
-            userInput.dispatchEvent(new Event('input')); // To trigger textarea resize
+          userInput.value = msgContentDiv.innerText;
+          userInput.focus();
+          userInput.dispatchEvent(new Event('input')); // To trigger textarea resize
         },
         handleDelete(message) {
-            const deleteIndex = App.state.chatHistory.findIndex(m => m.id === message.id);
-            if (deleteIndex > -1) {
-                App.state.chatHistory.splice(deleteIndex); // Remove message and all subsequent messages
-                App.ui.rebuildChatUI();
-                App.core.saveHistory();
-                App.utils.toast(App.i18n.strings[App.state.lang].messageDeleted);
-            }
-        }
+          const deleteIndex = App.state.chatHistory.findIndex(m => m.id === message.id);
+          if (deleteIndex > -1) {
+            App.state.chatHistory.splice(deleteIndex); // Remove this message and all subsequent ones
+            App.ui.rebuildChatUI();
+            App.core.saveHistory();
+            App.utils.toast(App.i18n.strings[App.state.lang].messageDeleted);
+          }
+        },
+        handleUnpin() {
+          App.state.pinnedMessageId = null;
+          App.core.saveHistory();
+          App.ui.updatePinnedMessageUI();
+        },
+
+        // --- Misc Handlers ---
+        handleIherbCopy(e) {
+          e.preventDefault();
+          const { copyAndGoIherbBtn, iherbCode } = App.elements;
+          if (!copyAndGoIherbBtn || !iherbCode) return;
+          const code = iherbCode.textContent.trim();
+          navigator.clipboard.writeText(code).then(() => {
+            App.utils.toast(App.i18n.strings[App.state.lang].iherbCopiedAndRedirecting);
+            setTimeout(() => { window.open(copyAndGoIherbBtn.href, '_blank'); }, 800);
+          });
+        },
+        handleIherbCodeClick() {
+          const code = App.elements.iherbCode.textContent.trim();
+          navigator.clipboard.writeText(code).then(() => App.utils.toast(App.i18n.strings[App.state.lang].copied));
+        },
       },
+
+      /**
+       * -----------------------------------------------------------------
+       * 10. APP INITIALIZATION
+       * -----------------------------------------------------------------
+       */
       init() {
         document.addEventListener('DOMContentLoaded', () => {
           this.cacheElements();
+          
+          // --- Initial Setup (Theme, Language, History) ---
           const savedTheme = localStorage.getItem('theme');
-          if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) { document.documentElement.classList.add('dark'); this.elements.btnTheme.textContent = '🌙'; }
+          if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+            this.elements.btnTheme.textContent = '🌙';
+          }
           this.i18n.setLang(navigator.language.startsWith('ar') ? 'ar' : 'en');
           this.core.loadHistory();
 
-          const { elements: E, handlers: H } = this;
+          // --- Bind Event Listeners ---
+          const { elements: E, handlers: H, utils: U, core: C, i18n: I } = this;
+          
+          // Screen Navigation
           E.startBtn.addEventListener('click', H.handleStartClick);
           E.nextBtn.addEventListener('click', () => H.handleNextClick.call(App));
-          E.sendBtn.addEventListener('click', () => App.core.sendMessage.call(App.core));
+
+          // Main Chat UI
+          E.chatAvatar.addEventListener('click', H.openProfileModal);
+          E.btnTheme.addEventListener('click', U.setTheme);
+          E.resetBtn.addEventListener('click', H.handleResetClick);
+          document.querySelectorAll('.lang-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => I.setLang(this.state.lang === 'ar' ? 'en' : 'ar'));
+          });
+          
+          // Input Area
+          E.sendBtn.addEventListener('click', () => C.sendMessage.call(C));
           E.userInput.addEventListener('keypress', H.handleKeyPress);
-          E.btnTheme.addEventListener('click', this.utils.setTheme);
           E.plusBtn.addEventListener('click', () => E.fileInput.click());
           E.fileInput.addEventListener('change', H.handleFileChange);
+          ['pointerdown','touchstart'].forEach(ev => E.micBtn.addEventListener(ev, H.handleMicRecord, {passive:false}));
+          ['pointerup','touchend','mouseleave'].forEach(ev => E.micBtn.addEventListener(ev, H.handleMicStop, {passive:false}));
+          
+          // Modals & Overlays
+          E.generatePlanBtn.addEventListener('click', H.openContactModal);
           E.closeContactBtn.addEventListener('click', H.closeContactModal);
           E.contactModal.addEventListener('click', (e) => H.handleModalClick.call(H, e));
-          E.generatePlanBtn.addEventListener('click', H.openContactModal);
-          E.copyAndGoIherbBtn.addEventListener('click', H.handleIherbCopy);
-          E.iherbCode.addEventListener('click', () => H.handleIherbCodeClick.call(H));
-          E.chatAvatar.addEventListener('click', H.openProfileModal);
           E.closeProfileBtn.addEventListener('click', H.closeProfileModal);
           E.profileModal.addEventListener('click', (e) => H.handleModalClick.call(H, e));
           E.profileGetPlanBtn.addEventListener('click', () => H.handleProfileGetPlanClick.call(H));
-          E.resetBtn.addEventListener('click', H.handleResetClick);
           E.confirmResetBtn.addEventListener('click', H.handleResetConfirm);
           E.cancelResetBtn.addEventListener('click', H.handleResetCancel);
           E.resetConfirmModal.addEventListener('click', (e) => H.handleModalClick.call(H, e));
-          E.messageContextMenu.addEventListener('click', (e) => { const action = e.target.closest('[data-action]')?.dataset.action; if (action) H.handleContextMenuAction.call(H, action); });
-          document.addEventListener('click', (e) => { if (E.messageContextMenu && E.messageContextMenu.classList.contains('show') && !E.messageContextMenu.contains(e.target) && !e.target.closest('.message-bubble')) { H.hideContextMenu.call(H); } });
-          E.unpinBtn.addEventListener('click', H.handleUnpin);
-          E.pinnedMessageArea.addEventListener('click', (e) => { if (e.target !== E.unpinBtn && !E.unpinBtn.contains(e.target)) { const msgEl = document.querySelector(`[data-message-id="${App.state.pinnedMessageId}"]`); if (msgEl) msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); } });
-          document.querySelectorAll('.lang-toggle-btn').forEach(btn => { btn.addEventListener('click', () => this.i18n.setLang(this.state.lang === 'ar' ? 'en' : 'ar')); });
-          ['pointerdown','touchstart'].forEach(ev=>E.micBtn.addEventListener(ev, H.handleMicRecord,{passive:false}));
-          ['pointerup','touchend','mouseleave'].forEach(ev=>E.micBtn.addEventListener(ev, H.handleMicStop,{passive:false}));
           E.closeImageViewerBtn.addEventListener('click', H.closeImageViewer);
           E.imageViewerModal.addEventListener('click', (e) => H.handleModalClick.call(H, e));
           E.howToUseLink.addEventListener('click', (e) => { e.preventDefault(); H.openHowToUseModal(); });
           E.closeHowToUseBtn.addEventListener('click', H.closeHowToUseModal);
           E.howToUseModal.addEventListener('click', (e) => H.handleModalClick.call(H, e));
+          
+          // Message Interactions
+          E.messageContextMenu.addEventListener('click', (e) => {
+            const action = e.target.closest('[data-action]')?.dataset.action;
+            if (action) H.handleContextMenuAction.call(H, action);
+          });
+          document.addEventListener('click', (e) => {
+            if (E.messageContextMenu.classList.contains('show') && !E.messageContextMenu.contains(e.target) && !e.target.closest('.message-bubble')) {
+              H.hideContextMenu.call(H);
+            }
+          });
+          E.unpinBtn.addEventListener('click', H.handleUnpin);
+          E.pinnedMessageArea.addEventListener('click', (e) => {
+            if (e.target !== E.unpinBtn && !E.unpinBtn.contains(e.target)) {
+              const msgEl = document.querySelector(`[data-message-id="${App.state.pinnedMessageId}"]`);
+              if (msgEl) msgEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+          });
+
+          // Misc
+          E.copyAndGoIherbBtn.addEventListener('click', H.handleIherbCopy);
+          E.iherbCode.addEventListener('click', () => H.handleIherbCodeClick.call(H));
+
           initUIEnhancements();
         });
       }
     };
+
+    // --- Start the application ---
     window.App = App;
     App.init();
+
   </script>
 </body>
 </html>
-
-
-
-
