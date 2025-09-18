@@ -1,5 +1,4 @@
-# netlify.toml
-
+# ===================== موجود لديك كما هو =====================
 [build]
   publish   = "."
   functions = "netlify/functions"
@@ -19,12 +18,6 @@
   from = "/admin"
   to   = "/admin/index.html"
   status = 200
-
-# (اختياري) لو أردت أن كل الروابط الفرعية تحت /admin/* تفتح نفس الملف
-# [[redirects]]
-#   from = "/admin/*"
-#   to   = "/admin/index.html"
-#   status = 200
 
 # Security headers
 [[headers]]
@@ -47,3 +40,36 @@
   to   = "/.netlify/functions/chat"
   status = 200
   force  = true
+
+# ===================== إضافات اختيارية (Append Only) =====================
+
+# لو فتحت روابط فرعية داخل /admin (بدون راوتر) خليك على نفس الملف
+[[redirects]]
+  from = "/admin/*"
+  to   = "/admin/index.html"
+  status = 200
+
+# مسارات قصيرة للدوال الجديدة (تقدر تظل تستخدم /.netlify/functions/* إن حبيت)
+[[redirects]]
+  from = "/api/adminless/upsert-session"
+  to   = "/.netlify/functions/adminless-upsert-session"
+  status = 200
+  force  = true
+
+[[redirects]]
+  from = "/api/adminless/add-message"
+  to   = "/.netlify/functions/adminless-add-message"
+  status = 200
+  force  = true
+
+# كاش ثابت لأي أصول ثابتة (لو عندك مجلد assets مثلاً)
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# إبراز متغيرات البيئة في إعدادات Netlify (تذكير فقط، القيم توضع من لوحة Netlify)
+[template.environment]
+  GEMINI_API_KEY = "your-gemini-key"
+  SUPABASE_URL = "https://xxxx.supabase.co"
+  SUPABASE_SERVICE_ROLE_KEY = "your-service-role-key"
