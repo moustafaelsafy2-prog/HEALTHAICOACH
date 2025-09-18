@@ -1179,8 +1179,102 @@
     window.App = App;
     App.init();
   </script>
+  <!-- =============== [ADD-ON] Session & Persistence Hook (NO EDITS ABOVE) =============== -->
+<script>
+/**
+ * هذا السكريبت لا يغيّر منطقك الحالي
+ * - يولّد sessionId ويخزّنه محليًا
+ * - يلتقط الرسائل المرسلة/المستلمة ويستدعي دوال Netlify لحفظها في Supabase
+ * - يحترم شرطك: إضافة فقط، بلا حذف/تعديل لأي سطر سابق
+ */
+
+(function () {
+  // 1) sessionId محلي
+  const SESS_KEY = 'smart-coach-session-id';
+  const getSessionId = () => {
+    let sid = localStorage.getItem(SESS_KEY);
+    if (!sid) {
+      sid = 'sess_' + Math.random().toString(36).slice(2) + Date.now();
+      localStorage.setItem(SESS_KEY, sid);
+      // سجّل الجلسة أول مرة
+      fetch('/.netlify/functions/adminless-upsert-session', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ session_id: sid })
+      }).catch(()=>{});
+    }
+    return sid;
+  };
+  const sessionId = getSessionId();
+
+  // 2) أداة إرسال للباك-إند (Netlify Function)
+  async function persistMessage({ role, text, images }) {
+    try {
+      await fetch('/.netlify/functions/adminless-add-message', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          session_id: sessionId,
+          role,
+          text,
+          images: images && images.length ? images : [],
+          ts: Date.now()
+        })
+      });
+    } catch (e) { /* صامت */ }
+  }
+
+  // 3) ربط غير متطفّل مع منطقك الحالي:
+  //    - نلف sendMessage و processAIResponse بدون تعديل تعريفاتهم الأصلية
+  const waitForApp = () => new Promise(res=>{
+    if (window.App && App.core && App.ui) return res();
+    const iv = setInterval(()=>{ if (window.App && App.core && App.ui) { clearInterval(iv); res(); } }, 30);
+  });
+
+  waitForApp().then(()=>{
+    // احفظ النسخ الأصلية
+    const _sendMessage = App.core.sendMessage.bind(App.core);
+    const _processAIResponse = App.core.processAIResponse.bind(App.core);
+
+    // لف sendMessage: بعد ما تضيف رسالتك للواجهة/الذاكرة، خزّنها في Supabase
+    App.core.sendMessage = function () {
+      // نحتاج قراءة محتوى الإدخال والصور قبل أن يمسحه الكود الأصلي
+      const typed = (App.elements.userInput.value || '').trim();
+      const pendingImages = (App.state.pendingImages || []).map(x=>x.dataUrl);
+
+      // نفّذ المنطق الأصلي كما هو
+      _sendMessage();
+
+      // خزّن رسالة المستخدم (لو كان فيه نص أو صور)
+      if (typed || pendingImages.length) {
+        persistMessage({ role:'user', text: typed, images: pendingImages });
+      }
+    };
+
+    // لف processAIResponse: بعد ما يظهر رد الذكاء الاصطناعي في الشات، خزّنه
+    App.core.processAIResponse = async function (images=[]) {
+      // نفّذ المنطق الأصلي (يجلب الرد ويضيفه للدردشة)
+      const beforeLen = App.state.chatHistory.length;
+      await _processAIResponse(images);
+      const afterLen = App.state.chatHistory.length;
+
+      // التغيير الأخير غالبًا هو رسالة المساعد
+      if (afterLen > beforeLen) {
+        const last = App.state.chatHistory[afterLen - 1];
+        if (last && last.role === 'assistant') {
+          const text = last.parts?.[0]?.text || '';
+          if (text) persistMessage({ role:'assistant', text, images: [] });
+        }
+      }
+    };
+  });
+})();
+</script>
+<!-- =============== [/ADD-ON] =============== -->
+
 </body>
 </html>
+
 
 
 
