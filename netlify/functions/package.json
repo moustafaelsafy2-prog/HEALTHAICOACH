@@ -2,15 +2,16 @@
   "name": "healthaicoach",
   "version": "1.0.0",
   "private": true,
-  "description": "Web + Netlify Functions for Smart Personal Coach",
-  "engines": { "node": ">=18" },
+  "description": "Smart Personal Coach site + Netlify Functions (Gemini + Supabase).",
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "dev": "netlify dev",
     "start": "netlify dev",
-    "build": "echo \"no build step\"",
-    "test": "node -e \"console.log('OK')\"",
-    "clean": "rm -rf .netlify/functions .netlify/edge-functions",
-    "verify:env": "node -e \"const req=['SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','GEMINI_API_KEY'];const miss=req.filter(k=>!process.env[k]);if(miss.length){console.error('Missing env:',miss.join(', '));process.exit(1)}console.log('ENV OK')\""
+    "build": "echo 'static site'",
+    "clean": "rm -rf node_modules .netlify",
+    "verify:env": "node -e \"const r=['SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','GEMINI_API_KEY'];const m=r.filter(k=>!process.env[k]);if(m.length){console.error('Missing env:',m.join(', '));process.exit(1)}console.log('ENV OK')\""
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
