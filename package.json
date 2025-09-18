@@ -1,0 +1,17 @@
+{
+  "name": "health-ai-coach-site",
+  "private": true,
+  "version": "1.0.0",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "build": "echo \"no site build\"",
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.45.0",
+    "dotenv": "^16.4.5"
+  },
+  "devDependencies": {
+    "netlify-cli": "^17.34.1"
+  }
+}
