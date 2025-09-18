@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>لوحة الإدارة | مدربك الشخصي الذكي</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            accent: {
+              DEFAULT: '#22C55E',
+              hover: '#16A34A'
+            }
+          },
+          boxShadow: {
+            soft: '0 4px 10px rgba(0,0,0,0.06)'
+          },
+          fontFamily: {
+            cairo: ['Cairo', 'system-ui', 'Segoe UI', 'Roboto', 'sans-serif']
+          }
+        }
+      }
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root{--border: #e5e7eb}
+    html.dark{color-scheme: dark}
+    html.dark body{background:#0b1220;color:#e5e7eb}
+    html.dark .card{background:#0f172a;border-color:#334155}
+    .card{background:#fff;border:1px solid var(--border);border-radius:1rem;box-shadow:var(--shadow-md,0 1px 2px rgba(0,0,0,.05))}
+    .kpi{border-inline-start:4px solid #22C55E}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace}
+  </style>
+</head>
+<body class="font-cairo bg-gray-50 min-h-dvh">
+  <!-- ============ Topbar ============ -->
+  <header class="sticky top-0 z-40 backdrop-blur supports-[backdrop-filter]:bg-white/70 bg-white border-b border-gray-200 dark:border-slate-700 dark:bg-slate-900/70">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full ring-2 ring-accent/30">
+          <svg class="w-6 h-6 text-accent" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20Zm1 14h-2v-2h2v2Zm1.07-7.75-.9.92C12.45 9.9 12 10.5 12 12h-2v-.5c0-1 .45-1.9 1.17-2.58l1.24-1.26a2 2 0 10-2.83-2.83A2.01 2.01 0 008 6H6a4 4 0 117.07 2.25Z"/></svg>
+        </span>
+        <div>
+          <div class="text-sm text-gray-500 dark:text-slate-400">لوحة الإدارة</div>
+          <h1 class="text-lg font-extrabold">مدربك الشخصي الذكي</h1>
+        </div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="btnDark" class="px-3 h-9 rounded-lg border border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-800">🌙 / ☀️</button>
+        <button id="btnExport" class="px-3 h-9 rounded-lg bg-accent text-white hover:bg-accent-hover">تصدير البيانات</button>
+        <label class="px-3 h-9 rounded-lg border border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-800 cursor-pointer inline-flex items-center">استيراد<input id="importFile" type="file" accept="application/json" class="hidden"/></label>
+      </div>
+    </div>
+  </header>
+
+  <!-- ============ Layout ============ -->
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 grid grid-cols-12 gap-6">
+    <!-- Sidebar -->
+    <aside class="col-span-12 lg:col-span-3 space-y-3">
+      <nav class="card p-3">
+        <ul class="space-y-1 text-sm">
+          <li><button data-tab="dashboard" class="tab-btn w-full text-right px-3 py-2 rounded-lg bg-gray-100 dark:bg-slate-800">لوحة التحكم</button></li>
+          <li><button data-tab="convos" class="tab-btn w-full text-right px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800">المحادثات</button></li>
+          <li><button data-tab="templates" class="tab-btn w-full text-right px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800">قوالب الرد</button></li>
+          <li><button data-tab="howto" class="tab-btn w-full text-right px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800">محتوى "كيف تستخدم"</button></li>
+          <li><button data-tab="settings" class="tab-btn w-full text-right px-3 py-2 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800">الإعدادات</button></li>
+        </ul>
+      </nav>
+      <div class="card p-4">
+        <div class="text-xs text-gray-500 mb-2">جلسة المتصفح</div>
+        <div class="mono text-xs break-words" id="sessionKey">STORAGE_KEY: smart-coach-session-v3</div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="col-span-12 lg:col-span-9 space-y-6">
+
+      <!-- Dashboard Tab -->
+      <section id="tab-dashboard" class="tab card p-5">
+        <div class="grid sm:grid-cols-3 gap-4">
+          <div class="kpi card p-4"><div class="text-sm text-gray-500">عدد الرسائل</div><div class="text-2xl font-extrabold" id="kpiMessages">0</div></div>
+          <div class="kpi card p-4"><div class="text-sm text-gray-500">رسائل المستخدم</div><div class="text-2xl font-extrabold" id="kpiUser">0</div></div>
+          <div class="kpi card p-4"><div class="text-sm text-gray-500">رسائل المدرب</div><div class="text-2xl font-extrabold" id="kpiAI">0</div></div>
+        </div>
+        <div class="mt-6">
+          <h3 class="font-bold mb-3">آخر 5 رسائل</h3>
+          <ul id="lastFive" class="space-y-2"></ul>
+        </div>
+      </section>
+
+      <!-- Conversations Tab -->
+      <section id="tab-convos" class="tab card p-5 hidden">
+        <div class="flex items-center gap-3 mb-4">
+          <input id="searchMsg" type="search" placeholder="ابحث في الرسائل" class="w-full sm:w-64 px-3 h-10 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900"/>
+          <button id="btnClearChat" class="px-3 h-10 rounded-lg bg-red-500 text-white hover:bg-red-600">حذف الجلسة</button>
+        </div>
+        <div class="overflow-hidden border border-gray-200 dark:border-slate-700 rounded-xl">
+          <table class="min-w-full text-sm">
+            <thead class="bg-gray-100 dark:bg-slate-800">
+              <tr>
+                <th class="p-3 text-right">#</th>
+                <th class="p-3 text-right">الدور</th>
+                <th class="p-3 text-right">النص</th>
+                <th class="p-3 text-right">الوقت</th>
+                <th class="p-3 text-right">إجراءات</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyMsgs" class="divide-y divide-gray-200 dark:divide-slate-700 bg-white dark:bg-slate-900"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Templates Tab -->
+      <section id="tab-templates" class="tab card p-5 hidden">
+        <div class="flex items-center gap-3 mb-4">
+          <input id="tplName" placeholder="اسم القالب" class="px-3 h-10 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 w-40"/>
+          <textarea id="tplText" placeholder="نص القالب" rows="2" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900"></textarea>
+          <button id="btnSaveTpl" class="px-4 h-10 rounded-lg bg-accent text-white hover:bg-accent-hover">حفظ</button>
+        </div>
+        <div id="tplList" class="grid gap-3"></div>
+      </section>
+
+      <!-- How-To Content Tab -->
+      <section id="tab-howto" class="tab card p-5 hidden">
+        <div class="mb-3 text-sm text-gray-500">تحرير محتوى نافذة "كيف تستخدم الخدمة" (من i18n المحلية)</div>
+        <textarea id="howtoAr" rows="8" class="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 mono"></textarea>
+        <div class="mt-3 flex gap-3">
+          <button id="btnSaveHowTo" class="px-4 h-10 rounded-lg bg-accent text-white hover:bg-accent-hover">حفظ</button>
+          <span id="howtoHint" class="text-sm text-gray-500"></span>
+        </div>
+      </section>
+
+      <!-- Settings Tab -->
+      <section id="tab-settings" class="tab card p-5 hidden">
+        <h3 class="font-bold mb-3">إعدادات عامة (محلية)</h3>
+        <div class="grid sm:grid-cols-2 gap-4">
+          <div class="space-y-2">
+            <label class="block text-sm text-gray-600">رقم واتساب</label>
+            <input id="setWhatsapp" placeholder="00971502061209" class="w-full px-3 h-10 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900"/>
+          </div>
+          <div class="space-y-2">
+            <label class="block text-sm text-gray-600">كود iHerb</label>
+            <input id="setIherb" placeholder="AYT3413" class="w-full px-3 h-10 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900"/>
+          </div>
+        </div>
+        <div class="mt-4 flex gap-3">
+          <button id="btnSaveSettings" class="px-4 h-10 rounded-lg bg-accent text-white hover:bg-accent-hover">حفظ</button>
+          <button id="btnResetSettings" class="px-4 h-10 rounded-lg border border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-800">إعادة ضبط</button>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- ============ Scripts ============ -->
+  <script>
+    const STORAGE_KEY = 'smart-coach-session-v3';
+    const ADMIN_NS = 'smart-coach-admin';
+
+    const el = (id) => document.getElementById(id);
+
+    const Admin = {
+      state: {
+        session: { chatHistory: [], userState: { data: {} }, pinnedMessageId: null },
+        templates: {},
+        howto: '',
+        settings: { whatsapp: '00971502061209', iherb: 'AYT3413' }
+      },
+      init(){
+        this.loadSession();
+        this.loadAdmin();
+        this.bind();
+        this.renderAll();
+        this.setThemeFromPref();
+      },
+      bind(){
+        // Tabs
+        document.querySelectorAll('.tab-btn').forEach(btn=>{
+          btn.addEventListener('click', ()=>{
+            document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('bg-gray-100','dark:bg-slate-800'));
+            btn.classList.add('bg-gray-100','dark:bg-slate-800');
+            const tab = btn.dataset.tab;
+            document.querySelectorAll('.tab').forEach(sec=>sec.classList.add('hidden'));
+            el('tab-'+tab).classList.remove('hidden');
+          });
+        });
+        // Actions
+        el('btnDark').addEventListener('click', this.toggleTheme);
+        el('btnExport').addEventListener('click', ()=>this.exportData());
+        el('importFile').addEventListener('change', (e)=>this.importData(e));
+        el('btnClearChat').addEventListener('click', ()=>this.clearChat());
+        el('searchMsg').addEventListener('input', (e)=>this.renderMessages(e.target.value));
+        el('btnSaveTpl').addEventListener('click', ()=>this.saveTemplate());
+        el('btnSaveHowTo').addEventListener('click', ()=>this.saveHowto());
+        el('btnSaveSettings').addEventListener('click', ()=>this.saveSettings());
+        el('btnResetSettings').addEventListener('click', ()=>this.resetSettings());
+      },
+      setThemeFromPref(){
+        const saved = localStorage.getItem(ADMIN_NS+':theme');
+        if(saved==='dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)){
+          document.documentElement.classList.add('dark');
+        }
+      },
+      toggleTheme(){
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem(ADMIN_NS+':theme', document.documentElement.classList.contains('dark')?'dark':'light');
+      },
+      // ====== Load/Save ======
+      loadSession(){
+        try{
+          const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+          if(data.chatHistory) this.state.session = data;
+        }catch(e){ console.warn('No session found'); }
+      },
+      saveSession(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(this.state.session)); },
+      loadAdmin(){
+        try{
+          const data = JSON.parse(localStorage.getItem(ADMIN_NS) || '{}');
+          this.state.templates = data.templates || {};
+          this.state.howto = data.howto || '';
+          this.state.settings = data.settings || this.state.settings;
+        }catch(e){ }
+      },
+      saveAdmin(){
+        localStorage.setItem(ADMIN_NS, JSON.stringify({
+          templates: this.state.templates,
+          howto: this.state.howto,
+          settings: this.state.settings
+        }));
+      },
+      // ====== Render ======
+      renderAll(){
+        this.renderKpis();
+        this.renderLastFive();
+        this.renderMessages();
+        this.renderTemplates();
+        this.renderHowto();
+        this.renderSettings();
+      },
+      renderKpis(){
+        const msgs = this.state.session.chatHistory || [];
+        const user = msgs.filter(m=>m.role==='user').length;
+        const ai = msgs.filter(m=>m.role==='assistant').length;
+        el('kpiMessages').textContent = msgs.length;
+        el('kpiUser').textContent = user;
+        el('kpiAI').textContent = ai;
+      },
+      renderLastFive(){
+        const ul = el('lastFive'); ul.innerHTML='';
+        const list = (this.state.session.chatHistory||[]).slice(-5);
+        list.forEach((m,idx)=>{
+          const li = document.createElement('li');
+          li.className='p-3 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900';
+          li.innerHTML = `<div class="text-xs text-gray-500">${m.role==='assistant'?'المدرب':'المستخدم'} • ${new Date(m.timestamp||Date.now()).toLocaleString('ar-EG')}</div>
+                          <div class="mt-1">${(m.parts?.[0]?.text||'').slice(0,180)}</div>`;
+          ul.appendChild(li);
+        });
+      },
+      renderMessages(filter=''){
+        const tbody = el('tbodyMsgs');
+        tbody.innerHTML='';
+        const msgs = (this.state.session.chatHistory||[]).map((m,i)=>({i, ...m}));
+        const q = filter.trim();
+        const view = q? msgs.filter(m=> (m.parts?.[0]?.text||'').includes(q)) : msgs;
+        view.forEach((m, idx)=>{
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="p-3 whitespace-nowrap">${m.i+1}</td>
+            <td class="p-3 whitespace-nowrap">${m.role==='assistant'?'المدرب':'المستخدم'}</td>
+            <td class="p-3"><div class="max-w-[48ch] truncate" title="${(m.parts?.[0]?.text||'').replace(/"/g,'&quot;')}">${(m.parts?.[0]?.text||'').slice(0,140)}</div></td>
+            <td class="p-3 whitespace-nowrap">${new Date(m.timestamp||Date.now()).toLocaleString('ar-EG')}</td>
+            <td class="p-3 whitespace-nowrap flex gap-2">
+              <button class="px-2 h-8 rounded bg-blue-500 text-white" data-act="view" data-i="${m.i}">عرض</button>
+              <button class="px-2 h-8 rounded bg-amber-500 text-white" data-act="edit" data-i="${m.i}">تعديل</button>
+              <button class="px-2 h-8 rounded bg-red-500 text-white" data-act="del" data-i="${m.i}">حذف</button>
+            </td>`;
+          tbody.appendChild(tr);
+        });
+        tbody.querySelectorAll('button').forEach(btn=>{
+          btn.addEventListener('click', (e)=>{
+            const i = +btn.dataset.i;
+            const act = btn.dataset.act;
+            if(act==='view') this.viewMsg(i); else if(act==='edit') this.editMsg(i); else this.deleteFrom(i);
+          });
+        });
+      },
+      viewMsg(i){
+        const m = this.state.session.chatHistory[i];
+        alert(`${m.role==='assistant'?'المدرب':'المستخدم'}\n\n${m.parts?.[0]?.text||''}`);
+      },
+      editMsg(i){
+        const m = this.state.session.chatHistory[i];
+        const t = prompt('حرّر النص ثم اضغط موافق:', m.parts?.[0]?.text||'');
+        if(t==null) return;
+        // قاعدة النظام: عند تعديل رسالة مستخدم — حذف كل ما بعدها
+        if(m.role==='user'){
+          this.state.session.chatHistory = this.state.session.chatHistory.slice(0, i);
+        }
+        // تعديل أو إدراج
+        this.state.session.chatHistory[i] = { ...m, parts:[{text:t}] };
+        this.saveSession();
+        this.renderAll();
+      },
+      deleteFrom(i){
+        if(!confirm('سيتم حذف هذه الرسالة وكل ما يليها. متابعة؟')) return;
+        this.state.session.chatHistory = this.state.session.chatHistory.slice(0, i);
+        this.saveSession();
+        this.renderAll();
+      },
+      clearChat(){
+        if(!confirm('حذف كامل الجلسة من المتصفح؟')) return;
+        localStorage.removeItem(STORAGE_KEY);
+        this.loadSession();
+        this.renderAll();
+      },
+      // ====== Templates ======
+      saveTemplate(){
+        const name = el('tplName').value.trim();
+        const text = el('tplText').value.trim();
+        if(!name || !text) return alert('أدخل اسمًا ونصًا');
+        this.state.templates[name] = text;
+        this.saveAdmin();
+        el('tplText').value='';
+        this.renderTemplates();
+      },
+      renderTemplates(){
+        const wrap = el('tplList'); wrap.innerHTML='';
+        const entries = Object.entries(this.state.templates);
+        if(entries.length===0){
+          wrap.innerHTML = '<div class="text-sm text-gray-500">لا توجد قوالب بعد.</div>';
+          return;
+        }
+        entries.forEach(([name,text])=>{
+          const card = document.createElement('div');
+          card.className = 'card p-4 flex items-start gap-3';
+          card.innerHTML = `
+            <div class="flex-1">
+              <div class="font-bold">${name}</div>
+              <div class="text-sm text-gray-600 dark:text-slate-300 mt-1 whitespace-pre-wrap">${text}</div>
+            </div>
+            <div class="flex gap-2">
+              <button class="px-3 h-9 rounded bg-blue-500 text-white" data-act="copy" data-name="${name}">نسخ</button>
+              <button class="px-3 h-9 rounded bg-amber-500 text-white" data-act="edit" data-name="${name}">تعديل</button>
+              <button class="px-3 h-9 rounded bg-red-500 text-white" data-act="del" data-name="${name}">حذف</button>
+            </div>`;
+          wrap.appendChild(card);
+        });
+        wrap.querySelectorAll('button').forEach(b=>{
+          b.addEventListener('click', ()=>{
+            const name = b.dataset.name;
+            const act = b.dataset.act;
+            if(act==='copy'){
+              navigator.clipboard.writeText(Admin.state.templates[name]);
+              alert('تم النسخ');
+            } else if(act==='edit'){
+              const t = prompt('حرّر نص القالب', Admin.state.templates[name]);
+              if(t!=null){ Admin.state.templates[name]=t; Admin.saveAdmin(); Admin.renderTemplates(); }
+            } else {
+              if(confirm('حذف القالب؟')){ delete Admin.state.templates[name]; Admin.saveAdmin(); Admin.renderTemplates(); }
+            }
+          });
+        });
+      },
+      // ====== How-To ======
+      renderHowto(){
+        el('howtoAr').value = this.state.howto || '';
+        el('howtoHint').textContent = this.state.howto? 'تم الحفظ مسبقًا':'لم يتم الحفظ بعد';
+      },
+      saveHowto(){
+        this.state.howto = el('howtoAr').value;
+        this.saveAdmin();
+        el('howtoHint').textContent = 'تم الحفظ ✓';
+        setTimeout(()=> el('howtoHint').textContent='', 1500);
+      },
+      // ====== Settings ======
+      renderSettings(){
+        el('setWhatsapp').value = this.state.settings.whatsapp || '';
+        el('setIherb').value = this.state.settings.iherb || '';
+      },
+      saveSettings(){
+        this.state.settings.whatsapp = el('setWhatsapp').value.trim();
+        this.state.settings.iherb = el('setIherb').value.trim();
+        this.saveAdmin();
+        alert('تم الحفظ');
+      },
+      resetSettings(){
+        if(!confirm('إرجاع الإعدادات الافتراضية؟')) return;
+        this.state.settings = { whatsapp: '00971502061209', iherb: 'AYT3413' };
+        this.saveAdmin(); this.renderSettings();
+      },
+      // ====== Import/Export ======
+      exportData(){
+        const payload = {
+          session: this.state.session,
+          templates: this.state.templates,
+          howto: this.state.howto,
+          settings: this.state.settings,
+          exportedAt: new Date().toISOString()
+        };
+        const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'smart-coach-admin-export.json'; a.click();
+        URL.revokeObjectURL(url);
+      },
+      importData(e){
+        const file = e.target.files?.[0];
+        if(!file) return;
+        const reader = new FileReader();
+        reader.onload = () => {
+          try{
+            const data = JSON.parse(reader.result);
+            if(data.session){ this.state.session = data.session; localStorage.setItem(STORAGE_KEY, JSON.stringify(data.session)); }
+            if(data.templates){ this.state.templates = data.templates; }
+            if(typeof data.howto==='string'){ this.state.howto = data.howto; }
+            if(data.settings){ this.state.settings = data.settings; }
+            this.saveAdmin(); this.renderAll();
+            alert('تم الاستيراد بنجاح');
+          }catch(err){ alert('ملف غير صالح'); }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      }
+    };
+
+    window.addEventListener('DOMContentLoaded', ()=> Admin.init());
+  </script>
+</body>
+</html>
