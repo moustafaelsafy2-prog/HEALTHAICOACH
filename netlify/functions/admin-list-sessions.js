@@ -1,27 +1,25 @@
-/* Admin-only: list sessions summary */
-const { createClient } = require('@supabase/supabase-js');
-const supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY);
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type, x-admin-key',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS'
-};
+const { getClient } = require('./_shared/supabase');
 
-exports.handler = async (event) => {
-  if (event.httpMethod === 'OPTIONS') return { statusCode: 200, headers: corsHeaders, body: 'ok' };
+exports.handler = async () => {
+  try {
+    const supabase = await getClient();
 
-  const hdr = (event.headers || {});
-  const key = hdr['x-admin-key'] || hdr['X-Admin-Key'];
-  if (!process.env.ADMIN_KEY || key !== process.env.ADMIN_KEY) {
-    return { statusCode: 401, headers: corsHeaders, body: 'Unauthorized' };
+    // يقرأ من الـ VIEW المقترح: sessions_summary
+    const { data, error } = await supabase
+      .from('sessions_summary')
+      .select('*')
+      .order('last_ts', { ascending: false })
+      .limit(200);
+
+    if (error) throw error;
+
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ok: true, sessions: data }),
+    };
+  } catch (e) {
+    console.error(e);
+    return { statusCode: 500, body: e.message || 'Server error' };
   }
-
-  const { data, error } = await supabase
-    .from('sessions_view') // تأكد تنفيذ الـ SQL لعمل الـ view
-    .select('*')
-    .order('last_message_at', { ascending: false })
-    .limit(500);
-
-  if (error) return { statusCode: 500, headers: corsHeaders, body: JSON.stringify({ error: error.message }) };
-  return { statusCode: 200, headers: corsHeaders, body: JSON.stringify(data || []) };
 };
