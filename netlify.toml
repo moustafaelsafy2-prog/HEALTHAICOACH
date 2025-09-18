@@ -4,23 +4,29 @@
   publish   = "."
   functions = "netlify/functions"
 
-# Use esbuild to bundle Node functions (fast, compatible with CJS/ESM)
 [functions]
   node_bundler = "esbuild"
-  # optional: increase function timeout/memory if تحتاج تحميل أثقل
-  # node_bundler = "esbuild"
-  # included_files = []
-  # external_node_modules = []
-  # directory = "netlify/functions"
 
-# Route frontend calls to your function
+# API ↔︎ Function
 [[redirects]]
   from = "/api/generate"
   to   = "/.netlify/functions/gemini-proxy"
   status = 200
   force  = true
 
-# (اختياري) تأمين رؤوس الاستجابة العامة
+# Admin route ↔︎ static file
+[[redirects]]
+  from = "/admin"
+  to   = "/admin/index.html"
+  status = 200
+
+# (اختياري) لو أردت أن كل الروابط الفرعية تحت /admin/* تفتح نفس الملف
+# [[redirects]]
+#   from = "/admin/*"
+#   to   = "/admin/index.html"
+#   status = 200
+
+# Security headers
 [[headers]]
   for = "/*"
   [headers.values]
