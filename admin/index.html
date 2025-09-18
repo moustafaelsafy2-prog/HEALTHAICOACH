@@ -98,6 +98,33 @@
           <input id="searchMsg" type="search" placeholder="ابحث في الرسائل" class="w-full sm:w-64 px-3 h-10 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900"/>
           <button id="btnClearChat" class="px-3 h-10 rounded-lg bg-red-500 text-white hover:bg-red-600">حذف الجلسة</button>
         </div>
+
+        <!-- ===================== [ADD-ON UI: اختيار المصدر + إدارة الجلسات السحابية] ===================== -->
+        <div class="flex flex-wrap items-center gap-3 mb-4">
+          <label class="text-sm text-gray-600">المصدر:</label>
+          <select id="sourceMode" class="px-2 h-10 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900">
+            <option value="local">المتصفح (Local)</option>
+            <option value="cloud">السحابة (Supabase)</option>
+          </select>
+
+          <button id="btnAdminKey" class="px-3 h-10 rounded-lg border border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-800">
+            مفتاح الأدمن
+          </button>
+
+          <button id="btnRefreshSessions" class="px-3 h-10 rounded-lg border border-gray-200 dark:border-slate-700 hover:bg-gray-100 dark:hover:bg-slate-800">
+            تحديث الجلسات
+          </button>
+
+          <select id="sessionSelect" class="px-2 h-10 rounded-lg border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900 min-w-[240px]">
+            <option value="">— اختر جلسة —</option>
+          </select>
+
+          <button id="btnLoadSessionMsgs" class="px-3 h-10 rounded-lg bg-accent text-white hover:bg-accent-hover">
+            فتح الجلسة
+          </button>
+        </div>
+        <!-- =================== [/ADD-ON UI] =================== -->
+
         <div class="overflow-hidden border border-gray-200 dark:border-slate-700 rounded-xl">
           <table class="min-w-full text-sm">
             <thead class="bg-gray-100 dark:bg-slate-800">
@@ -429,5 +456,124 @@
 
     window.addEventListener('DOMContentLoaded', ()=> Admin.init());
   </script>
+
+  <!-- =============== [ADD-ON] Cloud Admin Hook (NO EDITS ABOVE) =============== -->
+  <script>
+  (function(){
+    // نخزن مفتاح الأدمن محلياً لاستخدامه كرأس x-admin-key
+    const ADMIN_NS = 'smart-coach-admin';
+    const KeyStore = {
+      get(){ return localStorage.getItem(ADMIN_NS+':key') || ''; },
+      set(v){ localStorage.setItem(ADMIN_NS+':key', v || ''); }
+    };
+
+    function ensureKey(){
+      let k = KeyStore.get();
+      if(!k){
+        k = prompt('أدخل ADMIN_KEY (نفس القيمة المضبوطة في متغيرات Netlify)') || '';
+        if(k) KeyStore.set(k);
+      }
+      return k;
+    }
+
+    async function call(fn, body){
+      const key = ensureKey();
+      if(!key) throw new Error('ADMIN_KEY غير مُدخل');
+      const res = await fetch('/.netlify/functions/'+fn, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-key': key },
+        body: JSON.stringify(body || {})
+      });
+      if(!res.ok) throw new Error('HTTP '+res.status);
+      return res.json();
+    }
+
+    async function listSessions(){
+      try{
+        const out = await call('admin-list-sessions', {});
+        return out.sessions || out.data || [];
+      }catch(e){
+        alert('تعذر جلب الجلسات: '+e.message);
+        return [];
+      }
+    }
+
+    async function getMessages(session_id){
+      try{
+        const out = await call('admin-get-messages', { session_id });
+        return out.messages || out.data || [];
+      }catch(e){
+        alert('تعذر جلب الرسائل: '+e.message);
+        return [];
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', ()=>{
+      const selMode    = document.getElementById('sourceMode');
+      const btnKey     = document.getElementById('btnAdminKey');
+      const btnRefresh = document.getElementById('btnRefreshSessions');
+      const selSession = document.getElementById('sessionSelect');
+      const btnOpen    = document.getElementById('btnLoadSessionMsgs');
+      const btnClear   = document.getElementById('btnClearChat');
+
+      if(!selMode) return;
+
+      btnKey?.addEventListener('click', ()=>{
+        const cur = KeyStore.get();
+        const v = prompt('ADMIN_KEY', cur || '');
+        if(v!=null) KeyStore.set(v);
+      });
+
+      btnRefresh?.addEventListener('click', async ()=>{
+        if(selMode.value !== 'cloud') { alert('بدّل المصدر إلى "السحابة" أولاً'); return; }
+        selSession.innerHTML = '<option>جاري التحميل…</option>';
+        const rows = await listSessions();
+        selSession.innerHTML = '';
+        if(!rows.length){
+          selSession.innerHTML = '<option value="">لا توجد جلسات</option>';
+          return;
+        }
+        rows.forEach(r=>{
+          const id = r.session_id || r.id;
+          const count = r.count || r.msg_count || '';
+          const opt = document.createElement('option');
+          opt.value = id;
+          opt.textContent = count ? `${id} (${count})` : id;
+          selSession.appendChild(opt);
+        });
+      });
+
+      btnOpen?.addEventListener('click', async ()=>{
+        if(selMode.value !== 'cloud') { alert('اضبط المصدر على "السحابة"'); return; }
+        const sid = selSession.value;
+        if(!sid) return;
+        const rows = await getMessages(sid);
+        const mapped = rows.map(m=>({
+          id: 'srv-'+(m.id ?? ''),
+          role: m.role || 'user',
+          parts: [{ text: m.text || '' }],
+          timestamp: m.ts ? new Date(m.ts).getTime() : Date.now()
+        }));
+        Admin.state.session = { ...Admin.state.session, chatHistory: mapped };
+        Admin.renderAll();
+      });
+
+      selMode?.addEventListener('change', ()=>{
+        if(selMode.value === 'local'){
+          Admin.loadSession();
+          Admin.renderAll();
+        }
+      });
+
+      btnClear?.addEventListener('click', (e)=>{
+        if(selMode.value === 'cloud'){
+          e.preventDefault();
+          alert('حذف جلسات السحابة غير مفعل هنا. احذف من Supabase مباشرة أو أضف دالة delete مخصصة.');
+        }
+      });
+    });
+  })();
+  </script>
+  <!-- =============== [/ADD-ON] =============== -->
 </body>
 </html>
