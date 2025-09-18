@@ -1,25 +1,26 @@
 // netlify/functions/gemini-proxy.js
-// Gemini proxy: multi-model fallback, vision+audio inline, streaming, retries, strict guards,
-// auto language mirroring (AR/EN), and concise vision mode for short, actionable replies.
+// Pro-first, accuracy-tuned Gemini proxy with auto-continue for long answers,
+// strict language mirroring (AR/EN), anti-hallucination guard, streaming, retries.
 
-const MAX_TRIES = 3;                     // محاولات لكل نموذج
-const BASE_BACKOFF_MS = 600;             // ارتداد أُسّي مع jitter
-const MAX_OUTPUT_TOKENS_HARD = 8192;     // حد أقصى آمن للتوكنات
-const DEFAULT_TIMEOUT_MS = 26000;        // ضمن حدود Netlify
+const MAX_TRIES = 3;
+const BASE_BACKOFF_MS = 600;
+const MAX_OUTPUT_TOKENS_HARD = 8192;       // أقصى ما ندفعه للنموذج
+const DEFAULT_TIMEOUT_MS = 28000;          // ضمن سقف Netlify
 const SAFE_TEMP_RANGE = [0.0, 1.0];
 const SAFE_TOPP_RANGE = [0.0, 1.0];
 
-// حدود الوسائط
-const MAX_INLINE_BYTES = 15 * 1024 * 1024; // 15MB/part
+// Media limits
+const MAX_INLINE_BYTES = 15 * 1024 * 1024;
 const ALLOWED_IMAGE = /^image\/(png|jpe?g|webp|gif|bmp|svg\+xml)$/i;
 const ALLOWED_AUDIO = /^audio\/(webm|ogg|mp3|mpeg|wav|m4a|aac|3gpp|3gpp2|mp4)$/i;
 
-// ترتيب نماذج جيميني المرشحة
+// --- Pro-first pool لرفع الدقة ---
 const MODEL_POOL = [
-  "gemini-2.0-flash-exp",
+  "gemini-1.5-pro",
+  "gemini-1.5-pro-latest",
   "gemini-2.0-flash",
   "gemini-1.5-flash",
-  "gemini-1.5-pro"
+  "gemini-2.0-flash-exp",
 ];
 
 exports.handler = async (event) => {
@@ -34,7 +35,6 @@ exports.handler = async (event) => {
     "X-Request-ID": requestId
   };
 
-  // CORS
   if (event.httpMethod === "OPTIONS") return { statusCode: 204, headers: baseHeaders, body: "" };
   if (event.httpMethod !== "POST") return resp(405, baseHeaders, { error: "Method Not Allowed" });
 
@@ -46,64 +46,62 @@ exports.handler = async (event) => {
   try { payload = JSON.parse(event.body || "{}"); }
   catch { return resp(400, baseHeaders, { error: "Invalid JSON" }); }
 
-  // Inputs (+ معلمات إضافية للتكامل)
   let {
     prompt,
-    messages,            // [{role:"user"|"model"|"system", content:"...", images?:[], audio?:{}}]
-    images,              // top-level images: [dataUrl | {mime,data}]
-    audio,               // top-level audio: {mime,data}
-    model = "auto",      // "auto" = جرّب مجموعة النماذج
-    temperature = 0.6,
-    top_p = 0.9,
-    max_output_tokens = 2048,
-    system,              // string
+    messages,
+    images,
+    audio,
+    model = "auto",
+    temperature,
+    top_p,
+    max_output_tokens,
+    system,
     stream = false,
     timeout_ms = DEFAULT_TIMEOUT_MS,
     include_raw = false,
 
-    // ---- New tuning knobs ----
-    mode,                // "default" | "image_brief" | "qa" (مستقبلاً)
-    force_lang,          // "ar" | "en" | undefined
-    concise_image,       // boolean: يفرض ردًا موجزًا عند وجود صور
-    guard_level = "strict" // "relaxed" | "strict" — يؤثر على قوالب الحراسة فقط
-  } = payload || {};
+    // دوال الضبط
+    mode,                       // "default" | "qa" | "image_brief"
+    force_lang,                 // "ar" | "en"
+    concise_image,              // boolean
+    guard_level = "strict",     // "relaxed" | "strict"
 
-  // Validate/clamp
-  temperature = clampNumber(temperature, SAFE_TEMP_RANGE[0], SAFE_TEMP_RANGE[1], 0.6);
-  top_p = clampNumber(top_p, SAFE_TOPP_RANGE[0], SAFE_TOPP_RANGE[1], 0.9);
-  max_output_tokens = clampNumber(max_output_tokens, 1, MAX_OUTPUT_TOKENS_HARD, 2048);
-  timeout_ms = clampNumber(timeout_ms, 1000, 29000, DEFAULT_TIMEOUT_MS);
+    // --- جديد: تمكين ردود طويلة تلقائيًا ---
+    long = true,                // فعّال افتراضيًا
+    max_chunks = 4              // أقصى عدد دفعات للتكملة داخل نفس الطلب
+  } = payload || {};
 
   if (!prompt && !Array.isArray(messages)) {
     return resp(400, baseHeaders, { error: "Missing prompt or messages[]" });
   }
 
-  // --------- Guardrails & Language mirroring ----------
+  timeout_ms = clampNumber(timeout_ms, 1000, 29000, DEFAULT_TIMEOUT_MS);
+
+  // --------- لغة المستخدم + حراسة ----------
   const contentPreview = textPreview(prompt || messages?.map(m=>m?.content||"").join("\n"));
   const lang = chooseLang(force_lang, contentPreview);
-  const hasTopImages = Array.isArray(images) && images.length > 0;
-  const hasAnyImages = hasTopImages || !!(Array.isArray(messages) && messages.some(m=>Array.isArray(m.images) && m.images.length));
+  const hasTopImages  = Array.isArray(images) && images.length > 0;
+  const hasAnyImages  = hasTopImages || !!(Array.isArray(messages) && messages.some(m=>Array.isArray(m.images) && m.images.length));
   const useImageBrief = concise_image === true || mode === "image_brief" || hasAnyImages;
 
-  // حقن تعليمات حراسة قصيرة (بدون إطالة) — تُضاف قبل محتوى المستخدم
   const guard = buildGuardrails({ lang, useImageBrief, level: guard_level });
 
-  // Build contents + media
   const contents = Array.isArray(messages)
     ? normalizeMessagesWithMedia(messages, guard)
     : [{ role: "user", parts: buildParts(wrapPrompt(prompt, lang, useImageBrief, guard), images, audio) }];
 
-  const generationConfig = { temperature, topP: top_p, maxOutputTokens: max_output_tokens };
+  const generationConfig = tuneGeneration({ temperature, top_p, max_output_tokens, useImageBrief, mode });
+  const safetySettings   = buildSafety(guard_level);
+
   const systemInstruction = (system && typeof system === "string")
     ? { role: "system", parts: [{ text: system } ] }
     : undefined;
 
-  // Candidate models order
   const candidates = (model === "auto" || !model)
     ? [...MODEL_POOL]
-    : Array.from(new Set([model, ...MODEL_POOL])); // جرّب المطلوب أولًا ثم الباقي
+    : Array.from(new Set([model, ...MODEL_POOL]));
 
-  // ================== STREAMING (SSE) ==================
+  // ======= STREAM (SSE) =======
   if (stream) {
     const headers = {
       ...baseHeaders,
@@ -111,15 +109,10 @@ exports.handler = async (event) => {
       "Cache-Control": "no-cache, no-transform",
       "Connection": "keep-alive"
     };
-
     for (let mi = 0; mi < candidates.length; mi++) {
       const m = candidates[mi];
       const url = makeUrl(m, true, API_KEY);
-      const body = JSON.stringify({
-        contents,
-        generationConfig,
-        ...(systemInstruction ? { systemInstruction } : {})
-      });
+      const body = JSON.stringify({ contents, generationConfig, safetySettings, ...(systemInstruction ? { systemInstruction } : {}) });
 
       const sseOnce = await tryStreamOnce(url, body, timeout_ms);
       if (sseOnce.ok) {
@@ -150,37 +143,57 @@ exports.handler = async (event) => {
       if (mi === candidates.length - 1) {
         return sseOnce.errorResp || resp(502, baseHeaders, { error: "All models failed (stream)", requestId, lang });
       }
-      // else: try next model
     }
   }
 
-  // ================== NON-STREAM + Fallback ==================
+  // ======= NON-STREAM + Fallback + Auto-Continue =======
   for (let mi = 0; mi < candidates.length; mi++) {
     const m = candidates[mi];
     const url = makeUrl(m, false, API_KEY);
-    const body = JSON.stringify({
+
+    const makeBody = () => JSON.stringify({
       contents,
       generationConfig,
+      safetySettings,
       ...(systemInstruction ? { systemInstruction } : {})
     });
 
-    const jsonOnce = await tryJSONOnce(url, body, timeout_ms, include_raw);
-    if (jsonOnce.ok) {
-      return resp(200, baseHeaders, {
-        text: mirrorLanguage(jsonOnce.text, lang), // ضمان المرآة اللغوية
-        raw: include_raw ? jsonOnce.raw : undefined,
-        model: m,
-        lang,
-        usage: jsonOnce.usage || undefined,
-        requestId,
-        took_ms: Date.now() - reqStart
-      });
+    // المرة الأولى
+    const first = await tryJSONOnce(url, makeBody(), timeBudgetLeft(reqStart, timeout_ms), include_raw);
+    if (!first.ok) {
+      if (mi === candidates.length - 1) {
+        const status = first.statusCode || 502;
+        return resp(status, baseHeaders, { ...(first.error || { error: "All models failed" }), requestId, lang });
+      }
+      continue; // جرّب النموذج التالي
     }
-    if (mi === candidates.length - 1) {
-      const status = jsonOnce.statusCode || 502;
-      return resp(status, baseHeaders, { ...(jsonOnce.error || { error: "All models failed" }), requestId, lang });
+
+    let fullText = first.text;
+    let chunks = 1;
+
+    // تكملة تلقائية داخل نفس الطلب لإخراج نص طويل بدون تكرار
+    while (long && chunks < clampNumber(max_chunks, 1, 12, 4) && shouldContinue(fullText) && timeBudgetLeft(reqStart, timeout_ms) > 2500) {
+      // أضف ردّ النموذج كسياق، ثم اطلب "تابع" بنفس اللغة وبدون تكرار
+      contents.push({ role: "model", parts: [{ text: fullText }] });
+      contents.push({ role: "user", parts: [{ text: continuePrompt(lang) }] });
+
+      const next = await tryJSONOnce(url, makeBody(), timeBudgetLeft(reqStart, timeout_ms), false);
+      if (!next.ok) break;
+
+      // إزالة أي تكرار افتتاحي شائع
+      const append = dedupeContinuation(fullText, next.text);
+      fullText += (append ? ("\n" + append) : "");
+      chunks++;
     }
-    // else: fallback to next model
+
+    return resp(200, baseHeaders, {
+      text: mirrorLanguage(fullText, lang),
+      model: m,
+      lang,
+      usage: first.usage || undefined,
+      requestId,
+      took_ms: Date.now() - reqStart
+    });
   }
 
   return resp(500, baseHeaders, { error: "Unknown failure", requestId, lang });
@@ -209,44 +222,34 @@ function chooseLang(force, sample){
   return hasArabic(sample) ? "ar" : "en";
 }
 function mirrorLanguage(text, lang){
-  // لا نغيّر النص إن كان فارغًا أو النموذج أعاد اللغة المطلوبة.
   if(!text) return text;
   if(lang === "ar" && hasArabic(text)) return text;
   if(lang === "en" && !hasArabic(text)) return text;
-  // عند اللزوم: نضيف سطرًا تمهيديًا قصيرًا بلغة الهدف لتجنب تداخل اللغات من بعض النماذج.
   return (lang === "ar")
-    ? `**ملاحظة:** الرد باللغة العربية.\n\n${text}`
-    : `**Note:** Response in English.\n\n${text}`;
+    ? `**ملاحظة:** الرد باللغة العربية فقط.\n\n${text}`
+    : `**Note:** Response in English only.\n\n${text}`;
 }
 
-function textPreview(s){
-  if(!s) return "";
-  return (s || "").slice(0, 6000); // معاينة كافية لاختيار اللغة فقط
-}
+function textPreview(s){ return (s || "").slice(0, 6000); }
 
 /* ---- Guardrails ---- */
-
 function buildGuardrails({ lang, useImageBrief, level }){
   const L = (lang === "ar") ? {
-    mirror: "استخدم نفس لغة المستخدم تلقائيًا (العربية إن كانت ظاهرة).",
-    beBrief: "كن موجزًا وعمليًا بدون مقدمات أو اعتذارات.",
-    imageBrief: `إن كانت هناك صورة: قدّم 3–5 نقاط تنفيذية مختصرة + خطوة واحدة الآن. لا مقدّمات.`,
-    strict: "تجنّب العموميات والحشو. استخدم نقاط واضحة قابلة للتنفيذ.",
+    mirror: "أجب حصراً بنفس لغة المستخدم الظاهرة (العربية). لا تخلط لغتين. لا تُدرج ترجمة.",
+    beBrief: "اختصر الحشو وركّز على خطوات قابلة للتنفيذ وصياغة بشرية طبيعية.",
+    imageBrief: "عند وجود صور: أعطِ 3–5 نقاط تنفيذية دقيقة + خطوة واحدة فورية. بدون مقدمات.",
+    strict: "لا تختلق. عند الشك اطلب التوضيح. اذكر الافتراضات والوحدات. اعرض الحسابات والأرقام بدقة وتحقق منها. التزم بتعليمات التوجيه حرفيًا."
   } : {
-    mirror: "Mirror the user's language automatically (English if detected).",
-    beBrief: "Be concise and practical. No preambles or apologies.",
-    imageBrief: `If an image is present: return 3–5 tight, actionable bullets + one immediate step. No preamble.`,
-    strict: "Avoid vagueness and fluff. Use clear, executable bullets."
+    mirror: "Answer strictly in the user's language (English). Do not mix languages or add translations.",
+    beBrief: "Cut fluff, focus on precise, executable steps in a human tone.",
+    imageBrief: "If images exist: return 3–5 precise actionable bullets + one immediate step. No preamble.",
+    strict: "Never fabricate. If uncertain, ask for the missing detail. State assumptions/units. Show calculations accurately and verify. Follow system instructions exactly."
   };
   const lines = [L.mirror, L.beBrief, (useImageBrief ? L.imageBrief : ""), (level !== "relaxed" ? L.strict : "")].filter(Boolean);
   return lines.join("\n");
 }
-
 function wrapPrompt(prompt, lang, useImageBrief, guard){
-  // نحقن الحراسة قبل محتوى المستخدم مع فاصل واضح
-  const head = (lang === "ar")
-    ? "تعليمات حراسة موجزة (اتبعها بدقة):"
-    : "Concise guardrails (follow strictly):";
+  const head = (lang === "ar") ? "تعليمات حراسة موجزة (اتبعها بدقة):" : "Concise guardrails (follow strictly):";
   return `${head}\n${guard}\n\n---\n${prompt || ""}`;
 }
 
@@ -258,16 +261,13 @@ function buildParts(prompt, images, audio) {
   parts.push(...coerceMediaParts(images, audio));
   return parts;
 }
-
 function normalizeMessagesWithMedia(messages, guard) {
-  // Gemini expects: [{role:"user"|"model"|"system", parts:[{text|inline_data}...]}]
   const safeRole = (r) => (r === "user" || r === "model" || r === "system") ? r : "user";
   let injected = false;
   return messages
     .filter(m => m && (typeof m.content === "string" || m.images || m.audio))
     .map(m => {
       const parts = [];
-      // حقن الحراسة مرة واحدة في أول رسالة user فقط
       if (!injected && m.role === "user") {
         const content = (typeof m.content === "string" && m.content.trim()) ? m.content : "";
         parts.push({ text: wrapPrompt(content, chooseLang(undefined, content), !!(m.images && m.images.length), guard) });
@@ -283,8 +283,6 @@ function normalizeMessagesWithMedia(messages, guard) {
 
 function coerceMediaParts(images, audio) {
   const parts = [];
-
-  // images: [dataUrl | {mime,data}|{dataUrl}]
   if (Array.isArray(images)) {
     for (const item of images) {
       let mime, b64;
@@ -300,8 +298,6 @@ function coerceMediaParts(images, audio) {
       parts.push({ inline_data: { mime_type: mime, data: b64 } });
     }
   }
-
-  // audio: {mime,data} أو dataUrl string
   if (audio) {
     let mime, b64;
     if (typeof audio === "string" && audio.startsWith("data:")) {
@@ -314,47 +310,85 @@ function coerceMediaParts(images, audio) {
       parts.push({ inline_data: { mime_type: mime, data: b64 } });
     }
   }
-
   return parts;
 }
-
 function fromDataUrl(dataUrl) {
-  // data:[mime];base64,<data>
   const comma = dataUrl.indexOf(',');
   const header = dataUrl.slice(5, comma);
   const mime = header.includes(';') ? header.slice(0, header.indexOf(';')) : header;
   const data = dataUrl.slice(comma + 1);
   return { mime, data };
 }
-
 function approxBase64Bytes(b64) {
   const len = b64.length - (b64.endsWith('==') ? 2 : b64.endsWith('=') ? 1 : 0);
   return Math.floor(len * 0.75);
 }
 
+/* ---- Generation tuning (دقّة) ---- */
+function tuneGeneration({ temperature, top_p, max_output_tokens, useImageBrief, mode }) {
+  let t   = (temperature   === undefined || temperature   === null) ? (useImageBrief ? 0.25 : 0.30) : temperature;
+  let tp  = (top_p         === undefined || top_p         === null) ? 0.88 : top_p;
+  let mot = (max_output_tokens === undefined || max_output_tokens === null)
+              ? (useImageBrief ? 1536 : 6144)
+              : max_output_tokens;
+
+  if (mode === "qa" || mode === "factual") {
+    t = Math.min(t, 0.24);
+    tp = Math.min(tp, 0.9);
+    mot = Math.max(mot, 3072);
+  }
+
+  t   = clampNumber(t,   SAFE_TEMP_RANGE[0], SAFE_TEMP_RANGE[1], 0.30);
+  tp  = clampNumber(tp,  SAFE_TOPP_RANGE[0], SAFE_TOPP_RANGE[1], 0.88);
+  mot = clampNumber(mot, 1, MAX_OUTPUT_TOKENS_HARD, 6144);
+
+  return { temperature: t, topP: tp, maxOutputTokens: mot };
+}
+
+/* ---- Safety ---- */
+function buildSafety(level = "strict") {
+  const cat = (name) => ({ category: name, threshold: level === "relaxed" ? "BLOCK_NONE" : "BLOCK_ONLY_HIGH" });
+  return [
+    cat("HARM_CATEGORY_HARASSMENT"),
+    cat("HARM_CATEGORY_HATE_SPEECH"),
+    cat("HARM_CATEGORY_SEXUALLY_EXPLICIT"),
+    cat("HARM_CATEGORY_DANGEROUS_CONTENT"),
+  ];
+}
+
+/* ---- Auto-continue helpers ---- */
+function continuePrompt(lang){
+  return (lang === "ar")
+    ? "تابع من حيث توقفت بنفس الهيكل واللغة، بدون تكرار أو تلخيص لما سبق، وأكمل مباشرة."
+    : "Continue exactly where you stopped, same structure and language, no repetition or summary; output only the continuation.";
+}
+function shouldContinue(text){
+  if (!text) return false;
+  // اشارات انتهاء غير مؤكدة → واصل
+  const tail = text.slice(-40).trim();
+  return /[\u2026…]$/.test(tail) || /(?:continued|to be continued)[:.]?$/i.test(tail) || tail.endsWith("-");
+}
+function dedupeContinuation(prev, next){
+  if (!next) return "";
+  // إزالة افتتاحية مكررة (حتى 200 حرف)
+  const head = next.slice(0, 200);
+  if (prev && prev.endsWith(head)) return next.slice(head.length).trimStart();
+  return next;
+}
+function timeBudgetLeft(start, total){ return Math.max(0, total - (Date.now() - start)); }
+
 /* ---- Network & Retry ---- */
-
-function shouldRetry(status) {
-  return status === 429 || (status >= 500 && status <= 599);
-}
-
-function mapStatus(status) {
-  if (status === 429) return 429;
-  if (status >= 500) return 502;
-  return status || 500;
-}
-
+function shouldRetry(status) { return status === 429 || (status >= 500 && status <= 599); }
+function mapStatus(status) { if (status === 429) return 429; if (status >= 500) return 502; return status || 500; }
 function collectUpstreamError(status, data, text) {
   const details = (data && (data.error?.message || data.message)) || (typeof text === "string" ? text.slice(0, 1000) : "Upstream error");
   return { error: "Upstream error", status, details };
 }
-
 async function sleepWithJitter(attempt) {
   const base = BASE_BACKOFF_MS * Math.pow(2, attempt - 1);
   const jitter = Math.floor(Math.random() * 400);
   await new Promise(r => setTimeout(r, base + jitter));
 }
-
 async function streamBody(genFactory) {
   const chunks = [];
   for await (const chunk of genFactory()) {
@@ -364,7 +398,6 @@ async function streamBody(genFactory) {
 }
 
 /* ---- One-shot attempts ---- */
-
 async function tryStreamOnce(url, body, timeout_ms) {
   for (let attempt = 1; attempt <= MAX_TRIES; attempt++) {
     const abort = new AbortController();
@@ -397,7 +430,6 @@ async function tryStreamOnce(url, body, timeout_ms) {
     }
   }
 }
-
 async function tryJSONOnce(url, body, timeout_ms, include_raw) {
   for (let attempt = 1; attempt <= MAX_TRIES; attempt++) {
     const abort = new AbortController();
@@ -407,8 +439,7 @@ async function tryJSONOnce(url, body, timeout_ms, include_raw) {
       clearTimeout(t);
 
       const textBody = await respUp.text();
-      let data;
-      try { data = JSON.parse(textBody); } catch { data = null; }
+      let data; try { data = JSON.parse(textBody); } catch { data = null; }
 
       if (!respUp.ok) {
         if (shouldRetry(respUp.status) && attempt < MAX_TRIES) { await sleepWithJitter(attempt); continue; }
@@ -436,8 +467,4 @@ async function tryJSONOnce(url, body, timeout_ms, include_raw) {
     }
   }
 }
-
 function safeParseJSON(s) { try { return JSON.parse(s); } catch { return null; } }
-
-
-
