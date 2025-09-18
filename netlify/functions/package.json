@@ -1,17 +1,13 @@
 {
-  "name": "netlify-functions",
+  "name": "healthaicoach",
   "version": "1.0.0",
   "private": true,
-  "description": "Serverless functions for Smart Personal Coach (Gemini proxy with fallback/stream/vision/audio).",
-  "main": "gemini-proxy.js",
-  "engines": {
-    "node": ">=18"
-  },
+  "description": "Web + Netlify Functions for Smart Personal Coach",
+  "engines": { "node": ">=18" },
   "scripts": {
     "dev": "netlify dev",
-    "dev:functions": "netlify dev --framework=#static --port=8888",
-    "serve": "netlify dev",
     "start": "netlify dev",
+    "build": "echo \"no build step\"",
     "test": "node -e \"console.log('OK')\"",
     "clean": "rm -rf .netlify/functions .netlify/edge-functions",
     "verify:env": "node -e \"const req=['SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','GEMINI_API_KEY'];const miss=req.filter(k=>!process.env[k]);if(miss.length){console.error('Missing env:',miss.join(', '));process.exit(1)}console.log('ENV OK')\""
