@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "engines": { "node": ">=18" },
   "scripts": {
-    "build": "npm i"   // إجبر نتليفاي يثبت الاعتماديات أثناء النشر
+    "build": "npm i"
   },
   "dependencies": {
     "@netlify/blobs": "^6.3.0",
