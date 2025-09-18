@@ -1,4 +1,15 @@
 <!DOCTYPE html>
+
+
+<!-- اسكربت داخل وسم <script> صحيح -->
+<script>
+const $ = (id) => document.getElementById(id);
+const FGET = '/.netlify/functions/admin-get-config';
+const FSET = '/.netlify/functions/admin-set-config';
+
+
+async function loadConfig(){
+const r = await fetch(FGET);
 const cfg = await r.json();
 $('#coachName').value = cfg.coachName || '';
 $('#phone').value = cfg.phone || '';
@@ -37,7 +48,7 @@ function buildBookmarklet(){
 const url = location.origin + '/admin/runtime.js';
 const code = `javascript:(function(){var s=document.createElement('script');s.src='${url}?t='+(Date.now());document.body.appendChild(s);}())`;
 navigator.clipboard.writeText(code).then(()=>{
-$('#bmlStatus').textContent = 'تم النسخ — اسحبه إلى شريط العلامات لديك.';
+$('#bmlStatus').textContent = 'تم النسخ — اسحبه إلى شريط العلامات.';
 });
 }
 
