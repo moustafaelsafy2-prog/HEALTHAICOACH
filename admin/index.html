@@ -1,399 +1,53 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <title>لوحة الإدارة | مدربك الشخصي الذكي</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    :root{--border:#e5e7eb}
-    html,body{height:100%}
-    body{font-family:Cairo,system-ui,"Segoe UI",Roboto,sans-serif;background:#f7f8fa}
-    .card{background:#fff;border:1px solid var(--border);border-radius:1rem;box-shadow:0 1px 2px rgba(0,0,0,.05)}
-    .bubble{max-width:80%;padding:.6rem .9rem;border-radius:12px;line-height:1.7;box-shadow:0 1px 2px rgba(0,0,0,.06)}
-    .bubble.user{background:#dcfce7;color:#064e3b;margin-inline-start:auto;border-bottom-right-radius:6px}
-    .bubble.ai{background:#fff;border:1px solid #e5e7eb;margin-inline-end:auto;border-bottom-left-radius:6px}
-    .scroll-thin{scrollbar-width:thin;scrollbar-color:#cbd5e1 transparent}
-    .skel{background:linear-gradient(90deg,#eee,#f5f5f5,#eee);background-size:200% 100%;animation:l 1.2s linear infinite}
-    @keyframes l{0%{background-position:200% 0}100%{background-position:-200% 0}}
-  </style>
-</head>
-<body class="min-h-dvh">
-  <!-- Topbar -->
-  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-gray-200">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <span class="inline-flex h-9 w-9 items-center justify-center rounded-full ring-2 ring-emerald-500/30">
-          <svg class="w-6 h-6 text-emerald-600" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a10 10 0 100 20 10 10 0 000-20Zm1 14h-2v-2h2v2Zm1.07-7.75-.9.92C12.45 9.9 12 10.5 12 12h-2v-.5c0-1 .45-1.9 1.17-2.58l1.24-1.26a2 2 0 10-2.83-2.83A2.01 2.01 0 008 6H6a4 4 0 117.07 2.25Z"/></svg>
-        </span>
-        <div>
-          <div class="text-xs text-gray-500">لوحة الإدارة</div>
-          <h1 class="text-lg font-extrabold">مدربك الشخصي الذكي</h1>
-        </div>
-      </div>
-      <div class="flex items-center gap-2">
-        <button id="btnReload" class="px-3 h-9 rounded-lg border border-gray-200 hover:bg-gray-100">تحديث</button>
-        <button id="btnExport" class="px-3 h-9 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700">تصدير المحادثة</button>
-      </div>
-    </div>
-  </header>
+const cfg = await r.json();
+$('#coachName').value = cfg.coachName || '';
+$('#phone').value = cfg.phone || '';
+$('#whats').value = cfg.whats || '';
+$('#avatar').value = cfg.avatar || '';
+$('#bio').value = cfg.bio || '';
+$('#iherbCode').value = cfg.iherbCode || '';
+$('#iherbUrl').value = cfg.iherbUrl || '';
+$('#aiPrompt').value = cfg.aiPrompt || '';
+$('#welcomeTitle').value = cfg.welcomeTitle || '';
+$('#welcomeSubtitle').value = cfg.welcomeSubtitle || '';
+}
 
-  <!-- Layout -->
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 grid grid-cols-12 gap-5">
-    <!-- Sidebar: sessions -->
-    <aside class="col-span-12 md:col-span-4 lg:col-span-3 space-y-3">
-      <div class="card p-3">
-        <div class="flex items-center gap-2">
-          <input id="q" type="search" placeholder="ابحث بالجلسات…" class="flex-1 px-3 h-10 rounded-lg border border-gray-200" />
-          <button id="btnSearch" class="px-3 h-10 rounded-lg bg-gray-900 text-white hover:bg-black">بحث</button>
-        </div>
-      </div>
 
-      <div class="card">
-        <div class="p-3 flex items-center justify-between">
-          <div class="text-sm text-gray-500">الجلسات</div>
-          <div class="text-xs text-gray-400" id="sessionsCount">0</div>
-        </div>
-        <div id="sessionsList" class="max-h-[68dvh] overflow-y-auto scroll-thin divide-y divide-gray-100">
-          <!-- items -->
-        </div>
-      </div>
+async function saveConfig(){
+const token = $('#adminToken').value.trim();
+const body = {
+coachName: $('#coachName').value.trim(),
+phone: $('#phone').value.trim(),
+whats: $('#whats').value.trim(),
+avatar: $('#avatar').value.trim(),
+bio: $('#bio').value.trim(),
+iherbCode: $('#iherbCode').value.trim(),
+iherbUrl: $('#iherbUrl').value.trim(),
+aiPrompt: $('#aiPrompt').value,
+welcomeTitle: $('#welcomeTitle').value.trim(),
+welcomeSubtitle: $('#welcomeSubtitle').value.trim(),
+};
+const r = await fetch(FSET, {method:'POST', headers:{'Content-Type':'application/json','x-admin-token':token}, body: JSON.stringify(body)});
+const j = await r.json();
+alert(j.ok ? 'تم الحفظ بنجاح' : ('فشل الحفظ: ' + (j.error||'Unknown')));
+}
 
-      <div class="card p-3">
-        <div class="text-xs text-gray-500 mb-1">ملاحظة</div>
-        <p class="text-xs text-gray-600">
-          هذه الصفحة تستخدم دوال Netlify لسحب الجلسات والرسائل من Supabase.
-          لإغلاقها بكلمة مرور يمكنك تفعيل حماية Netlify أو Basic Auth.
-        </p>
-      </div>
-    </aside>
 
-    <!-- Main: conversation & controls -->
-    <main class="col-span-12 md:col-span-8 lg:col-span-9 space-y-4">
-      <!-- Session header -->
-      <section class="card p-4">
-        <div class="flex items-start justify-between gap-3">
-          <div>
-            <div class="text-xs text-gray-500">الجلسة الحالية</div>
-            <div id="currentSessionId" class="font-bold break-all">—</div>
-            <div id="currentMeta" class="text-xs text-gray-500 mt-1">—</div>
-          </div>
-          <div class="flex items-center gap-2">
-            <button id="btnLoadOlder" class="px-3 h-9 rounded-lg border border-gray-200 hover:bg-gray-100" disabled>تحميل أقدم</button>
-            <button id="btnRefreshOne" class="px-3 h-9 rounded-lg border border-gray-200 hover:bg-gray-100" disabled>تحديث</button>
-          </div>
-        </div>
-      </section>
+function buildBookmarklet(){
+const url = location.origin + '/admin/runtime.js';
+const code = `javascript:(function(){var s=document.createElement('script');s.src='${url}?t='+(Date.now());document.body.appendChild(s);}())`;
+navigator.clipboard.writeText(code).then(()=>{
+$('#bmlStatus').textContent = 'تم النسخ — اسحبه إلى شريط العلامات لديك.';
+});
+}
 
-      <!-- Chat view -->
-      <section class="card h-[62dvh] flex flex-col">
-        <div id="chatView" class="flex-1 p-4 overflow-y-auto scroll-thin bg-gray-50">
-          <div id="chatEmpty" class="h-full grid place-items-center text-gray-400">
-            اختر جلسة من القائمة لعرض المحادثة.
-          </div>
-        </div>
-        <div class="border-t border-gray-200 p-3">
-          <div class="flex items-end gap-2">
-            <textarea id="adminReply" rows="1" placeholder="اكتب ردّك كـ المدرب…" class="flex-1 px-3 py-2 rounded-lg border border-gray-200 max-h-40"></textarea>
-            <select id="replyRole" class="h-10 px-2 rounded-lg border border-gray-200">
-              <option value="assistant" selected>رد المدرب</option>
-              <option value="user">كمستخدم (اختبار)</option>
-            </select>
-            <button id="btnSend" class="h-10 px-4 rounded-lg bg-emerald-600 text-white hover:bg-emerald-700" disabled>إرسال</button>
-          </div>
-        </div>
-      </section>
-    </main>
-  </div>
 
-  <script>
-  // ================= API endpoints (بدّل الأسماء لو مختلفة عندك) =================
-  const API = {
-    listSessions: async (q = '', cursor = '') => {
-      // GET: /.netlify/functions/adminless-list-sessions?q=...&cursor=...
-      const url = '/.netlify/functions/adminless-list-sessions'
-        + (q ? ('?q=' + encodeURIComponent(q)) : '')
-        + (cursor ? (q ? '&' : '?') + 'cursor=' + encodeURIComponent(cursor) : '');
-      const r = await fetch(url);
-      if (!r.ok) throw new Error('خطأ في تحميل الجلسات');
-      return r.json(); // { data:[{session_id, last_ts, messages_count, ...}], next_cursor? }
-    },
-    listMessages: async (session_id, cursor = '', limit = 50) => {
-      // POST: {session_id, cursor?, limit?}  → { data:[{role,text,images,ts}], next_cursor? }
-      const r = await fetch('/.netlify/functions/adminless-list-messages', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ session_id, cursor, limit })
-      });
-      if (!r.ok) throw new Error('خطأ في تحميل الرسائل');
-      return r.json();
-    },
-    addMessage: async ({ session_id, role = 'assistant', text = '', images = [] }) => {
-      const r = await fetch('/.netlify/functions/adminless-add-message', {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({ session_id, role, text, images, ts: Date.now() })
-      });
-      if (!r.ok) throw new Error('فشل إرسال الرسالة');
-      return r.json();
-    }
-  };
+$('#loadBtn').onclick = loadConfig;
+$('#saveBtn').onclick = saveConfig;
+$('#copyBml').onclick = buildBookmarklet;
 
-  // ================= State =================
-  const State = {
-    sessions: [],
-    sessionsCursor: '',
-    activeSessionId: '',
-    msgs: [],
-    msgsCursor: '',
-  };
 
-  // ================= Elements =================
-  const $ = id => document.getElementById(id);
-  const el = {
-    q: $('q'),
-    btnSearch: $('btnSearch'),
-    btnReload: $('btnReload'),
-    sessionsList: $('sessionsList'),
-    sessionsCount: $('sessionsCount'),
-    currentSessionId: $('currentSessionId'),
-    currentMeta: $('currentMeta'),
-    chatView: $('chatView'),
-    chatEmpty: $('chatEmpty'),
-    btnLoadOlder: $('btnLoadOlder'),
-    btnRefreshOne: $('btnRefreshOne'),
-    adminReply: $('adminReply'),
-    btnSend: $('btnSend'),
-    btnExport: $('btnExport'),
-    replyRole: $('replyRole'),
-  };
-
-  // ================= Utilities =================
-  function fmtTime(ts){
-    try{
-      return new Date(ts).toLocaleString('ar-EG', { hour12:true });
-    }catch(_){ return '—'; }
-  }
-  function createSessionItem(s){
-    const div = document.createElement('button');
-    div.className = 'w-full text-right px-3 py-3 hover:bg-gray-50';
-    div.innerHTML = `
-      <div class="flex items-start justify-between gap-2">
-        <div class="min-w-0">
-          <div class="font-bold text-sm break-all">${s.display_name || s.session_id}</div>
-          <div class="text-xs text-gray-500 truncate">${s.last_text || ''}</div>
-        </div>
-        <div class="text-[10px] text-gray-400 whitespace-nowrap">${s.messages_count ?? '—'} رسائل</div>
-      </div>
-    `;
-    div.addEventListener('click', () => loadConversation(s.session_id));
-    return div;
-  }
-  function renderSessions(){
-    el.sessionsList.innerHTML = '';
-    if(!State.sessions.length){
-      el.sessionsList.innerHTML = `<div class="p-4 text-sm text-gray-500">لا توجد جلسات.</div>`;
-      el.sessionsCount.textContent = '0';
-      return;
-    }
-    State.sessions.forEach(s => el.sessionsList.appendChild(createSessionItem(s)));
-    el.sessionsCount.textContent = State.sessions.length;
-  }
-  function bubbleTemplate(m){
-    const who = m.role === 'assistant' ? 'ai' : 'user';
-    const b = document.createElement('div');
-    b.className = `bubble ${who}`;
-    const text = (m.text || (m.parts && m.parts[0] && m.parts[0].text) || '');
-    const images = m.images || [];
-    let imgs = '';
-    if (Array.isArray(images) && images.length){
-      const thumbs = images.map(src => `<img src="${src}" alt="" class="w-20 h-20 object-cover rounded-lg border border-gray-200 cursor-pointer" />`).join('');
-      imgs = `<div class="flex flex-wrap gap-2 mb-2">${thumbs}</div>`;
-    }
-    b.innerHTML = `
-      ${imgs}
-      <div class="whitespace-pre-wrap break-words">${text}</div>
-      <div class="mt-1 text-[10px] text-gray-500 text-left">${fmtTime(m.ts)}</div>
-    `;
-    // enlarge image on click
-    b.querySelectorAll('img').forEach(img=>{
-      img.addEventListener('click', ()=> {
-        const w = window.open();
-        w.document.write('<title>Image</title><img style="max-width:100%" src="'+img.src+'"/>');
-      });
-    });
-    return b;
-  }
-  function renderMsgs(appendToTop=false){
-    if(!State.msgs.length){
-      el.chatView.innerHTML = '';
-      el.chatView.appendChild(el.chatEmpty);
-      return;
-    }
-    if(!appendToTop){
-      el.chatView.innerHTML = '';
-    }
-    const frag = document.createDocumentFragment();
-    State.msgs.forEach(m => frag.appendChild(bubbleTemplate(m)));
-    if(appendToTop){
-      // keep scroll position when prepending old messages
-      const prevHeight = el.chatView.scrollHeight;
-      el.chatView.prepend(frag);
-      const newHeight = el.chatView.scrollHeight;
-      el.chatView.scrollTop = newHeight - prevHeight;
-    }else{
-      el.chatView.appendChild(frag);
-      el.chatView.scrollTop = el.chatView.scrollHeight;
-    }
-  }
-
-  // ================= Actions =================
-  async function loadSessions(q=''){
-    // skeleton
-    el.sessionsList.innerHTML = '';
-    for (let i=0;i<6;i++){
-      const s = document.createElement('div');
-      s.className = 'p-3';
-      s.innerHTML = `<div class="h-4 rounded skel mb-2"></div><div class="h-3 w-2/3 rounded skel"></div>`;
-      el.sessionsList.appendChild(s);
-    }
-    try{
-      const res = await API.listSessions(q);
-      State.sessions = (res && res.data) ? res.data : [];
-      State.sessionsCursor = res.next_cursor || '';
-      renderSessions();
-      // restore last opened session
-      const last = localStorage.getItem('admin:lastSession');
-      if(last && State.sessions.some(s=>s.session_id===last)){
-        loadConversation(last);
-      }
-    }catch(e){
-      el.sessionsList.innerHTML = `<div class="p-4 text-sm text-red-600">فشل تحميل الجلسات</div>`;
-      console.error(e);
-    }
-  }
-
-  async function loadConversation(session_id){
-    State.activeSessionId = session_id;
-    localStorage.setItem('admin:lastSession', session_id);
-    el.currentSessionId.textContent = session_id;
-    el.currentMeta.textContent = '—';
-    el.btnSend.disabled = false;
-    el.btnRefreshOne.disabled = false;
-    el.btnLoadOlder.disabled = true;
-    el.chatEmpty.remove();
-
-    // clear view + skeleton
-    el.chatView.innerHTML = '';
-    for (let i=0;i<4;i++){
-      const row = document.createElement('div');
-      row.className = 'mb-2';
-      row.innerHTML = `<div class="bubble ai"><div class="h-4 rounded skel w-64 mb-1"></div><div class="h-4 rounded skel w-40"></div></div>`;
-      el.chatView.appendChild(row);
-    }
-    try{
-      const res = await API.listMessages(session_id, '', 60);
-      const arr = (res && res.data) ? res.data : [];
-      // normalize: ensure fields role, text, images, ts
-      State.msgs = arr.map(x=>({
-        role: x.role,
-        text: x.text || (x.parts && x.parts[0] && x.parts[0].text) || '',
-        images: Array.isArray(x.images) ? x.images : [],
-        ts: x.ts || x.created_at || Date.now()
-      }));
-      State.msgs.sort((a,b)=> (a.ts||0) - (b.ts||0));
-      State.msgsCursor = res.next_cursor || '';
-      renderMsgs();
-      el.btnLoadOlder.disabled = !State.msgsCursor;
-      // meta
-      const last = State.msgs[State.msgs.length-1];
-      el.currentMeta.textContent = last ? `آخر نشاط: ${fmtTime(last.ts)} • إجمالي: ${State.msgs.length}` : '—';
-    }catch(e){
-      el.chatView.innerHTML = `<div class="p-4 text-sm text-red-600">فشل تحميل الرسائل</div>`;
-      console.error(e);
-    }
-  }
-
-  async function loadOlder(){
-    if(!State.activeSessionId || !State.msgsCursor) return;
-    el.btnLoadOlder.disabled = true;
-    try{
-      const res = await API.listMessages(State.activeSessionId, State.msgsCursor, 60);
-      const arr = (res && res.data) ? res.data : [];
-      const older = arr.map(x=>({
-        role: x.role,
-        text: x.text || (x.parts && x.parts[0] && x.parts[0].text) || '',
-        images: Array.isArray(x.images) ? x.images : [],
-        ts: x.ts || x.created_at || Date.now()
-      }));
-      older.sort((a,b)=> (a.ts||0) - (b.ts||0));
-      State.msgs = [...older, ...State.msgs];
-      State.msgsCursor = res.next_cursor || '';
-      // prepend & keep scroll
-      renderMsgs(true);
-      el.btnLoadOlder.disabled = !State.msgsCursor;
-    }catch(e){
-      console.error(e);
-      el.btnLoadOlder.disabled = false;
-    }
-  }
-
-  async function sendReply(){
-    const text = (el.adminReply.value || '').trim();
-    if(!text || !State.activeSessionId) return;
-    el.btnSend.disabled = true;
-    try{
-      const role = el.replyRole.value || 'assistant';
-      await API.addMessage({ session_id: State.activeSessionId, role, text, images: [] });
-      // reflect locally
-      const m = { role, text, images: [], ts: Date.now() };
-      State.msgs.push(m);
-      renderMsgs();
-      el.adminReply.value = '';
-      el.adminReply.style.height = 'auto';
-    }catch(e){
-      alert('تعذّر إرسال الرسالة');
-      console.error(e);
-    }finally{
-      el.btnSend.disabled = false;
-    }
-  }
-
-  function exportConversation(){
-    if(!State.activeSessionId || !State.msgs.length){
-      alert('اختر جلسة أولاً'); return;
-    }
-    const payload = {
-      session_id: State.activeSessionId,
-      exported_at: new Date().toISOString(),
-      messages: State.msgs
-    };
-    const blob = new Blob([JSON.stringify(payload,null,2)], {type:'application/json'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = `conversation_${State.activeSessionId}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-  }
-
-  // ================= Events =================
-  function autoGrowTextarea(){
-    const ta = el.adminReply;
-    ta.style.height = 'auto';
-    ta.style.height = Math.min(180, ta.scrollHeight) + 'px';
-  }
-  el.adminReply.addEventListener('input', autoGrowTextarea);
-  el.btnSearch.addEventListener('click', ()=> loadSessions(el.q.value.trim()));
-  el.btnReload.addEventListener('click', ()=> loadSessions(el.q.value.trim()));
-  el.btnRefreshOne.addEventListener('click', ()=> State.activeSessionId && loadConversation(State.activeSessionId));
-  el.btnLoadOlder.addEventListener('click', loadOlder);
-  el.btnSend.addEventListener('click', sendReply);
-  el.btnExport.addEventListener('click', exportConversation);
-  el.q.addEventListener('keypress', (e)=>{ if(e.key==='Enter'){ loadSessions(el.q.value.trim()); }});
-
-  // init
-  loadSessions('');
-  </script>
+loadConfig();
+</script>
 </body>
 </html>
