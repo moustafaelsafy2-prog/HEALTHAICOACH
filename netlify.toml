@@ -33,3 +33,17 @@
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
     Referrer-Policy = "strict-origin-when-cross-origin"
+
+# جلسة جديدة لكل مستخدم
+[[redirects]]
+  from = "/api/create-session"
+  to   = "/.netlify/functions/create-session"
+  status = 200
+  force  = true
+
+# إرسال/جلب رسائل جلسة واحدة
+[[redirects]]
+  from = "/api/chat"
+  to   = "/.netlify/functions/chat"
+  status = 200
+  force  = true
