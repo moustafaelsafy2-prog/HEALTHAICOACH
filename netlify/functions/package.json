@@ -12,7 +12,9 @@
     "dev:functions": "netlify dev --framework=#static --port=8888",
     "serve": "netlify dev",
     "start": "netlify dev",
-    "test": "node -e \"console.log('OK')\""
+    "test": "node -e \"console.log('OK')\"",
+    "clean": "rm -rf .netlify/functions .netlify/edge-functions",
+    "verify:env": "node -e \"const req=['SUPABASE_URL','SUPABASE_SERVICE_ROLE_KEY','GEMINI_API_KEY'];const miss=req.filter(k=>!process.env[k]);if(miss.length){console.error('Missing env:',miss.join(', '));process.exit(1)}console.log('ENV OK')\""
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.0",
